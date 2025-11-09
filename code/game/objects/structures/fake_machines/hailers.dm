@@ -23,6 +23,18 @@
 	SSroguemachine.hailer -= src
 	return ..()
 
+/obj/structure/fake_machine/hailer/examine(mob/user)
+	. = ..()
+	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		. += ""
+		user.add_stress(/datum/stress_event/ring_madness)
+		return
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		. += ""
+		return
+	else
+		. += ""
+
 /obj/structure/fake_machine/hailer/attackby(obj/item/H, mob/user, params)
 	if(!HAS_TRAIT(user, TRAIT_BURDEN) && !is_gaffer_assistant_job(user.mind.assigned_role))
 		to_chat(user, span_danger("you can't feed the [src] without carrying it's burden"))

@@ -48,7 +48,7 @@
 
 /obj/structure/fake_machine/headeater
 	name = "HEAD EATER"
-	desc = "A machine that feeds on certain heads for coin, despite all this time... this itteration still seems unfinished, what a sell out"
+	desc = "Feeds on certain heads for coin, despite all this time... this itteration still seems unfinished, what a sell out"
 	icon = 'icons/roguetown/misc/machines.dmi'
 	icon_state = "headeater"
 	density = FALSE
@@ -62,6 +62,18 @@
 /obj/structure/fake_machine/headeater/Destroy()
 	SSroguemachine.headeater = null
 	. = ..()
+
+/obj/structure/fake_machine/headeater/examine(mob/user)
+	. = ..()
+	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		. += ""
+		user.add_stress(/datum/stress_event/ring_madness)
+		return
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		. += ""
+		return
+	else
+		. += ""
 
 /obj/structure/fake_machine/headeater/r
 	SET_BASE_PIXEL(32, 0)

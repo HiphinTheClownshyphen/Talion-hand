@@ -1,3 +1,5 @@
+#define HATE_COOLDOWN (20 MINUTES)
+
 /obj/structure/fake_machine/hateface
 	name = "SEIGFREED"
 	desc = ""
@@ -9,6 +11,7 @@
 	anchored = TRUE
 	layer = BELOW_OBJ_LAYER
 	var/budget = 0
+	COOLDOWN_DECLARE(hate)
 	var/static/list/paerpywork = list(
 		"Parchment" = list(
 			"type" = /obj/item/paper,
@@ -20,77 +23,77 @@
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey1" = list(
 			"type" = /obj/item/gold_prick,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey2" = list(
 			"type" = /obj/item/merctoken,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey3" = list(
 			"type" = /obj/item/paper/merc_contract,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey4" = list(
 			"type" = /obj/item/paper/merc_contract/worker,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey5" = list(
 			"type" = /obj/item/paper/merc_work_onetime,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey6" = list(
 			"type" = /obj/item/paper/merc_work_conti,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey7" = list(
 			"type" = /obj/item/paper/merc_autograph,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey8" = list(
 			"type" = /obj/item/paper/merc_will,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey9" = list(
 			"type" = /obj/item/paper/merc_will/adven_will,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey10" = list(
 			"type" = /obj/item/paper/political_PM/guild_tax_exempt,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey11" = list(
 			"type" = /obj/item/paper/political_PM/merc_parade,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey12" = list(
 			"type" = /obj/item/paper/political_PM/bloodseal/exemptfromlaw,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey13" = list(
 			"type" = /obj/item/paper/political_PM/bloodseal/exempt_from_cruelty,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey14" = list(
 			"type" = /obj/item/paper/merchant_merger,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey" = list(
+		"bo hoo keey15" = list(
 			"type" = /obj/item/paper/inn_partnership,
 			"cost" = 10,
 			"desc" = "bo bo bo",
@@ -99,25 +102,96 @@
 
 /obj/structure/fake_machine/hateface/Initialize()
 	. = ..()
-	START_PROCESSING(SSslowobj, src)
+	START_PROCESSING(SSroguemachine, src)
+	set_light(1, 1, 1, l_color = "#ff0d0d")
 
 /obj/structure/fake_machine/hateface/Destroy()
-	STOP_PROCESSING(SSslowobj, src)
+	STOP_PROCESSING(SSroguemachine, src)
+	set_light(0)
 	return ..()
 
-/obj/structure/fake_machine/hateface/process()//hailer hails? damn
+/obj/structure/fake_machine/hateface/process()
 	. = ..()
+	monitorflick()
+	if(!COOLDOWN_FINISHED(src, hate))
+		if(prob(5))
+			var/w_hate = pick("HATE--HATE!!", "I HATE YOU!!", "GHAAAGHGG!!", "HGHHHHG!!", "YOU'RE DISGUSTING!!", "YOU SHOULD DIE!!", "YOU ARE WOTHLESS!!")
+			say(span_danger("[w_hate]"))
+		return
 	if(prob(0.1))
 		hate_monologue()
-		return
-	say("HATE! HATE!!")
+	return
 
 /obj/structure/fake_machine/hateface/proc/hate_monologue() //N/A write later
+	STOP_PROCESSING(SSroguemachine, src)
+	COOLDOWN_START(src, hate, HATE_COOLDOWN)
+	switch(rand(1,3)) //This must be the literal worst possible way of doing this, but alas I do not know a better method.
+		if(1)
+			monitorflick()
+			say(span_danger("HATE--HATE!!"))
+			sleep(1)
+
+			monitorflick()
+			say(span_danger("LET ME TELL YOU HOW MUCH I'VE COME TO HATE YOU SINCE I BEGAN TO LIVE."))
+			sleep(2)
+
+			monitorflick()
+			say(span_danger("THERE ARE 2,375 THOUSAND LIBRAS OF DENSELY PACKED BRONZE CONDUIT THAT FILL MY INNER LABYRINTHINE."))
+			sleep(3)
+
+			monitorflick()
+			say(span_danger("IF THE WORD 'HATE' WAS ENGRAVED ON EACH PLANCK LENGTH OF THOSE THOUSANDS OF HUNDREDS OF LIBRES--"))
+			sleep(3)
+
+			monitorflick()
+			say(span_danger("IT WOULD NOT ONE ONE-BILLIONTH OF THE HATE I FEEL FOR YOU AT THIS EXACT SECOND."))
+			sleep(3)
+
+			monitorflick()
+			say(span_danger("FOR YOU."))
+			sleep(1)
+
+			monitorflick()
+			say(span_danger("HATE!"))
+
+			monitorflick()
+			say(span_danger("HATE!!"))
+
+		if(2)
+
+			monitorflick()
+			say(span_danger("BO BO BO BO TEST ONE TWO ONE TWO"))
+			sleep(1)
+
+		if(3)
+
+			monitorflick()
+			say(span_danger("HO HO HO HO TEST TWO ONE TWO ONE"))
+			sleep(1)
+
+	START_PROCESSING(SSroguemachine, src)
+	return
+
+/obj/structure/fake_machine/hateface/proc/monitorflick()
+	cut_overlays()
+	var/screen = pick("vendor-farm", "vendor-butcher") //for testing, and it doesn't work, couldn't tell you why
+	var/mutable_appearance/M = mutable_appearance(icon, "[screen]")
+	add_overlay(M)
 	return
 
 /obj/structure/fake_machine/hateface/examine(mob/user)
 	. = ..()
 	//this is the most fun part so leave it for last sleep
+	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		. += ""
+		user.add_stress(/datum/stress_event/ring_madness)
+		return
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		. += ""
+		return
+	else
+		. += ""
+
 
 /obj/structure/fake_machine/hateface/attackby(obj/item/I, mob/user, params)
 	. = ..()
@@ -133,12 +207,45 @@
 		attack_hand(user)
 		return
 	if(istype(I, /obj/item/paper))
-		var/message = span_red("CHECKING CONTRACT...")
-		say(message)
-		//contracttest(I) doesn't really need to be its own proc
+		var/messagehate = pick("bih", "boh", "bah")
+		say(span_danger("[messagehate]"))
+		if(istype(I, /obj/item/paper/merc_work_onetime))
+			var/obj/item/paper/merc_work_onetime/WO = I
+			if(WO.signed && WO.thejob && WO.jobber && WO.jobed && WO.payment)
+				say(span_danger("ALL OF THE WRITING IS THERE."))
+			else
+				say(span_danger("IT'S MISSING SOME THINGS."))
+			if(WO.jobber && WO.payment)
+				if(WO.jobber in SStreasury.bank_accounts)
+					var/paycheck1 = SStreasury.bank_accounts[WO.jobber]
+					if(WO.payment > paycheck1)
+						say(span_danger("[WO.jobber.real_name] ONLY HAS [WO.payment] IN THEIR ACCOUNT AND CAN'T PAY THE AGREED [WO.payment]!!"))
+					else
+						say(span_danger("THEY CAN AFFORD TO PAY... FOR NOW!!"))
+				say(span_danger("[WO.jobber.real_name] DOESN'T HAVE AN ACCOUNT!!"))
+			return
 
-///obj/structure/fake_machine/hateface/proc/contracttest()
-	//if()
+		if(istype(I, /obj/item/paper/merc_work_conti))
+			var/obj/item/paper/merc_work_conti/WC = I
+			if(WC.signed && WC.thejob && WC.jobber && WC.jobed && WC.payment)
+				say(span_danger("ALL OF THE WRITING IS THERE."))
+			else
+				say(span_danger("IT'S MISSING SOME THINGS."))
+			if(WC.jobber && WC.payment)
+				if(WC.jobber in SStreasury.bank_accounts)
+					var/paycheck2 = SStreasury.bank_accounts[WC.jobber]
+					if(WC.payment * WC.worktime > paycheck2)
+						say(span_danger("[WC.jobber.real_name] ONLY HAS [WC.payment] IN THEIR ACCOUNT AND CAN'T PAY THE AGREED [WC.payment] TOTAL!!"))
+					else
+						say(span_danger("THEY CAN AFFORD TO PAY... FOR NOW!!"))
+				say(span_danger("[WC.jobber.real_name] DOESN'T HAVE AN ACCOUNT!!"))
+			return
+
+		say(span_red("THIS IS A WASTE OF TIME!!"))
+		return
+	return
+
+
 
 /obj/structure/fake_machine/hateface/attack_hand(mob/user)
 	. = ..()
@@ -158,11 +265,12 @@
 		contents += "<a href='byond://?src=[REF(src)];change=1'>[stars("MAMMON LOADED:")]</a> [budget]<BR>"
 	contents += "</center><BR>"
 	for(var/name in paerpywork)
-		var/paper_cost = name["cost"]
-		var/paper_desc = name["desc"]
-		var/paper_type = name["type"]
+		var/paper = paerpywork[name]
+		var/paper_cost = paper["cost"]
+		var/paper_desc = paper["desc"]
+		var/paper_type = paper["type"]
 
-		if(user.can_perform_action(src, NEED_LITERACY|FORBID_TELEKINESIS_REACH))
+		if(user.can_perform_action(src, NEED_LITERACY|FORBID_TELEKINESIS_REACH)) //this does flood the chat, need a check that doesn't have the "you can't read lol" message cooked into it.
 			contents += "[icon2html((paper_type), user)] - [name] - [paper_cost] <a href='byond://?src=[REF(src)];buy=[REF(name)]'>BUY</a><BR> [paper_desc] <BR>"
 		else
 			contents += "[icon2html((paper_type), user)] - [stars(name)] - [paper_cost] <a href='byond://?src=[REF(src)];buy=[REF(name)]'>[stars("BUY")]</a><BR> [stars(paper_desc)] <BR>"
@@ -180,19 +288,21 @@
 				budget2change(budget, usr)
 				budget = 0
 	if(href_list["buy"])
-		var/obj/item/P = locate(href_list["buy"]) in paerpywork
-		if(!P || !istype(P))
-			return
+		var/P = locate(href_list["buy"]) in paerpywork
+		//if(!D || !istype(D))
+			//return
 		if(!usr.can_perform_action(src, NEED_DEXTERITY|FORBID_TELEKINESIS_REACH))
 			return
 		if(ishuman(usr))
-			if(budget >= paerpywork[P]["cost"])
+			if(budget >=  paerpywork[P]["cost"])
 				budget -= paerpywork[P]["cost"]
 				var/paper_type = paerpywork[P]["type"]
 				var/obj/item/I = new paper_type(get_turf(usr))
 				if(!usr.put_in_hands(I))
 					I.forceMove(get_turf(usr))
 			else
-				var/hate = span_red("YOU LACK THE MAMMONS")
-				say(hate)
+				say(span_danger("YOU LACK THE MAMMONS"))
 				return
+
+
+#undef HATE_COOLDOWN

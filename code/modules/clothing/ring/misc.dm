@@ -310,6 +310,10 @@
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
 		. += "An ancient ring made of pyrite amalgam, an engraved quote is hidden in the inner bridge; \"Heavy is the head that bows\""
 		user.add_stress(/datum/stress_event/ring_madness)
+		return
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		. += ""
+		return
 	else
 		. += "A very old golden ring appointing its wearer as the Mercenary guild master, its strangely missing the crown for the centre stone"
 
@@ -324,15 +328,15 @@
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
 		return TRUE
 
-	var/gaffed = browser_alert(user, "Will you bear the burden? (Be the next Gaffer)", "YOUR DESTINY", "Yes", "No")
+	var/gaffed = browser_alert(user, "Will you bear the burden? (Be the next Gaffer)", "YOUR DESTINY", DEFAULT_INPUT_CHOICES)
 	var/gaffed_time = world.time
 
-	if((gaffed == "No" || world.time > gaffed_time + 5 SECONDS) && user.is_holding(src))
+	if((gaffed == CHOICE_NO || world.time > gaffed_time + 5 SECONDS) && user.is_holding(src))
 		user.dropItemToGround(src, force = TRUE)
 		to_chat(user, span_danger("With great effort, the ring slides off your palm to the floor below"))
 		return
 
-	if((gaffed == "Yes") && user.is_holding(src))
+	if((gaffed == CHOICE_YES) && user.is_holding(src))
 		ADD_TRAIT(user, TRAIT_BURDEN, type)
 		ADD_TRAIT(user, TRAIT_MERCGUILD, type)
 		user.equip_to_slot_if_possible(src, ITEM_SLOT_RING, FALSE, FALSE, TRUE, TRUE)

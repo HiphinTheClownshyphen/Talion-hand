@@ -1428,8 +1428,11 @@
 /obj/structure/fluff/statue/gaffer/examine(mob/user)
 	. = ..()
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
-		. += "slumped and tortured, broken body pertrified and in pain, its chest rose and fell in synch with mine banishing any doubt left, it is me! my own visage glares back at me!"
+		. += "slumped and tortured, broken body pertrified and in pain, it's chest rose and fell in synch with mine banishing any doubt left, it is me! my own visage glares back at me!"
 		user.add_stress(/datum/stress_event/ring_madness)
+		return
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		. += ""
 		return
 	if(ring_destroyed == TRUE)
 		. += "a statue depicting a decapitated man writhing in chains on the ground, it holds its hands out, pleading, in its palms is a glowing ring..."
