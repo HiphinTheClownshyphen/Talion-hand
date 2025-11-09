@@ -171,7 +171,7 @@
 						say("The crown is sorry for your loss... TAX OF [deposit_results2[2]] MAMMONS APPLIED!!")
 						record_featured_stat(FEATURED_STATS_TAX_PAYERS, H, deposit_results2[2])
 						GLOB.vanderlin_round_stats[STATS_TAXES_COLLECTED] += deposit_results2[2]
-				if(AW.yuptheydied in SStreasury.bank_accounts && (deadsaccount > 0))
+				if((AW.yuptheydied in SStreasury.bank_accounts) && (deadsaccount > 0))
 					var/gaffersaccount = SStreasury.bank_accounts[AW.yuptheydied]
 					var/gafferscut = deadsaccount * 0.05
 					gafferscut = round(gafferscut)
@@ -202,7 +202,7 @@
 					say("Your acquaintance, [MW.soontodie.real_name] has left you their debt. The crown thanks you, personally, for continuing to pay what is rightfully owned to the crown")
 					MW.inheretorial += deadsaccount
 					return
-				if(MW.yuptheydied in SStreasury.bank_accounts && (deadsaccount > 0))
+				if((MW.yuptheydied in SStreasury.bank_accounts) && (deadsaccount > 0))
 					var/gaffersaccount = SStreasury.bank_accounts[MW.yuptheydied]
 					var/gafferscut = deadsaccount * 0.05
 					gafferscut = round(gafferscut)

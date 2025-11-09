@@ -1449,13 +1449,13 @@
 		to_chat(user, span_danger("It is not mine to have..."))
 		return
 	to_chat(user, span_danger("As you extend your hand over to the glowing ring, you feel a shiver go up your spine, as if unseen eyes turned to glare at you..."))
-	var/gaffed = browser_alert(user, "Will you bear the burden? (Be the next Gaffer)", "YOUR DESTINY", "Yes", "No")
+	var/gaffed = browser_alert(user, "Will you bear the burden? (Be the next Gaffer)", "YOUR DESTINY", DEFAULT_INPUT_CHOICES)
 
-	if(gaffed == "No" && ring_destroyed == TRUE)
+	if(gaffed == CHOICE_NO && ring_destroyed == TRUE)
 		to_chat(user, span_danger("yes...best to leave it alone."))
 		return
 
-	if((gaffed == "Yes") && Adjacent(user) && ring_destroyed == TRUE)
+	if((gaffed == CHOICE_YES) && Adjacent(user) && ring_destroyed == TRUE)
 		var/obj/item/ring = new /obj/item/clothing/ring/gold/burden(loc)
 		ADD_TRAIT(user, TRAIT_BURDEN, type)
 		user.put_in_hands(ring)

@@ -241,6 +241,7 @@
 				say(span_danger("[WC.jobber.real_name] DOESN'T HAVE AN ACCOUNT!!"))
 			return
 
+		sleep(2)
 		say(span_red("THIS IS A WASTE OF TIME!!"))
 		return
 	return

@@ -106,17 +106,14 @@
 /obj/item/natural/head/proc/ButcheringResults(butchering_quality)
 	switch(butchering_quality)
 		if(0)
-			sellprice = floor(sellprice * 0.75)
 			headpricemin = floor(headpricemin * 0.75)
 			headpricemax = floor(headpricemax * 0.75)
 		if(1)
 			EMPTY_BLOCK_GUARD
 		if(2)
-			sellprice = floor(sellprice * 1.25)
 			headpricemin = floor(headpricemin * 1.25)
 			headpricemax = floor(headpricemax * 1.25)
 		if(-1)
-			sellprice = floor(sellprice * 0.1)
 			headpricemin = floor(headpricemin * 0.1)
 			headpricemax = floor(headpricemax * 0.1)
 			var/initial_name = name
@@ -189,7 +186,6 @@
 	icon_state = "roushead"
 	headpricemin = 3
 	headpricemax = 7
-	sellprice = 5
 	meat_to_give = /obj/item/reagent_containers/food/snacks/meat/mince/beef
 
 /obj/item/natural/head/direbear
@@ -197,7 +193,8 @@
 	desc = "The head of a terrifying direbear."
 	icon_state = "direbearhead"
 	layer = 3.1
-	sellprice = 20
+	headpricemin = 14
+	headpricemax = 24
 
 /obj/item/natural/head/fox
 	name = "venard head"
@@ -205,7 +202,9 @@
 	icon_state = "foxhead"
 	layer = 3.1
 	grid_height = 32
-	sellprice = 6
+	headpricemin = 1
+	headpricemax = 8
+
 
 /obj/item/natural/head/spider
 	name = "beespider head"
@@ -213,7 +212,6 @@
 	icon_state = "spiderhead"
 	headpricemin = 4
 	headpricemax = 20
-	sellprice = 12
 	meat_to_give = /obj/item/reagent_containers/food/snacks/meat/strange
 
 /obj/item/natural/head/bug
@@ -222,7 +220,6 @@
 	icon_state = "boghead"
 	headpricemin = 4
 	headpricemax = 15
-	sellprice = 10
 	meat_to_give = /obj/item/reagent_containers/food/snacks/meat/strange
 
 /obj/item/natural/head/mole

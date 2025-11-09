@@ -33,7 +33,6 @@
 	var/renamed_name
 	var/axe_cut = 0
 	istrainable = TRUE // You can train weapon skills on a dummy with these.
-	var/uniquestyle = TRUE // for weapon (and armor) customizers, prevents them from being icon changed or applied overlays
 
 /obj/item/weapon/Initialize(mapload)
 	. = ..()
