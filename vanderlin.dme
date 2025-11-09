@@ -3426,7 +3426,6 @@
 #include "code\modules\spells\spell_types\undirected\list_target\convert_role\brotherhood.dm"
 #include "code\modules\spells\spell_types\undirected\list_target\convert_role\church.dm"
 #include "code\modules\spells\spell_types\undirected\list_target\convert_role\guard.dm"
-#include "code\modules\spells\spell_types\undirected\list_target\convert_role\mercenary.dm"
 #include "code\modules\spells\spell_types\undirected\list_target\convert_role\milita.dm"
 #include "code\modules\spells\spell_types\undirected\list_target\convert_role\servant.dm"
 #include "code\modules\spells\spell_types\undirected\projectile\_basic_projectile.dm"
