@@ -214,8 +214,8 @@
 		B.limb_grabbed = BP
 		B.sublimb_grabbed = used_limb
 
-		last_attacker_name = user.real_name
-		last_attacker_ckey = user.ckey
+		lastattacker = user.real_name
+		lastattackerckey = user.ckey
 		fragger = user
 		if(mind)
 			mind.attackedme[user.real_name] = world.time

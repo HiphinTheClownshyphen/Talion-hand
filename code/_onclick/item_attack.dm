@@ -275,8 +275,8 @@
 		to_chat(user, "<span class='warning'>I don't want to harm other living beings!</span>")
 		return FALSE
 
-	M.last_attacker_name = user.real_name
-	M.last_attacker_ckey = user.ckey
+	M.lastattacker = user.real_name
+	M.lastattackerckey = user.ckey
 	M.fragger = user
 	if(M.mind)
 		M.mind.attackedme[user.real_name] = world.time

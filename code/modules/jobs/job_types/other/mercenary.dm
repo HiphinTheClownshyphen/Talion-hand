@@ -6,7 +6,6 @@
 	gold is the great hypocritical lubricant in life, founding empires, driving brothers to kill one another. \
 	\n\n\
 	You care not. Another day, another mammon."
-	flag = GRAVETENDER
 	department_flag = MERCGUILD
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_MERCENARY
@@ -28,12 +27,12 @@
 /datum/job/mercenary/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
 	to_chat(spawned, "<br><br><font color='#855b14'><span class='bold'>The Gaffer, who feeds and houses you may have work for you todae, go see him at the office outside your lodgings.</span></font><br><br>")
+	ADD_TRAIT(spawned, TRAIT_MERCGUILD, TRAIT_GENERIC)
+	for(var/C in GLOB.landmarks_list)
+		var/obj/effect/landmark/contracthole/merchole = C
+		merchole.addcontract(spawned)
 
-/datum/job/advclass/mercenary
+/datum/job/mercenary
 	abstract_type = /datum/job/advclass/mercenary
 	blacklisted_species = list(SPEC_ID_HALFLING)
 	category_tags = list(CTAG_MERCENARY)
-	ADD_TRAIT(H, TRAIT_MERCGUILD, TRAIT_GENERIC)
-	for(var/C in GLOB.landmarks_list)
-		var/obj/effect/landmark/contracthole/merchole = C
-		merchole.addcontract(H)

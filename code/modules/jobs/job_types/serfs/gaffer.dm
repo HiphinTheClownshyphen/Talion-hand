@@ -1,6 +1,5 @@
 /datum/job/gaffer
 	title = "Gaffer"
-	flag = GAFFER
 	department_flag = MERCGUILD
 	faction = "Station"
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE )
@@ -26,7 +25,6 @@
 	give_bank_account = 20
 	min_pq = 8
 	bypass_lastclass = TRUE
-	selection_color = "#3b150e"
 
 /datum/outfit/gaffer/pre_equip(mob/living/carbon/human/H, visuals_only)
 	..()

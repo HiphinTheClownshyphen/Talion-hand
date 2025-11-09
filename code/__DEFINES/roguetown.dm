@@ -749,16 +749,3 @@ BCLASS_TWIST)
 #define ARMOR_INT_SIDE_LEATHER 200 // Integrity for leather / copper pieces
 #define ARMOR_INT_SIDE_DECREPIT 150 // Integrity for decrepit pieces
 #define ARMOR_INT_SIDE_CLOTH 100 // Integrity for cloth / aesthetic oriented pieces
-
-//defines for what material armor and weapons are, right now only used for the customizer kits
-
-#define LEATHER "leather"
-#define HIDE "hide" //from what?
-#define COPPER "copper"
-#define BRONZE "bronze"
-#define IRON "iron"
-#define STEEL "steel"
-#define BLACKSTEEL "black-steel"
-
-#define WOOD "wood"
-#define SILVER "silver"

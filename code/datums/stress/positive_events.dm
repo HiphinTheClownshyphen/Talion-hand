@@ -390,22 +390,22 @@
 	stress_change = 5
 	timer = 10 MINUTES
 
-/datum/stressevent/elevated_optimism
-	stressadd = -10
+/datum/stress_event/elevated_optimism
+	stress_change = -10
 	desc = span_green("Just purse your lips and whistle, that's the thing!")
 	timer = INFINITY
 
-/datum/stressevent/autograph_fangirl_1
-	stressadd = -1
+/datum/stress_event/autograph_fangirl_1
+	stress_change = -1
 	desc = span_green("I have known mercenaries autograph, so cool!")
 	timer = 1 MINUTES
 
-/datum/stressevent/autograph_fangirl_2
-	stressadd = -1
+/datum/stress_event/autograph_fangirl_2
+	stress_change = -1
 	desc = span_green("I have well known mercenaries autograph, so cool!")
 	timer = 1 MINUTES
 
-/datum/stressevent/autograph_fangirl_3
-	stressadd = -3
+/datum/stress_event/autograph_fangirl_3
+	stress_change = -3
 	desc = span_green("I have total legend's autograph, so cool!")
 	timer = 1 MINUTES

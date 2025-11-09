@@ -1431,7 +1431,7 @@ GLOBAL_LIST_EMPTY(patreon_races)
 
 		var/armor_block = target.run_armor_check(selzone, "blunt", blade_dulling = user.used_intent.blade_class)
 
-		target.last_attacker_name = user.real_name
+		target.lastattacker = user.real_name
 		target.fragger = user
 		if(target.mind)
 			target.mind.attackedme[user.real_name] = world.time

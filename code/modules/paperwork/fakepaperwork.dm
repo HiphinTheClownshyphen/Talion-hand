@@ -38,7 +38,7 @@
 		if(HAS_TRAIT(user, TRAIT_BURDEN))
 			to_chat(user, span_warning("I pinch the end of the prick and trace my fingers up along it's length, until the only blood left is on my fingers."))
 			playsound(src, 'sound/magic/enter_blood.ogg', 30, FALSE, ignore_walls = FALSE)
-			user.add_stress(/datum/stressevent/ring_madness)
+			user.add_stress(/datum/stress_event/ring_madness)
 			return
 		to_chat(user, span_warning("I clean the prick"))
 
@@ -169,7 +169,7 @@
 		return
 	if(!signedmerc)
 		. += "A lesser pact with the HEADEATER, whenever I dim my eyes and gaze again at the words, they change in some way, never enough to be meaningful, never enough to be ignored."
-		user.add_stress(/datum/stressevent/ring_madness)
+		user.add_stress(/datum/stress_event/ring_madness)
 		return
 	if(signedmerc.stat == DEAD)
 		var/loldied = pick("Dirty", "Cold", "Scabby", "Stiff", "Limp", "Rotted", "Mutilated", "Pallid", "Withered")
@@ -212,7 +212,7 @@
 	if(signedmerc)
 		REMOVE_TRAIT(signedmerc, TRAIT_MERCGUILD, type)
 		to_chat(signedmerc, span_warning("in a blink, it was as if the world's joy was dimmed. The songs of birds, The sounds of children playing, they grew distant, hard to notice. As if the monotony of life muffled the song of wonder... or maybe, I just became unemployed."))
-		signedmerc.add_stress(/datum/stressevent/merc_fired)
+		signedmerc.add_stress(/datum/stress_event/merc_fired)
 	. = ..()
 
 /obj/item/paper/merc_contract/proc/bloodvodoo(mob/user)
@@ -598,7 +598,7 @@
 	if(!signed)
 		return
 	if(user.is_holding(src))
-		user.add_stress(/datum/stressevent/autograph_fangirl_1)
+		user.add_stress(/datum/stress_event/autograph_fangirl_1)
 		//var/Erenown = GLOB.mob_renown_list[signed.mobid]
 		//if(Erenown <= 4)
 			//user.add_stress(/datum/stressevent/autograph_fangirl_1)
@@ -1281,7 +1281,7 @@
 
 /obj/item/headeater_spawn/pickup(mob/user)
 	to_chat(user, span_danger("WHAT IS THIS PUTRID THING?!!"))
-	user.add_stress(/datum/stressevent/touched_headeater_spawn)
+	user.add_stress(/datum/stress_event/touched_headeater_spawn)
 	. = ..()
 
 /obj/item/headeater_spawn/examine(mob/user)

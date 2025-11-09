@@ -18,7 +18,6 @@
 	prevent_crits = ALL_EXCEPT_BLUNT
 	max_integrity = INTEGRITY_STRONG
 	item_weight = 6 * STEEL_MULTIPLIER
-	madeof = STEEL
 
 /obj/item/clothing/armor/chainmail/iron
 	name = "iron haubergeon"
@@ -32,7 +31,6 @@
 	body_parts_covered = COVERAGE_ALL_BUT_LEGS
 	max_integrity = INTEGRITY_STRONG
 	item_weight = 6 * IRON_MULTIPLIER
-	madeof = IRON
 
 //................ Hauberk ............... //
 /obj/item/clothing/armor/chainmail/hauberk
@@ -44,7 +42,6 @@
 
 	body_parts_covered = COVERAGE_FULL
 	item_weight = 6 * STEEL_MULTIPLIER
-	madeof = STEEL
 
 /obj/item/clothing/armor/chainmail/hauberk/Initialize()
 	. = ..()
@@ -78,4 +75,3 @@
 	armor = ARMOR_SCALE
 	body_parts_covered = COVERAGE_ALL_BUT_LEGS
 	item_weight = 7 * STEEL_MULTIPLIER
-	madeof = null
