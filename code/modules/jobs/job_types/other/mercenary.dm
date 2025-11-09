@@ -32,7 +32,7 @@
 		var/obj/effect/landmark/contracthole/merchole = C
 		merchole.addcontract(spawned)
 
-/datum/job/mercenary
+/datum/job/advclass/mercenary
 	abstract_type = /datum/job/advclass/mercenary
 	blacklisted_species = list(SPEC_ID_HALFLING)
 	category_tags = list(CTAG_MERCENARY)

@@ -80,7 +80,6 @@
 			return
 		var/mob/living/carbon/human/H = user
 		if(istype(P, /obj/item/coin))
-			var/mob/living/carbon/human/H = user
 			if(HAS_TRAIT(user, TRAIT_MATTHIOS_CURSE) && prob(33))
 				to_chat(H, "<span class='warning'>The idea repulses me!</span>")
 				H.cursed_freak_out()

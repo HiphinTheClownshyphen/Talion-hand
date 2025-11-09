@@ -238,20 +238,23 @@
 		//N/A sound here would be neat
 		COOLDOWN_START(src, recallcool, 10 MINUTES)
 
-/obj/item/paper/merc_contract/attack_obj(obj/O, mob/living/user)
-	if(istype(O, /obj/item/flashlight/flare/torch))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			var/obj/item/flashlight/flare/torch/T = O
-			if(T.on && user.used_intent.type != INTENT_HARM && signedmerc)
-				bloodvodoo()
-				return
-	if(istype(O, /obj/item/candle))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			var/obj/item/candle/C = O
-			if(C.lit && user.used_intent.type != INTENT_HARM && signedmerc)
-				bloodvodoo()
-				return
-
+/obj/item/paper/merc_contract/pre_attack(atom/A, mob/living/user, params)
+	if(isitem(A))
+		var/obj/item/O = A
+		if(istype(O, /obj/item/flashlight/flare/torch))
+			if(HAS_TRAIT(user, TRAIT_BURDEN))
+				var/obj/item/flashlight/flare/torch/T = O
+				if(T.on && user.used_intent.type != INTENT_HARM && signedmerc)
+					bloodvodoo()
+					return
+		if(istype(O, /obj/item/candle))
+			if(HAS_TRAIT(user, TRAIT_BURDEN))
+				var/obj/item/candle/C = O
+				if(C.lit && user.used_intent.type != INTENT_HARM && signedmerc)
+					bloodvodoo()
+					return
+		return TRUE
+	return ..()
 
 /obj/item/paper/merc_contract/worker
 	name = "Covenant of Guild Commitments and Operational Service"
@@ -957,19 +960,23 @@
 			addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
 			triumph_effect()
 
-/obj/item/paper/political_PM/bloodseal/attack_obj(obj/O, mob/living/user)
-	if(istype(O, /obj/item/flashlight/flare/torch))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			var/obj/item/flashlight/flare/torch/T = O
-			if(T.on && user.used_intent.type != INTENT_HARM && signed)
-				bloodvodoo()
-				return
-	if(istype(O, /obj/item/candle))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			var/obj/item/candle/C = O
-			if(C.lit && user.used_intent.type != INTENT_HARM && signed)
-				bloodvodoo()
-				return
+/obj/item/paper/political_PM/bloodseal/pre_attack(atom/A, mob/living/user, params)
+	if(isitem(A))
+		var/obj/item/O = A
+		if(istype(O, /obj/item/flashlight/flare/torch))
+			if(HAS_TRAIT(user, TRAIT_BURDEN))
+				var/obj/item/flashlight/flare/torch/T = O
+				if(T.on && user.used_intent.type != INTENT_HARM && signed)
+					bloodvodoo()
+					return
+		if(istype(O, /obj/item/candle))
+			if(HAS_TRAIT(user, TRAIT_BURDEN))
+				var/obj/item/candle/C = O
+				if(C.lit && user.used_intent.type != INTENT_HARM && signed)
+					bloodvodoo()
+					return
+		return TRUE
+	return ..()
 
 /obj/item/paper/political_PM/bloodseal/proc/bloodvodoo(mob/user)
 	var/fuckitupterry = browser_alert(user, "The fire is inches away from the parchment", "THE PACT", "Absolve Contract", "Intimidate Whelp") //"Mark for death"
