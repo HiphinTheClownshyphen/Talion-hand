@@ -148,10 +148,15 @@
 		return TRUE
 	return FALSE
 
-/obj/item/soap/attack_obj(obj/O, mob/living/user)
+/obj/item/soap/attack_atom(atom/attacked_atom, mob/living/user)
+	if(!isobj(attacked_atom))
+		return ..()
+
+	var/obj/O = attacked_atom
 	var/datum/reagents/r = O.reagents
 	if(!r || !O.is_open_container())
-		return
+		return ..()
+	. = TRUE
 	if(r.total_volume >= r.maximum_volume)
 		to_chat(user, span_warning("There's no room to add [src]."))
 		return
@@ -165,11 +170,16 @@
 		reagents.add_reagent(/datum/reagent/soap, amt2Add)
 		reagents.trans_to(O, reagents.total_volume, transfered_by = user, method = TOUCH)
 		to_chat(user, span_info("I dissolve some of \the [name] in the water."))
+		decreaseUses(5)
 
 /obj/item/soap/proc/scrub_scrub(mob/living/carbon/human/target, mob/living/carbon/user)
 	target.wash(clean_strength)
 	user.visible_message(span_info("[user] scrubs [target] with [src]."), span_info("I scrub [target] with [src]."))
 	decreaseUses(5)
+	target.add_stress(/datum/stress_event/clean)
+	target.adjust_hygiene(50)
+	target.ExtinguishMob()
+	target.adjust_fire_stacks(-20)
 
 /obj/item/soap/bath
 	name = "herbal soap"
@@ -180,8 +190,7 @@
 //Only get the buff if you use the good stuff
 /obj/item/soap/bath/scrub_scrub(mob/living/carbon/human/target, mob/living/carbon/user)
 	. = ..()
-	to_chat(target, span_green("I feel so relaxed and clean!"))
-	if(user != target)
+	if(target.hygiene == HYGIENE_LEVEL_CLEAN)
+		to_chat(target, span_green("I feel so relaxed and clean!"))
 		target.apply_status_effect(/datum/status_effect/buff/clean_plus)
-	else
-		user.add_stress(/datum/stressevent/clean)
+		user.add_stress(/datum/stress_event/clean_plus)

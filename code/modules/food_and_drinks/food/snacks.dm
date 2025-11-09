@@ -92,14 +92,9 @@ All foods are distributed among various categories. Use common sense.
 	var/list/sizemod = null
 	var/list/raritymod = null
 
-	var/plateable = FALSE //if it can be plated or not
-	var/foodbuff_skillcheck // is the cook good enough to add buff?
 	var/modified = FALSE // for tracking if food has been changed
 	var/quality = 1  // used to track foodbuffs and such. Somewhat basic, could be combined with the foodbuff system directly perhaps
 
-	var/plating_alt_icon // for food items not sprited in a way that fits the plating underlay, you can instead have a alt sprite specifically for its plated version.
-	var/plated_iconstate // used in afterattack to switch the above on or off
-	base_icon_state // used for procs manipulating icons when sliced and the like
 	var/biting // if TRUE changes the icon state to the bitecount, for stuff like handpies. Will break unless you also set a base_icon_state
 	var/rot_away_timer
 
@@ -192,7 +187,7 @@ All foods are distributed among various categories. Use common sense.
 		slice_path = null
 		cooktime = 0
 		modified = TRUE
-		rot_away_timer = QDEL_IN_STOPPABLE(src, 10 MINUTES)
+		rot_away_timer = QDEL_IN_STOPPABLE(src, 15 MINUTES)
 		record_round_statistic(STATS_FOOD_ROTTED)
 		return TRUE
 	if(!ismob(loc) && loc)
@@ -257,37 +252,72 @@ All foods are distributed among various categories. Use common sense.
 		return
 
 	var/apply_effect = TRUE
-	// check to see if what we're eating is appropriate fare for our "social class" (aka nobles shouldn't be eating sticks of butter you troglodytes)
-	if (ishuman(eater))
+	if(ishuman(eater))
 		var/mob/living/carbon/human/human_eater = eater
+
+		if(human_eater.culinary_preferences)
+			var/favorite_food_type = human_eater.culinary_preferences[CULINARY_FAVOURITE_FOOD]
+			if(favorite_food_type == type)
+				if(human_eater.add_stress(/datum/stress_event/favourite_food))
+					to_chat(human_eater, span_green("Yum! My favorite food!"))
+			else if(ispath(type, favorite_food_type))
+				var/obj/item/reagent_containers/food/snacks/favorite_food_instance = favorite_food_type
+				var/favorite_food_name = initial(favorite_food_instance.name)
+				if(favorite_food_name == name)
+					if(human_eater.add_stress(/datum/stress_event/favourite_food))
+						to_chat(human_eater, span_green("Yum! My favorite food!"))
+			else
+				var/obj/item/reagent_containers/food/snacks/favorite_food_instance = favorite_food_type
+				var/slice_path = initial(favorite_food_instance.slice_path)
+				if(slice_path && type == slice_path)
+					if(human_eater.add_stress(/datum/stress_event/favourite_food))
+						to_chat(human_eater, span_green("Yum! My favorite food!"))
+
+			var/hated_food_type = human_eater.culinary_preferences[CULINARY_HATED_FOOD]
+			if(hated_food_type == type)
+				if(human_eater.add_stress(/datum/stress_event/hated_food))
+					to_chat(human_eater, span_red("Yuck! My hated food!"))
+			else if(ispath(type, hated_food_type))
+				var/obj/item/reagent_containers/food/snacks/hated_food_instance = hated_food_type
+				var/hated_food_name = initial(hated_food_instance.name)
+				if(hated_food_name == name)
+					if(human_eater.add_stress(/datum/stress_event/hated_food))
+						to_chat(human_eater, span_red("Yuck! My hated food!"))
+			else
+				var/obj/item/reagent_containers/food/snacks/hated_food_instance = hated_food_type
+				var/slice_path = initial(hated_food_instance.slice_path)
+				if(slice_path && type == slice_path)
+					if(human_eater.add_stress(/datum/stress_event/hated_food))
+						to_chat(human_eater, span_red("Yuck! My hated food!"))
+
 		if (!HAS_TRAIT(human_eater, TRAIT_NASTY_EATER))
 			if (human_eater.is_noble())
 				if (!portable)
 					if(!(locate(/obj/structure/table) in range(1, eater)))
-						eater.add_stress(/datum/stressevent/noble_ate_without_table) // look i just had to okay?
+						eater.add_stress(/datum/stress_event/noble_ate_without_table) // look i just had to okay?
 						if (prob(25))
 							to_chat(eater, span_red("I should really eat this at a table..."))
 				switch (faretype)
 					if (FARE_IMPOVERISHED)
-						eater.add_stress(/datum/stressevent/noble_impoverished_food)
+						eater.add_stress(/datum/stress_event/noble_impoverished_food)
 						to_chat(eater, span_red("This is disgusting... how can anyone eat this?"))
 						if (eater.nutrition >= NUTRITION_LEVEL_STARVING)
 							eater.taste(reagents)
 							return
 						else
-							if (eater.has_stress(/datum/stressevent/noble_impoverished_food))
-								eater.add_stress(/datum/stressevent/noble_desperate)
+							if (eater.has_stress_type(/datum/stress_event/noble_impoverished_food))
+								eater.add_stress(/datum/stress_event/noble_desperate)
 							apply_effect = FALSE
 					if (FARE_POOR to FARE_NEUTRAL)
-						eater.add_stress(/datum/stressevent/noble_bland_food)
+						eater.add_stress(/datum/stress_event/noble_bland_food)
 						if (prob(25))
 							to_chat(eater, span_red("This is rather bland. I deserve better food than this..."))
 						apply_effect = FALSE
 					if (FARE_FINE)
-						eater.remove_stress(/datum/stressevent/noble_bland_food)
+						eater.remove_stress(/datum/stress_event/noble_bland_food)
 					if (FARE_LAVISH)
-						eater.remove_stress(/datum/stressevent/noble_bland_food)
-						eater.add_stress(/datum/stressevent/noble_lavish_food)
+						eater.remove_stress(/datum/stress_event/noble_bland_food)
+						eater.add_stress(/datum/stress_event/noble_lavish_food)
 						if (prob(25))
 							to_chat(eater, span_green("Ah, food fit for my title."))
 
@@ -295,12 +325,12 @@ All foods are distributed among various categories. Use common sense.
 			if (human_eater.is_yeoman() || human_eater.is_courtier())
 				switch (faretype)
 					if (FARE_IMPOVERISHED)
-						eater.add_stress(/datum/stressevent/noble_bland_food)
+						eater.add_stress(/datum/stress_event/noble_bland_food)
 						apply_effect = FALSE
 						if (prob(25))
 							to_chat(eater, span_red("This is rather bland. I deserve better food than this..."))
 					if (FARE_POOR to FARE_LAVISH)
-						eater.remove_stress(/datum/stressevent/noble_bland_food)
+						eater.remove_stress(/datum/stress_event/noble_bland_food)
 
 	if(eat_effect && apply_effect)
 		if(islist(eat_effect))
@@ -317,10 +347,11 @@ All foods are distributed among various categories. Use common sense.
 			record_round_statistic(STATS_LUXURIOUS_FOOD_EATEN)
 		if(eat_effect == /datum/status_effect/debuff/rotfood)
 			SEND_SIGNAL(eater, COMSIG_ROTTEN_FOOD_EATEN, src)
-		qdel(src)
+		var/old_loc = loc
 		var/obj/item/trash = generate_trash(drop_location())
-		if(trash && isliving(loc))
-			var/mob/living/L = loc
+		qdel(src)
+		if(trash && isliving(old_loc))
+			var/mob/living/L = old_loc
 			L.put_in_hands(trash)
 
 	update_appearance(UPDATE_ICON_STATE)
@@ -329,7 +360,7 @@ All foods are distributed among various categories. Use common sense.
 	return
 
 /obj/item/reagent_containers/food/snacks/attack(mob/living/M, mob/living/user, def_zone)
-	if(user.used_intent.type != /datum/intent/food)
+	if(user.used_intent.type != /datum/intent/food && (!(M == user) && isanimal(M)))
 		return ..()
 	if(!eatverb)
 		eatverb = pick("bite","chew","nibble","gnaw","gobble","chomp")
@@ -405,6 +436,7 @@ All foods are distributed among various categories. Use common sense.
 			playsound(M.loc,'sound/misc/eat.ogg', rand(30,60), TRUE)
 			if(reagents.total_volume)
 				SEND_SIGNAL(src, COMSIG_FOOD_EATEN, M, user)
+				SEND_SIGNAL(M, COMSIG_MOB_FOOD_EAT, src)
 				var/fraction = min(bitesize / reagents.total_volume, 1)
 				var/amt2take = reagents.total_volume / (bitesize - bitecount)
 				if((bitecount >= bitesize) || (bitesize == 1))
@@ -419,6 +451,11 @@ All foods are distributed among various categories. Use common sense.
 		playsound(M.loc,'sound/misc/eat.ogg', rand(30,60), TRUE)
 		qdel(src)
 		return FALSE
+	else if(isanimal(M))
+		var/mob/living/simple_animal/animal = M
+		if(animal.eat_food(src))
+			animal.eat_food_after(src)
+			return TRUE
 
 	return ..()
 
@@ -455,76 +492,6 @@ All foods are distributed among various categories. Use common sense.
 			return TRUE
 		else if(slice(W, user))
 			return TRUE
-
-	if(user.mind)
-		if(foodbuff_skillcheck)		// cooks with less than 3 skill don´t add bonus buff
-			if(user.get_skill_level(/datum/skill/craft/cooking) <= 1) // cooks with 0 skill make shitty meals when trying to be fancy
-				tastes = list("blandness" = 1)
-				quality = 0
-				switch(rand(1,6))
-					if(1)
-						name = "unappealing [name]"
-						desc = "It is made without love or care."
-					if(2)
-						name = "sloppy [name]"
-						desc = "It barely looks like food."
-					if(3)
-						name = "failed [name]"
-						desc = "It is a disgrace to cooking."
-					if(4)
-						name = "woeful [name]"
-						desc = "Cooking that might cause a divorce."
-					if(5)
-						name = "soggy [name]"
-						desc = "If there be gods of cooking they must be dead."
-					if(6)
-						name = "bland [name]"
-						desc = "Is this food?"
-			if(user.get_skill_level(/datum/skill/craft/cooking) >= 2)
-				eat_effect = /datum/status_effect/buff/foodbuff
-				quality = 2
-			if(user.get_skill_level(/datum/skill/craft/cooking) == 4)
-				quality = 3
-				switch(rand(1,7))
-					if(1)
-						name = "fine [name]"
-						desc = "[desc] It looks tasty."
-					if(2)
-						name = "tasty [name]"
-						desc = "[desc] It smells good."
-					if(3)
-						name = "well-made [name]"
-						desc = "[desc] This is fine cooking."
-					if(4)
-						name = "appealing [name]"
-						desc = "[desc] It seem to call out to you."
-					if(5)
-						name = "appetising [name]"
-						desc = "[desc] Your mouth waters at the sight."
-					if(6)
-						name = "savory [name]"
-						desc = "[desc] It will make a fine meal."
-					if(7)
-						name = "flavorful [name]"
-						desc = "[desc] It looks like good eating."
-			if(user.get_skill_level(/datum/skill/craft/cooking) >= 5)
-				quality = 4
-				switch(rand(1,5))
-					if(1)
-						name = "masterful [name]"
-						desc = "[desc] It looks perfect."
-					if(2)
-						name = "exquisite [name]"
-						desc = "[desc] It smells like heaven."
-					if(3)
-						name = "perfected [name]"
-						desc = "[desc] It is a triumph of cooking."
-					if(4)
-						name = "gourmet [name]"
-						desc = "[desc] It is fit for royalty."
-					if(5)
-						name = "delicious [name]"
-						desc = "[desc] It is a masterwork."
 
 /obj/item/reagent_containers/food/snacks/proc/slice(obj/item/W, mob/user)
 	if((slices_num <= 0 || !slices_num) || !slice_path) //is the food sliceable?
@@ -575,6 +542,7 @@ All foods are distributed among various categories. Use common sense.
 	reagents.trans_to(slice,reagents_per_slice)
 	slice.filling_color = filling_color
 	slice.update_snack_overlays(src)
+	slice.set_quality(recipe_quality)
 
 /obj/item/reagent_containers/food/snacks/proc/generate_trash(atom/location)
 	if(trash)
@@ -629,7 +597,7 @@ All foods are distributed among various categories. Use common sense.
 			if(bitecount == 0 || prob(50))
 				M.emote("me", 1, "nibbles away at \the [src]")
 			bitecount++
-			L.food = min(L.food + 30, L.food_max)
+			SEND_SIGNAL(L, COMSIG_MOB_FEED, src, 30)
 			playsound(L.loc, 'sound/misc/eat.ogg', 25, TRUE)
 			L.taste(reagents) // why should carbons get all the fun?
 			if(bitecount >= 5)
@@ -699,6 +667,7 @@ All foods are distributed among various categories. Use common sense.
 	icon_state = "badrecipe"
 	list_reagents = list(/datum/reagent/toxin/bad_food = 30)
 	filling_color = "#8B4513"
+	faretype = FARE_IMPOVERISHED
 	foodtype = GROSS
 	burntime = 0
 	cooktime = 0
@@ -712,14 +681,10 @@ All foods are distributed among various categories. Use common sense.
 	inhand_x_dimension = 32
 	inhand_y_dimension = 32
 	drop_sound = 'sound/foley/dropsound/wooden_drop.ogg'
-	if(plating_alt_icon)
-		icon_state = plated_iconstate
 
 // Proc for important vars when reaching meal level
 /obj/item/reagent_containers/food/snacks/proc/meal_properties()
-	plateable = TRUE
 	modified = TRUE
-	foodbuff_skillcheck = TRUE
 	rotprocess = SHELFLIFE_DECENT
 	bitesize = 5
 

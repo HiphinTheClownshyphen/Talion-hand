@@ -185,10 +185,7 @@
 	. = ..()
 	if(ismob(target))
 		var/mob/M = target
-		if(M.can_block_magic(MAGIC_RESISTANCE))
-			M.visible_message("<span class='warning'>[src] vanishes on contact with [target]!</span>")
-			return BULLET_ACT_BLOCK
-		SEND_SIGNAL(M, COMSIG_ADD_MOOD_EVENT, src, /datum/mood_event/sapped)
+		M.add_stress(/datum/stress_event/sapped)
 
 /obj/projectile/magic/necropotence
 	name = "bolt of necropotence"
@@ -245,6 +242,7 @@
 	if(ismob(target))
 		var/mob/living/M = target
 		M.adjust_fire_stacks(6)
+		M.IgniteMob()
 
 	var/turf/T
 	if(isturf(target))
@@ -267,4 +265,5 @@
 			T = target
 	else
 		T = get_turf(target)
-	explosion(T, exp_devi, exp_heavy, exp_light, exp_flash, 0, flame_range = exp_fire, hotspot_range = exp_hotspot, soundin = explode_sound)
+	explosion(T, 0, 0, 0, exp_flash, 0, flame_range = exp_fire, hotspot_range = exp_hotspot, soundin = explode_sound)
+	cell_explosion(T, exp_light * 5, 0.1)

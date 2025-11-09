@@ -5,7 +5,7 @@
 	opacity = 1
 	density = TRUE
 	blocks_air = TRUE
-	baseturfs = list(/turf/open/floor/naturalstone, /turf/open/transparent/openspace)
+	baseturfs = /turf/open/floor/naturalstone
 	smoothing_groups = SMOOTH_GROUP_CLOSED
 	pass_flags_self = PASSCLOSEDTURF
 
@@ -40,6 +40,9 @@
 		if(!HAS_TRAIT(L, TRAIT_IMMOBILIZED))
 			wallpress(L)
 			return
+
+/turf/closed/get_explosion_resistance()
+	return 1000000
 
 /turf/closed/proc/feel_turf(mob/living/user)
 	to_chat(user, span_notice("I start feeling around [src]"))

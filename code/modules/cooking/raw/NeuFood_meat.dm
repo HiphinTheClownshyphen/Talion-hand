@@ -72,9 +72,15 @@
 /obj/item/reagent_containers/food/snacks/fish
 	chopping_sound = TRUE
 	slices_num = 2
+	faretype = FARE_POOR
 	var/rare = FALSE
 	/// Number representing how rare the fish is, 0 is the lowest common fish
 	var/rarity_rank = 0
+
+/obj/item/reagent_containers/food/snacks/fish/dead
+	abstract_type = /obj/item/reagent_containers/food/snacks/fish/dead
+	status = FISH_DEAD
+	fish_id = "dead"
 
 /*	........   Cooked food template   ................ */ // No choppping double cooking etc prefixed
 /obj/item/reagent_containers/food/snacks/cooked
@@ -114,6 +120,7 @@
 	icon_state = "meatmince"
 
 /obj/item/reagent_containers/food/snacks/meat/mince/beef/cooked
+	name = "cooked minced meat"
 	eat_effect = null
 	foodtype = MEAT
 	rotprocess = SHELFLIFE_DECENT
@@ -125,6 +132,7 @@
 	icon_state = "fishmince"
 
 /obj/item/reagent_containers/food/snacks/meat/mince/fish/cooked
+	name = "cooked minced fish"
 	eat_effect = null
 	foodtype = MEAT
 	rotprocess = SHELFLIFE_DECENT
@@ -132,10 +140,11 @@
 	color = "#a0655f"
 
 /obj/item/reagent_containers/food/snacks/meat/mince/poultry
-	name = "mince poultry"
+	name = "minced poultry"
 	icon_state = "birdmince"
 
 /obj/item/reagent_containers/food/snacks/meat/mince/poultry/cooked
+	name = "cooked minced poultry"
 	eat_effect = null
 	foodtype = MEAT
 	rotprocess = SHELFLIFE_DECENT

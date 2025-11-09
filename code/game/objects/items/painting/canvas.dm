@@ -56,13 +56,13 @@
 
 /obj/item/canvas/attack_hand(mob/user)
 	. = ..()
-	if(user.cmode)
-		if(anchored)
-			to_chat(user, "I start unmounting [src]...")
-			if(!do_after(user, 3 SECONDS, src))
-				return
-			anchored = FALSE
-			to_chat(user, "I unmount [src].")
+	if(anchored)
+		to_chat(user, "I start unmounting [src]...")
+		if(!do_after(user, 3 SECONDS, src))
+			return
+		anchored = FALSE
+		to_chat(user, "I unmount [src].")
+		user.put_in_hands(src)
 
 /obj/item/canvas/attack_hand_secondary(mob/user, params)
 	. = ..()
@@ -78,9 +78,9 @@
 /obj/item/canvas/attackby(obj/item/I, mob/living/user, params)
 	. = ..()
 	if(istype(I, /obj/item/natural/feather))
-		author = input("Who's the author of this painting?")
+		author = browser_input_text(user, "Who's the author of this painting?", "NAME YOURSELF", max_length = MAX_NAME_LEN)
 		author_ckey = user.ckey
-		title = input("What's the title of this painting.")
+		title = browser_input_text(user, "What's the title of this painting?", "NAME YOUR MASTERPIECE", max_length = MAX_CHARTER_LEN)
 		if(title)
 			name = title
 		if(author)
@@ -100,17 +100,19 @@
 	for(var/mob/mob in showers)
 		remove_shower(mob)
 
-/obj/item/canvas/attack_turf(turf/T, mob/living/user)
-	. = ..()
-	to_chat(user, "I start mounting [src] to [T]...")
-	if(!do_after(user, 3 SECONDS, T))
+/obj/item/canvas/attack_atom(atom/attacked_atom, mob/living/user)
+	if(!isclosedturf(attacked_atom))
+		return ..()
+
+	. = TRUE
+	to_chat(user, "I start mounting [src] to [attacked_atom]...")
+	if(!do_after(user, 3 SECONDS, attacked_atom))
 		return
 	user.dropItemToGround(src)
-	forceMove(T)
-	pixel_x = 0
-	pixel_y = 0
+	forceMove(attacked_atom)
+	pixel_x = base_pixel_x
+	pixel_y = base_pixel_y
 	anchored = TRUE
-	to_chat(user, "I mount [src] to [T].")
 
 /obj/item/canvas/proc/remove_shower(mob/source)
 	showers -= source
@@ -160,7 +162,7 @@
 	var/current_overlays = 0
 
 
-/atom/movable/screen/canvas/Initialize(mapload, ...)
+/atom/movable/screen/canvas/Initialize(mapload, datum/hud/hud_owner)
 	. = ..()
 	draw = icon(icon, icon_state)
 	base = icon(icon, icon_state)

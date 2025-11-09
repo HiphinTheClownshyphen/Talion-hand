@@ -7,30 +7,6 @@ GLOBAL_LIST_EMPTY(radial_menus)
 	var/click_on_hover = FALSE
 	var/datum/radial_menu/parent
 
-/atom/movable/screen/radial/handle_mouseover(location, control, params)
-	var/mob/p = usr
-	if(p.client)
-		if(!p.client.mouseovertext)
-			p.client.genmouseobj()
-			return FALSE
-		if(p.client.pixel_x || p.client.pixel_y)
-			return FALSE
-		if(!p.x || !p.y)
-			return FALSE
-		var/offset_x = 8 - (p.x - x)
-		var/offset_y = 8 - (p.y - y)
-		var/list/PM = list("screen-loc" = "[offset_x]:0,[offset_y]:0")
-		if(!isturf(loc))
-			PM = params2list(params)
-			p.client.mouseovertext.movethis(PM, TRUE)
-		else
-			p.client.mouseovertext.movethis(PM)
-		p.client.mouseovertext.maptext_width = 196
-		p.client.mouseovertext.maptext = {"<span style='font-size:8pt;font-family:"Pterra";color:[hover_color];text-shadow:0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;' class='center maptext '>[name]"}
-		p.client.screen |= p.client.mouseovertext
-	return TRUE
-
-
 /atom/movable/screen/radial/proc/set_parent(new_value)
 	UnregisterSignal(parent, COMSIG_PARENT_QDELETING)
 	parent = new_value
@@ -276,22 +252,22 @@ GLOBAL_LIST_EMPTY(radial_menus)
 		// Fixed name assignment logic - prioritize choice_datum.name, then original key, then fallbacks
 		if(choice_datum?.name)
 			E.name = choice_datum.name
-			E.nomouseover = FALSE
+			E.no_over_text = FALSE
 		else if(choices_keys && choices_keys[choice_id])
 			// Use the stored original choice key
 			E.name = choices_keys[choice_id]
-			E.nomouseover = FALSE
+			E.no_over_text = FALSE
 		else if(istext(choices_values[choice_id]))
 			E.name = choices_values[choice_id]
-			E.nomouseover = FALSE
+			E.no_over_text = FALSE
 		else if(ispath(choices_values[choice_id],/atom))
 			var/atom/A = choices_values[choice_id]
 			E.name = initial(A.name)
-			E.nomouseover = FALSE
+			E.no_over_text = FALSE
 		else
 			var/atom/movable/AM = choices_values[choice_id] //Movables only
 			E.name = AM.name
-			E.nomouseover = FALSE
+			E.no_over_text = FALSE
 
 		E.choice = choice_id
 		E.maptext = null
@@ -380,7 +356,7 @@ GLOBAL_LIST_EMPTY(radial_menus)
 
 /datum/radial_menu/proc/wait(atom/user, atom/anchor, require_near = FALSE)
 	while (current_user && !finished && !selected_choice)
-		if(require_near && !in_range(anchor, user))
+		if(require_near && !in_range_loose(anchor, user))
 			return
 		if(custom_check_callback && next_check < world.time)
 			if(!custom_check_callback.Invoke())
@@ -450,7 +426,7 @@ GLOBAL_LIST_EMPTY(radial_menus)
 	var/answer = menu.selected_choice
 	menu.remove_menu()
 	GLOB.radial_menus -= uniqueid
-	if(require_near && !in_range(anchor, user))
+	if(require_near && !in_range_loose(anchor, user))
 		return
 	if(istype(custom_check))
 		if(!custom_check.Invoke())

@@ -29,7 +29,7 @@
 	plane = OPENSPACE_PLANE
 	appearance_flags = PLANE_MASTER
 
-/atom/movable/screen/plane_master/openspace/Initialize(mapload, ...)
+/atom/movable/screen/plane_master/openspace/Initialize(mapload, datum/hud/hud_owner)
 	. = ..()
 	add_filter("openspace_blur", 1, gauss_blur_filter(1))
 
@@ -39,22 +39,17 @@
 	appearance_flags = PLANE_MASTER
 	blend_mode = BLEND_OVERLAY
 
+/atom/movable/screen/plane_master/seethrough
+	name = "Seethrough"
+	plane = SEETHROUGH_PLANE
+	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+
 /atom/movable/screen/plane_master/game_world
 	name = "game world plane master"
 	plane = GAME_PLANE
 	appearance_flags = PLANE_MASTER //should use client color
 	blend_mode = BLEND_OVERLAY
 	render_target = GAME_PLANE_RENDER_TARGET
-
-/atom/movable/screen/plane_master/game_world/backdrop(mob/mymob)
-	clear_filters()
-	if(istype(mymob))
-		if(isliving(mymob))
-			var/mob/living/L = mymob
-			if(L.has_status_effect(/datum/status_effect/buff/druqks))
-				add_filter("druqks_ripple", 2, ripple_filter(0, 50, 1, x = 80))
-				animate(filters[length(filters)], 1 SECONDS, -1, radius=480, size=50, flags=ANIMATION_PARALLEL)
-				add_filter("druqks_color", 2, color_matrix_filter(list(0,0,1,0, 0,1,0,0, 1,0,0,0, 0,0,0,1, 0,0,0,0)))
 
 /atom/movable/screen/plane_master/area
 	name = "area plane master"
@@ -179,16 +174,6 @@
 	appearance_flags = PLANE_MASTER
 	blend_mode = BLEND_OVERLAY
 
-/atom/movable/screen/plane_master/game_world_above/backdrop(mob/mymob)
-	clear_filters()
-	if(istype(mymob))
-		if(isliving(mymob))
-			var/mob/living/L = mymob
-			if(L.has_status_effect(/datum/status_effect/buff/druqks))
-				add_filter("druqks_ripple", 1, ripple_filter(0, 50, 1, x = 80))
-				animate(filters[length(filters)], 1 SECONDS, -1, radius=480, size=50, flags=ANIMATION_PARALLEL)
-				add_filter("druqks_color", 2, color_matrix_filter(list(0,0,1,0, 0,1,0,0, 1,0,0,0, 0,0,0,1, 0,0,0,0)))
-
 /atom/movable/screen/plane_master/field_of_vision_blocker
 	name = "field of vision blocker plane master"
 	plane = FIELD_OF_VISION_BLOCKER_PLANE
@@ -253,11 +238,13 @@
 
 /atom/movable/screen/plane_master/leylines/backdrop(mob/mymob)
 	. = ..()
-	if(!isliving(mymob) && mymob.client?.toggled_leylines)
+	alpha = 0
+	var/client/client = mymob.client
+	if(!client)
+		return
+	if(!isliving(mymob) && client.toggled_leylines)
 		alpha = 255
-	else if(!HAS_TRAIT(mymob, TRAIT_SEE_LEYLINES))
-		alpha = 0
-	else
+	else if(HAS_TRAIT(mymob, TRAIT_SEE_LEYLINES))
 		alpha = 255
 
 /atom/movable/screen/plane_master/stategy_plane

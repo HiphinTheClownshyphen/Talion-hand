@@ -60,7 +60,7 @@
 
 /datum/component/obeys_commands/proc/on_key_unpressed(mob/living/source)
 	SIGNAL_HANDLER
-	UnregisterSignal(source, COMSIG_ATOM_MOUSE_ENTERED)
+	UnregisterSignal(source, COMSIG_USER_MOUSE_ENTERED)
 
 /datum/component/obeys_commands/proc/remove_from_viewers(mob/living/source)
 	radial_viewers -= REF(source)
@@ -88,7 +88,7 @@
 
 /datum/component/obeys_commands/proc/on_key_pressed(mob/living/friend)
 	SIGNAL_HANDLER
-	RegisterSignal(friend, COMSIG_ATOM_MOUSE_ENTERED, PROC_REF(on_mouse_hover))
+	RegisterSignal(friend, COMSIG_USER_MOUSE_ENTERED, PROC_REF(on_mouse_hover))
 
 /datum/component/obeys_commands/proc/on_mouse_hover(mob/living/friend, atom/mouse_hovered)
 	SIGNAL_HANDLER
@@ -152,7 +152,7 @@
 
 /// Actually display the radial menu and then do something with the result
 /datum/component/obeys_commands/proc/prompt_name(mob/living/clicker)
-	var/new_name = input(clicker, "Choose a new name for [parent]", parent)
+	var/new_name = browser_input_text(clicker, "Choose a new name for [parent]", "NEW NAME", max_length = MAX_NAME_LEN)
 	if(!new_name)
 		return
 	var/mob/living/living = parent

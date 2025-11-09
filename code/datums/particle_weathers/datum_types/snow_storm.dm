@@ -15,13 +15,12 @@
 	transform 			   = null
 
 /datum/particle_weather/snow_gentle
-	name = "Rain"
+	name = "Gentle Snow"
 	desc = "Gentle Rain, la la description."
 	particleEffectType = /particles/weather/snow
 
 	scale_vol_with_severity = TRUE
-	weather_sounds = list(/datum/looping_sound/snow)
-	weather_messages = list("It's snowing!","You feel a chill/")
+	weather_sounds = /datum/looping_sound/snow
 
 	minSeverity = 1
 	maxSeverity = 10
@@ -32,20 +31,21 @@
 	target_trait = PARTICLEWEATHER_SNOW
 	forecast_tag = "snow"
 
+	temperature_modification = -10
+
+
 //Makes you a little chilly
 /datum/particle_weather/snow_gentle/weather_act(mob/living/L)
-	L.adjust_bodytemperature(-rand(1,3))
 	L.snow_shiver = world.time + 7 SECONDS
 
 
 /datum/particle_weather/snow_storm
-	name = "Rain"
+	name = "Snow Storm"
 	desc = "Gentle Rain, la la description."
 	particleEffectType = /particles/weather/snow
 
 	scale_vol_with_severity = TRUE
-	weather_sounds = list(/datum/looping_sound/snow)
-	weather_messages = list("You feel a chill/", "The cold wind is freezing you to the bone", "How can a man who is warm, understand a man who is cold?")
+	weather_sounds = /datum/looping_sound/snow
 
 	minSeverity = 40
 	maxSeverity = 100
@@ -61,6 +61,8 @@
 	weather_special_effect = /datum/weather_effect/snow
 	forecast_tag = "snow"
 
+	temperature_modification = -15
+
 /datum/weather_effect/snow
 	name = "snow effect"
 	probability = 40
@@ -75,7 +77,6 @@
 /mob/living/var/snow_shiver
 
 /datum/particle_weather/snow_storm/weather_act(mob/living/L)
-	L.adjust_bodytemperature(-rand(5,15))
 	L.snow_shiver = world.time + 10 SECONDS
 
 
@@ -104,9 +105,6 @@
 /turf/proc/apply_weather_effect(datum/weather_effect/effect)
 	SIGNAL_HANDLER
 	if(!effect)
-		return
-
-	if(!(turf_flags & TURF_EFFECT_AFFECTABLE))
 		return
 
 	if(is_blocked_turf(TRUE))

@@ -31,8 +31,8 @@
 	if(!LAZYACCESS(modifiers, ICON_X) || !LAZYACCESS(modifiers, ICON_Y))
 		return
 	if(user.transferItemToLoc(I, src, silent = FALSE))
-		I.pixel_x = clamp(text2num(LAZYACCESS(modifiers, ICON_X)) - 16, -max_x_offset, max_x_offset)
-		I.pixel_y = min(text2num(LAZYACCESS(modifiers, ICON_Y)) + placement_offset, max_height_offset)
+		I.pixel_x = I.base_pixel_x + clamp(text2num(LAZYACCESS(modifiers, ICON_X)) - 16, -max_x_offset, max_x_offset)
+		I.pixel_y = I.base_pixel_x + min(text2num(LAZYACCESS(modifiers, ICON_Y)) + placement_offset, max_height_offset)
 		to_chat(user, span_notice("You place [I] on [src]."))
 		AddToPlate(I, user)
 	else
@@ -98,8 +98,8 @@
 		ItemRemovedFromPlate(scattered_item)
 		scattered_item.forceMove(scatter_turf)
 		var/list/scatter_vector = scatter_gen.Rand()
-		scattered_item.pixel_x = scatter_vector[1]
-		scattered_item.pixel_y = scatter_vector[2]
+		scattered_item.pixel_x = scattered_item.base_pixel_x + scatter_vector[1]
+		scattered_item.pixel_y = scattered_item.base_pixel_y + scatter_vector[2]
 		scattered_item.throw_impact(hit_atom, throwingdatum)
 
 /obj/item/plate/attack_self(mob/user, params)
@@ -149,6 +149,10 @@
 	sellprice = 12
 	smeltresult = /obj/item/ingot/silver
 
+/obj/item/plate/silver/Initialize(mapload)
+	. = ..()
+	enchant(/datum/enchantment/silver)
+
 /obj/item/plate/gold
 	name = "gold platter"
 	desc = "A fancy gold plate often used by the nobility as a symbol of class."
@@ -157,6 +161,70 @@
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
 	sellprice = 20
 	smeltresult = /obj/item/ingot/gold
+
+/obj/item/plate/jade
+	name = "joapstone platter"
+	desc = "A fancy platter carved out of joapstone."
+	icon_state = "platter_jade"
+	resistance_flags = FIRE_PROOF
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 60
+
+/obj/item/plate/onyxa
+	name = "onyxa platter"
+	desc = "A fancy platter carved out of onyxa."
+	icon_state = "platter_onyxa"
+	resistance_flags = FIRE_PROOF
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 40
+
+/obj/item/plate/shell
+	name = "shell platter"
+	desc = "A fancy platter carved out of shell."
+	icon_state = "platter_shell"
+	resistance_flags = FIRE_PROOF
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 20
+
+/obj/item/plate/rose
+	name = "rosellusk platter"
+	desc = "A fancy platter carved out of rosellusk."
+	icon_state = "platter_rose"
+	resistance_flags = FIRE_PROOF
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 25
+
+/obj/item/plate/amber
+	name = "petriamber platter"
+	desc = "A fancy platter carved out of petriamber."
+	icon_state = "platter_amber"
+	resistance_flags = FIRE_PROOF
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 60
+
+/obj/item/plate/opal
+	name = "opaloise platter"
+	desc = "A fancy platter carved out of opaloise."
+	icon_state = "platter_opal"
+	resistance_flags = FIRE_PROOF
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 90
+
+/obj/item/plate/coral
+	name = "aoetal platter"
+	desc = "A fancy platter carved out of aoetal."
+	icon_state = "platter_coral"
+	resistance_flags = FIRE_PROOF
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 70
+
+/obj/item/plate/turq
+	name = "ceruleabaster platter"
+	desc = "A fancy platter carved out of ceruleabaster."
+	icon_state = "platter_turq"
+	resistance_flags = FIRE_PROOF
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 85
 
 /obj/item/plate/tray
 	name = "tray"

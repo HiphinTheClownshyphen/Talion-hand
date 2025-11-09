@@ -13,6 +13,7 @@
 /datum/species/aasimar
 	name = "Aasimar"
 	id = SPEC_ID_AASIMAR
+	native_language = "Celestial"
 	desc = "Immortal offspring sculpted by the gods for use in servitude. \
 	\n\n\
 	Aasimar roaming alone on Psydonia often are those abandoned after serving their purpose. \
@@ -30,7 +31,7 @@
 	skin_tone_wording = "Craft"
 
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, OLDGREY)
-	inherent_traits = list(TRAIT_NOMOBSWAP)
+	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_NOHYGIENE)
 	use_skintones = TRUE
 
 	possible_ages = list(AGE_IMMORTAL)
@@ -174,5 +175,3 @@
 /datum/species/aasimar/get_possible_surnames(gender)
 	return null
 
-/datum/species/aasimar/get_native_language()
-	return "Celestial"

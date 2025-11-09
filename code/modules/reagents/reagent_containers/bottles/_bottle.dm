@@ -2,34 +2,55 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 
 /obj/item/reagent_containers/glass/bottle
 	name = "bottle"
-	var/original_name
 	desc = "A bottle with a cork."
 	icon = 'icons/roguetown/items/glass_reagent_container.dmi'
 	icon_state = "clear_bottle1"
-	var/original_icon_state = null
-	amount_per_transfer_from_this = 6
-	possible_transfer_amounts = list(6)
+	amount_per_transfer_from_this = 5
+	possible_transfer_amounts = list(5,10)
 	volume = 70
 	fill_icon_thresholds = list(0, 10, 25, 50, 75, 100)
 	dropshrink = 0.8
 	slot_flags = ITEM_SLOT_HIP|ITEM_SLOT_MOUTH
 	obj_flags = CAN_BE_HIT
 	spillable = FALSE
-	var/closed = TRUE
 	reagent_flags = TRANSPARENT
+	fill_icon_under_override = TRUE
 	w_class = WEIGHT_CLASS_NORMAL
 	drinksounds = list('sound/items/drink_bottle (1).ogg','sound/items/drink_bottle (2).ogg')
 	fillsounds = list('sound/items/fillcup.ogg')
 	poursounds = list('sound/items/fillbottle.ogg')
 	experimental_onhip = TRUE
-	/// Determines if the bottle can be labeled with paper
-	var/can_label_bottle = TRUE
-	/// for bottles with custom descriptors that you don't want to change when bottle manipulated
-	var/fancy
+	can_label_container = TRUE
+	label_prefix = "bottle of "
+	var/closed = TRUE
+	/// Do not change desc when opened or closed
+	var/fancy = FALSE
+	/// Name to slap on a label, replaces current name
+	var/auto_label_name
+	/// Auto label description, appended to current desc
+	var/auto_label_desc
+	///custom icon?
+	var/custom_icon = FALSE
 
 /obj/item/reagent_containers/glass/bottle/Initialize()
-	icon_state = "clear_bottle[rand(1,4)]"
+	if(!custom_icon)
+		icon_state = "clear_bottle[rand(1,4)]"
 	return ..()
+
+/obj/item/reagent_containers/glass/bottle/apply_initial_label()
+	if(!auto_label_name && !auto_label_desc)
+		return
+	label_container(label_name = auto_label_name, label_desc = auto_label_desc)
+
+/obj/item/reagent_containers/glass/bottle/label_container(mob/user, label_name, label_desc)
+	. = ..()
+	if(label_desc)
+		fancy = TRUE
+
+/obj/item/reagent_containers/glass/bottle/remove_label(mob/user, force)
+	. = ..()
+	if(desc != initial(desc))
+		fancy = initial(fancy)
 
 /obj/item/reagent_containers/glass/bottle/attackby(obj/item/I, mob/user, params)
 	if(istype(I, /obj/item/paper/scroll))
@@ -71,7 +92,7 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 	if(closed)
 		reagent_flags &= ~TRANSFERABLE
 		reagents.flags = reagent_flags
-		to_chat(user, span_notice("You carefully press the cork back into the mouth of [src]."))
+		balloon_alert(user, "I press the cork back in.")
 		spillable = FALSE
 		GLOB.weather_act_upon_list -= src
 		if(!fancy)
@@ -80,7 +101,7 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 		reagent_flags |= TRANSFERABLE
 		reagents.flags = reagent_flags
 		playsound(user.loc,'sound/items/uncork.ogg', 100, TRUE)
-		to_chat(user, span_notice("You thumb off the cork from [src]."))
+		balloon_alert(user, "I thumb off the cork.")
 		spillable = TRUE
 		GLOB.weather_act_upon_list |= src
 		if(!fancy)
@@ -175,8 +196,8 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 	desc = "A vial with a cork."
 	icon = 'icons/roguetown/items/glass_reagent_container.dmi'
 	icon_state = "clear_vial1"
-	amount_per_transfer_from_this = 6
-	possible_transfer_amounts = list(6)
+	amount_per_transfer_from_this = 5
+	possible_transfer_amounts = list(5)
 	volume = 30
 	fill_icon_thresholds = list(0, 10, 25, 50, 75, 100)
 	dropshrink = 0.8
@@ -186,10 +207,12 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 	closed = TRUE
 	reagent_flags = TRANSPARENT
 	w_class = WEIGHT_CLASS_SMALL
+	grid_width = 32
 	grid_height = 32
 	drinksounds = list('sound/items/drink_bottle (1).ogg','sound/items/drink_bottle (2).ogg')
 	fillsounds = list('sound/items/fillcup.ogg')
 	poursounds = list('sound/items/fillbottle.ogg')
+	label_prefix = "vial of "
 
 /obj/item/reagent_containers/glass/bottle/vial/Initialize()
 	. = ..()
@@ -203,12 +226,12 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 		reagent_flags &= ~TRANSFERABLE
 		reagents.flags = reagent_flags
 		desc = "A vial with a cork."
-		to_chat(user, span_notice("You carefully press the cork back into the mouth of [src]."))
+		balloon_alert(user, "I press the cork back in.")
 		spillable = FALSE
 	else
 		reagent_flags |= TRANSFERABLE
 		reagents.flags = reagent_flags
-		to_chat(user, span_notice("You thumb off the cork from [src]."))
+		balloon_alert(user, "I thumb off the cork.")
 		playsound(user.loc,'sound/items/uncork.ogg', 100, TRUE)
 		desc = "An open vial, easy to drink quickly."
 		spillable = TRUE
@@ -223,7 +246,7 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 	amount_per_transfer_from_this = 8
 	possible_transfer_amounts = list(8)
 	dropshrink = 1
-	can_label_bottle = FALSE
+	can_label_container = FALSE
 	spillable = TRUE
 	fill_icon_thresholds = null
 
@@ -241,21 +264,17 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 
 	icon = 'icons/obj/handmade/teapot.dmi'
 	icon_state = "world"
-	volume = 99
+	volume = 100
 	amount_per_transfer_from_this = 6
 	possible_transfer_amounts = list(6)
 	dropshrink = 1
-	can_label_bottle = FALSE
 	spillable = TRUE
-
 	fill_icon_thresholds = null
+	can_label_container = FALSE
 
 /obj/item/reagent_containers/glass/bottle/teapot/Initialize()
 	. = ..()
 	icon_state = "world"
-
-/obj/item/reagent_containers/glass/bottle/teapot/Initialize()
-	. = ..()
 	AddComponent(/datum/component/storage/concrete/grid/teapot)
 	AddComponent(/datum/component/container_craft, subtypesof(/datum/container_craft/cooking/tea), TRUE)
 
@@ -275,10 +294,30 @@ GLOBAL_LIST_INIT(wisdoms, world.file2list("strings/rt/wisdoms.txt"))
 	icon_state = "cup_fancy"
 	volume = 30
 	dropshrink = 0.7
+	can_label_container = FALSE
+	custom_icon = TRUE
 
 /obj/item/reagent_containers/glass/bottle/glazed_teapot
 	name = "fancy teapot"
 	desc = "A fancy tea pot made out of ceramic. Used to hold tea."
 	icon_state = "teapot_fancy"
-	volume = 99
+	volume = 100
 	dropshrink = 0.7
+	can_label_container = FALSE
+	custom_icon = TRUE
+
+/obj/item/reagent_containers/glass/bottle/glazed_teapot/tea
+	list_reagents = list(/datum/reagent/consumable/tea/compot = 100)
+
+/obj/item/reagent_containers/glass/bottle/black
+	name = "wine pot"
+	desc = "A wine pot made of glazed clay."
+	icon_state = "blackbottle"
+	fill_icon_thresholds = null
+	label_prefix = "pot of "
+	custom_icon = TRUE
+
+/obj/item/reagent_containers/glass/bottle/black/Initialize()
+	. = ..()
+	icon_state = "blackbottle"
+	update_appearance(UPDATE_OVERLAYS)

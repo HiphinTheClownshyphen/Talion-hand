@@ -83,18 +83,13 @@
 			if(istype(food_item, /obj/item/reagent_containers/food/snacks))
 				var/obj/item/reagent_containers/food/snacks/F = food_item
 				total_freshness += max(0, (F.warming + F.rotprocess))
-				highest_quality = max(highest_quality, F.quality)
-
-			// Handle crops/grown items
-			else if(istype(food_item, /obj/item/reagent_containers/food/snacks/produce))
-				var/obj/item/reagent_containers/food/snacks/produce/G = food_item
-				highest_quality = max(highest_quality, G.crop_quality - 1)
+				highest_quality = max(highest_quality, F.quality, F.recipe_quality )
 
 	// Calculate average freshness
 	var/average_freshness = (ingredient_count > 0) ? (total_freshness / ingredient_count) : 0
 
 	// Get the user's cooking skill
-	var/cooking_skill = user.get_skill_level(/datum/skill/craft/cooking)
+	var/cooking_skill = user.get_skill_level(/datum/skill/craft/cooking) + user.get_inspirational_bonus()
 
 	// Create output items
 	for(var/spawn_count = 1 to output_amount)
@@ -102,11 +97,12 @@
 		new_item.sellprice = sellprice
 		new_item.randomize_price()
 
-		// Apply freshness to the new food item
-		new_item.warming = min(5 MINUTES, average_freshness)
+		if(istype(new_item, /obj/item/reagent_containers/food/snacks))
+			// Apply freshness to the new food item
+			new_item.warming = min(5 MINUTES, average_freshness)
 
-		// Calculate final quality based on ingredients, skill, and recipe
-		apply_food_quality(new_item, cooking_skill, highest_quality, average_freshness)
+			// Calculate final quality based on ingredients, skill, and recipe
+			apply_food_quality(new_item, cooking_skill, highest_quality, average_freshness)
 
 		if(length(pass_types_in_end))
 			var/list/parts = list()

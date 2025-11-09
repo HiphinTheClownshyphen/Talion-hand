@@ -6,12 +6,16 @@
 	density = FALSE
 	anchored = TRUE
 	layer = BELOW_MOB_LAYER
-	max_integrity = 0
+	resistance_flags = INDESTRUCTIBLE
 	var/aportalloc = "a"
 
 /obj/structure/fluff/testportal/Initialize()
-	name = aportalloc
+	LAZYADD(GLOB.testportals, src)
 	return ..()
+
+/obj/structure/fluff/testportal/Destroy()
+	. = ..()
+	LAZYREMOVE(GLOB.testportals, src)
 
 /obj/structure/fluff/testportal/attack_hand(mob/user)
 	var/fou
@@ -36,7 +40,7 @@
 	density = FALSE
 	anchored = TRUE
 	layer = ABOVE_OPEN_TURF_LAYER
-	max_integrity = 0
+	resistance_flags = INDESTRUCTIBLE
 	var/aportalid = "REPLACETHIS"
 	var/aportalgoesto = "REPLACETHIS"
 	var/aallmig

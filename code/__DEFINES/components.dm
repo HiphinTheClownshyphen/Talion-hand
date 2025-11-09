@@ -53,7 +53,6 @@
 	#define COMSIG_ATOM_BLOCKS_BSA_BEAM 1
 #define COMSIG_ATOM_DIR_CHANGE "atom_dir_change"				//from base of atom/setDir(): (old_dir, new_dir)
 #define COMSIG_ATOM_CONTENTS_DEL "atom_contents_del"			//from base of atom/handle_atom_del(): (atom/deleted)
-#define COMSIG_ATOM_HAS_GRAVITY "atom_has_gravity"				//from base of atom/has_gravity(): (turf/location, list/forced_gravities)
 #define COMSIG_ATOM_CANREACH "atom_can_reach"					//from internal loop in atom/movable/proc/CanReach(): (list/next)
 	#define COMPONENT_BLOCK_REACH 1
 #define COMSIG_ATOM_SCREWDRIVER_ACT "atom_screwdriver_act"		//from base of atom/screwdriver_act(): (mob/living/user, obj/item/I)
@@ -71,7 +70,7 @@
 /////////////////
 //This signal return value bitflags can be found in __DEFINES/misc.dm
 #define COMSIG_ATOM_INTERCEPT_Z_FALL "movable_intercept_z_impact"	//called for each movable in a turf contents on /turf/zImpact(): (atom/movable/A, levels)
-
+#define COMSIG_ATOM_FALL_INTERACT "atom_fall_interact"
 /////////////////
 
 #define COMSIG_ENTER_AREA "enter_area" 						//from base of area/Entered(): (/area)
@@ -93,6 +92,7 @@
 #define COMSIG_MOB_CREATED_CALLOUT "mob_created_callout"
 
 #define COMSIG_MOB_CLICKON "mob_clickon"						//from base of mob/clickon(): (atom/A, params)
+#define COMSIG_ATOM_CLICKEDON "atom_clickedon"
 #define COMSIG_MOB_MIDDLECLICKON "mob_middleclickon"			//from base of mob/MiddleClickOn(): (atom/A)
 #define COMSIG_MOB_ALTCLICKON "mob_altclickon"				//from base of mob/AltClickOn(): (atom/A)
 	#define COMSIG_MOB_CANCEL_CLICKON 1
@@ -126,7 +126,11 @@
 ///from base of /mob/verb/pointed: (atom/A)
 #define COMSIG_MOB_POINTED "mob_pointed"
 
+#define COMSIG_MOB_ADD_STRESS "mob_add_stress"
+#define COMSIG_MOB_APPLIED_STATUS_EFFECT "mob_applied_status_effect"
+
 // /mob/living/carbon signals
+#define COMSIG_CARBON_REAGENT_ADD "carbon_reagent_add"
 #define COMSIG_CARBON_SOUNDBANG "carbon_soundbang"					//from base of mob/living/carbon/soundbang_act(): (list(intensity))
 #define COMSIG_CARBON_ON_HANDLE_BLOOD "human_on_handle_blood"
 	#define HANDLE_BLOOD_HANDLED (1<<0)
@@ -146,6 +150,10 @@
 #define COMSIG_OBJ_DEFAULT_UNFASTEN_WRENCH "obj_default_unfasten_wrench"	//from base of code/game/machinery
 /// From /obj/item/multitool/remove_buffer(): (buffer)
 #define COMSIG_MULTITOOL_REMOVE_BUFFER "multitool_remove_buffer"
+
+/// from /obj/proc/unfreeze()
+#define COMSIG_OBJ_UNFREEZE "obj_unfreeze"
+
 
 // /obj/machinery signals
 #define COMSIG_MACHINERY_BROKEN "machinery_broken"				//from /obj/machinery/obj_break(damage_flag): (damage_flag)
@@ -231,11 +239,6 @@
 //Gibs
 #define COMSIG_GIBS_STREAK "gibs_streak"						// from base of /obj/effect/decal/cleanable/blood/gibs/streak(): (list/directions, list/diseases)
 
-//Mood
-#define COMSIG_ADD_MOOD_EVENT "add_mood" //Called when you send a mood event from anywhere in the code.
-#define COMSIG_ADD_MOOD_EVENT_RND "RND_add_mood" //Mood event that only RnD members listen for
-#define COMSIG_CLEAR_MOOD_EVENT "clear_mood" //Called when you clear a mood event from anywhere in the code.
-
 //NTnet
 #define COMSIG_COMPONENT_NTNET_RECEIVE "ntnet_receive"			//called on an object by its NTNET connection component on receive. (sending_id(number), sending_netname(text), data(datum/netdata))
 
@@ -310,6 +313,7 @@
 #define COMSIG_MOUSE_ENTERED "comsig_mouse_entered"
 /// signal sent when a mouse is hovering over us, sent by atom/proc/on_mouse_entered
 #define COMSIG_ATOM_MOUSE_ENTERED "mouse_entered"
+#define COMSIG_USER_MOUSE_ENTERED "user_mouse_entered"
 
 #define COMSIG_HABITABLE_HOME "comsig_habitable_home"
 
@@ -325,3 +329,9 @@
 #define COMSIG_MOB_GRENADE_ARMED "grenade_mob_armed"
 ///called in /obj/item/gun/process_fire (user, target, params, zone_override)
 #define COMSIG_GRENADE_ARMED "grenade_armed"
+
+#define COMSIG_MOB_HEALTHHUD_UPDATE "update_healthhud"
+
+#define COMSIG_ITEM_ATTACK_EFFECT "item_attack_effect"
+#define COMSIG_ITEM_ATTACK_EFFECT_SELF "item_attack_effect_self"
+#define COMSIG_DOOR_OPENED "door_open"

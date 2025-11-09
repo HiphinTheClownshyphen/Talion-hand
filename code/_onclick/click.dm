@@ -98,13 +98,12 @@
 		return
 	next_click = world.time + 1
 
-	if(check_click_intercept(params,A))
-		return
-
-	if(notransform)
+	if(check_click_intercept(params,A) || HAS_TRAIT(src, TRAIT_NO_TRANSFORM))
 		return
 
 	if(SEND_SIGNAL(src, COMSIG_MOB_CLICKON, A, params) & COMSIG_MOB_CANCEL_CLICKON)
+		return
+	if(SEND_SIGNAL(A, COMSIG_ATOM_CLICKEDON, src, params) & COMSIG_MOB_CANCEL_CLICKON)
 		return
 
 	if(next_move > world.time)
@@ -119,7 +118,8 @@
 					changeNext_move(mmb_intent.clickcd)
 					return
 
-	if(LAZYACCESS(modifiers, LEFT_CLICK))
+	var/obj/item/W = get_active_held_item()
+	if(LAZYACCESS(modifiers, LEFT_CLICK) && !(W == A || LAZYACCESS(modifiers, SHIFT_CLICKED) || LAZYACCESS(modifiers, CTRL_CLICKED) || LAZYACCESS(modifiers, ALT_CLICKED)))
 		if(atkswinging != "left")
 			return
 		if(active_hand_index == 1)
@@ -178,14 +178,12 @@
 
 	if(HAS_TRAIT(src, TRAIT_HANDS_BLOCKED))
 		changeNext_move(CLICK_CD_HANDCUFFED)   //Doing shit in cuffs shall be vey slow
-		UnarmedAttack(A)
+		UnarmedAttack(A, source = src)
 		return
 
 	if(in_throw_mode)
 		throw_item(A)
 		return
-
-	var/obj/item/W = get_active_held_item()
 
 	if(W == A)
 		if(LAZYACCESS(modifiers, RIGHT_CLICK))
@@ -298,7 +296,7 @@
 		W.melee_attack_chain(src, A, params)
 	else
 		if(ismob(A))
-			var/adf = used_intent.clickcd
+			var/adf = used_intent?.clickcd
 			if(istype(rmb_intent, /datum/rmb_intent/aimed))
 				adf = round(adf * 1.4)
 			if(istype(rmb_intent, /datum/rmb_intent/swift))
@@ -363,8 +361,6 @@
 				continue
 			closed[target] = TRUE
 			var/usedreach = 1
-			if(tool)
-				usedreach = tool.reach
 			if(ismob(src))
 				var/mob/user = src
 				if(user.used_intent)
@@ -435,7 +431,7 @@
 	proximity_flag is not currently passed to attack_hand, and is instead used
 	in human click code to allow glove touches only at melee range.
 */
-/mob/proc/UnarmedAttack(atom/A, proximity_flag, params)
+/mob/proc/UnarmedAttack(atom/A, proximity_flag, params, atom/source)
 	return
 
 /*
@@ -596,7 +592,7 @@
 		user.client.statpanel = T.name
 
 /mob/proc/CtrlRightClickOn(atom/A, params)
-	linepoint(A, params)
+	pointed(A)
 	return
 
 /*
@@ -778,7 +774,6 @@
 		eyet.update_appearance(UPDATE_ICON)
 
 /mob/proc/ShiftRightClickOn(atom/A, params)
-//	linepoint(A, params)
 //	A.ShiftRightClick(src)
 	return
 

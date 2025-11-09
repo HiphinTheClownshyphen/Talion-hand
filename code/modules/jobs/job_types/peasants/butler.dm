@@ -6,7 +6,6 @@
 	By your word the meals are served, the chambers kept, and the floors polished clean. \
 	You wear the royal colors and hold their semblance of dignity, \
 	for without you and the servants under your command, the court would have all starved to death."
-	flag = BUTLER
 	department_flag = SERFS
 	display_order = JDO_BUTLER
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
@@ -17,19 +16,9 @@
 	bypass_lastclass = TRUE
 
 	allowed_ages = list(AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
-	allowed_races = list(\
-		SPEC_ID_HUMEN,\
-		SPEC_ID_ELF,\
-		SPEC_ID_HALF_ELF,\
-		SPEC_ID_DWARF,\
-		SPEC_ID_DROW,\
-		SPEC_ID_HALF_DROW,\
-		SPEC_ID_TIEFLING,\
-		SPEC_ID_AASIMAR,\
-		SPEC_ID_HARPY,\
-	)
+	allowed_races = RACES_BUTLER
 
-	outfit = /datum/outfit/job/butler
+	outfit = /datum/outfit/butler
 	give_bank_account = 30 // Along with the pouch, enough to purchase some ingredients from the farm and give hard working servants a silver here and there. Still need the assistance of the crown's coffers to do anything significant
 	cmode_music = 'sound/music/cmode/towner/CombatInn.ogg'
 
@@ -39,7 +28,7 @@
 		addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(know_keep_door_password), H), 50)
 
 
-/datum/outfit/job/butler/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/butler/pre_equip(mob/living/carbon/human/H)
 	..()
 	backpack_contents = list(/obj/item/book/manners = 1)
 	mask = /obj/item/clothing/face/spectacles
@@ -62,6 +51,7 @@
 	H.change_stat(STATKEY_PER, 1)
 	H.change_stat(STATKEY_END, 1)
 	ADD_TRAIT(H, TRAIT_KNOWKEEPPLANS, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_ROYALSERVANT, TRAIT_GENERIC)
 	backpack_contents = list(/obj/item/recipe_book/cooking = 1)
 
 	if(H.gender == MALE)

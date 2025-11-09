@@ -3,61 +3,41 @@
 	var/mob/living/carbon/human/H = user
 	if(H.stat == DEAD) return
 	if(H.advsetup) return
+	if(HAS_TRAIT(H, TRAIT_SILVER_BLESSED)) return
 
 	// Werewolf transforms at night AND under the sky
-	if(!transformed && !transforming)
+	if(!HAS_TRAIT(user, TRAIT_WEREWOLF_RAGE))
 		if(GLOB.tod == "night")
 			if(isturf(H.loc))
 				var/turf/loc = H.loc
 				if(loc.can_see_sky())
-					to_chat(H, span_userdanger("The moonlight scorns me... It is too late."))
-					owner.current.playsound_local(get_turf(owner.current), 'sound/music/wolfintro.ogg', 80, FALSE, pressure_affected = FALSE)
-					H.flash_fullscreen("redflash3")
-					transforming = world.time // timer
-
-	// Begin transformation
-	else if(transforming)
-		if (world.time >= transforming + 35 SECONDS) // Stage 3
-			H.werewolf_transform()
-			transforming = FALSE
-			transformed = TRUE // Mark as transformed
-
-		else if (world.time >= transforming + 25 SECONDS) // Stage 2
-			H.flash_fullscreen("redflash3")
-			H.emote("agony", forced = TRUE)
-			to_chat(H, span_userdanger("UNIMAGINABLE PAIN!"))
-			H.Stun(30)
-			H.Knockdown(30)
-
-		else if (world.time >= transforming + 10 SECONDS) // Stage 1
-			H.emote("")
-			to_chat(H, span_warning("I can feel my muscles aching, it feels HORRIBLE..."))
+					var/mob/living/carbon/human/human = user
+					if(human.rage_datum?.rage > human.rage_datum.max_rage - 20)
+						to_chat(H, span_userdanger("The moonlight scorns me... It is too late."))
+					human.rage_datum?.update_rage(10)
 
 
-	// Werewolf reverts to human form during the day
-	else if(transformed)
-		H.real_name = wolfname
-		H.name = wolfname
-
-		if(GLOB.tod != "night")
-			if(!untransforming)
-				untransforming = world.time // Start untransformation phase
-
-			if (world.time >= untransforming + 30 SECONDS) // Untransform
-				H.emote("rage", forced = TRUE)
-				H.werewolf_untransform()
-				transformed = FALSE
-				untransforming = FALSE // Reset untransforming phase
-
-			else if (world.time >= untransforming) // Alert player
-				H.flash_fullscreen("redflash1")
-				to_chat(H, span_warning("Daylight shines around me... the curse begins to fade."))
-
-
-/mob/living/carbon/human/species/werewolf/death(gibbed)
-	werewolf_untransform(TRUE, gibbed)
+/mob/living/carbon/human/species/werewolf/death(gibbed, nocutscene = FALSE)
+	werewolf_untransform(null, TRUE, gibbed)
 
 /mob/living/carbon/human/proc/werewolf_transform()
+
+	if(HAS_TRAIT(src, TRAIT_WEREWOLF_RAGE))
+		return
+	if(is_species(src, /datum/species/werewolf))
+		return
+
+	ADD_TRAIT(src, TRAIT_WEREWOLF_RAGE, INNATE_TRAIT)
+
+	flash_fullscreen("redflash3")
+	emote("agony", forced = TRUE)
+	to_chat(src, span_userdanger("UNIMAGINABLE PAIN!"))
+	Stun(5 SECONDS)
+	Knockdown(5 SECONDS)
+
+	sleep(5 SECONDS)
+	playsound_local(get_turf(src), 'sound/music/wolfintro.ogg', 80, FALSE, pressure_affected = FALSE)
+	rage_datum.rage_decay_rate += 5
 	if(!mind)
 		log_runtime("NO MIND ON [src.name] WHEN TRANSFORMING")
 	Paralyze(1, ignore_canstun = TRUE)
@@ -68,8 +48,9 @@
 	var/oldinv = invisibility
 	invisibility = INVISIBILITY_MAXIMUM
 	cmode = FALSE
+//	stop_cmusic()
 
-	src.fully_heal(FALSE)
+	fully_heal(FALSE)
 
 	var/ww_path
 	if(gender == MALE)
@@ -81,12 +62,12 @@
 
 	W.set_patron(src.patron)
 	W.gender = gender
+	W.rage_datum = rage_datum
 	W.regenerate_icons()
 	W.stored_mob = src
 	W.limb_destroyer = TRUE
 	W.ambushable = FALSE
-	W.cmode_music = 'sound/music/cmode/antag/combat_werewolf.ogg'
-	W.skin_armor = new /obj/item/clothing/armor/skin_armor/werewolf_skin(W)
+	W.skin_armor = new /obj/item/clothing/armor/regenerating/skin/werewolf_skin(W)
 	playsound(W.loc, pick('sound/combat/gib (1).ogg','sound/combat/gib (2).ogg'), 200, FALSE, 3)
 	W.spawn_gibs(FALSE)
 	src.forceMove(W)
@@ -94,11 +75,11 @@
 	W.after_creation()
 	W.stored_language = new
 	W.stored_language.copy_known_languages_from(src)
-	W.stored_skills = skills?.known_skills.Copy()
-	W.stored_experience = skills?.skill_experience.Copy()
-	mind?.transfer_to(W)
-	W.skills?.known_skills = list()
-	W.skills?.skill_experience = list()
+	W.stored_skills = ensure_skills().known_skills.Copy()
+	W.stored_experience = ensure_skills().skill_experience.Copy()
+	mind.transfer_to(W)
+	skills?.known_skills = list()
+	skills?.skill_experience = list()
 	W.grant_language(/datum/language/beast)
 
 	W.base_intents = list(INTENT_HELP, INTENT_DISARM, INTENT_GRAB)
@@ -111,40 +92,25 @@
 	W.adjust_skillrank(/datum/skill/combat/unarmed, 5, TRUE)
 	W.adjust_skillrank(/datum/skill/misc/climbing, 6, TRUE)
 
-	W.base_strength = 15
-	W.base_constitution = 15
-	W.base_endurance = 15
-	W.dodgetime = 36
+	W.set_stat_modifier("[type]", STATKEY_STR, 20)
+	W.set_stat_modifier("[type]", STATKEY_CON, 20)
+	W.set_stat_modifier("[type]", STATKEY_END, 20)
+
 
 	W.add_spell(/datum/action/cooldown/spell/undirected/howl)
 	W.add_spell(/datum/action/cooldown/spell/undirected/claws)
+	W.add_spell(/datum/action/cooldown/spell/aoe/repulse/howl)
+	W.add_spell(/datum/action/cooldown/spell/woundlick)
 
-	ADD_TRAIT(src, TRAIT_NOSLEEP, TRAIT_GENERIC)
-
-	ADD_TRAIT(W, TRAIT_NOSTAMINA, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_STRONGBITE, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_ZJUMP, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_NOFALLDAMAGE1, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_BASHDOORS, TRAIT_GENERIC)
-	// ADD_TRAIT(W, TRAIT_SHOCKIMMUNE, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_STEELHEARTED, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_BREADY, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_TOXIMMUNE, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_ORGAN_EATER, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_NASTY_EATER, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_NOSTINK, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_CRITICAL_RESISTANCE, TRAIT_GENERIC)
-	// ADD_TRAIT(W, TRAIT_IGNOREDAMAGESLOWDOWN, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_IGNORESLOWDOWN, TRAIT_GENERIC)
-	ADD_TRAIT(W, TRAIT_HARDDISMEMBER, TRAIT_GENERIC)
-	// ADD_TRAIT(W, TRAIT_PIERCEIMMUNE, TRAIT_GENERIC)
-	// ADD_TRAIT(W, TRAIT_ANTIMAGIC, TRAIT_GENERIC)
+	W.rage_datum.grant_to_secondary(W)
 
 	invisibility = oldinv
 
-
-/mob/living/carbon/human/proc/werewolf_untransform(dead,gibbed)
+/mob/living/carbon/human/proc/werewolf_untransform(mob/bleh, dead,gibbed)
 	if(!stored_mob)
+		var/mob/living/carbon/human/species/werewolf/wolf = loc
+		if(istype(wolf))
+			wolf.werewolf_untransform(null, dead, gibbed)
 		return
 	if(!mind)
 		log_runtime("NO MIND ON [src.name] WHEN UNTRANSFORMING")
@@ -168,15 +134,18 @@
 
 	var/mob/living/carbon/human/species/werewolf/WA = src
 	W.copy_known_languages_from(WA.stored_language)
-	W.skills.known_skills = WA.stored_skills.Copy()
-	W.skills.skill_experience = WA.stored_experience.Copy()
-	W.dodgetime = 12
+	skills?.known_skills = WA.stored_skills.Copy()
+	skills?.skill_experience = WA.stored_experience.Copy()
 
 	W.remove_spell(/datum/action/cooldown/spell/undirected/howl)
 	W.remove_spell(/datum/action/cooldown/spell/undirected/claws)
-
-	W.fully_heal(FALSE)
+	W.remove_spell(/datum/action/cooldown/spell/aoe/repulse/howl)
+	W.remove_spell(/datum/action/cooldown/spell/woundlick)
+	W.rage_datum.remove_secondary()
 	W.regenerate_icons()
+
+	REMOVE_TRAIT(W, TRAIT_WEREWOLF_RAGE, INNATE_TRAIT)
+	W.rage_datum.rage_decay_rate -= 5
 
 	to_chat(W, span_userdanger("I return to my facade."))
 	playsound(W.loc, pick('sound/combat/gib (1).ogg','sound/combat/gib (2).ogg'), 200, FALSE, 3)

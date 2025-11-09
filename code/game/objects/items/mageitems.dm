@@ -224,12 +224,12 @@
 	icon_state = "amethyst"
 	sellprice = 18
 	arcyne_potency = 25
-	desc = "A deep lavender crystal, it surges with magical energy, yet it's artificial nature means it' worth little."
+	desc = "A pink crystal, it surges with magical energy, yet it's artificial nature means it' worth little."
 	attuned = /datum/attunement/arcyne
 
 /obj/item/mimictrinket
 	name = "mimic trinket"
-	desc = "A small mimic, imbued with the arcane to make it docile. It can transform into most things it touchs. "
+	desc = "A small mimic, imbued with the arcyne to make it docile. It can transform into most things it touchs. "
 	icon = 'icons/roguetown/items/misc.dmi'
 	icon_state = "mimic_trinket"
 	possible_item_intents = list(/datum/intent/use)
@@ -255,7 +255,12 @@
 		deltimer(timing_id)
 		timing_id = null
 
-/obj/item/mimictrinket/attack_obj(obj/target, mob/living/user)
+/obj/item/mimictrinket/attack_atom(atom/attacked_atom, mob/living/user)
+	if(!isobj(attacked_atom))
+		return ..()
+
+	var/obj/target = attacked_atom
+	. = TRUE
 	if(ready)
 		to_chat(user,span_notice("[src] takes the form of [target]!"))
 		oldicon = icon
@@ -271,7 +276,7 @@
 
 /obj/item/hourglass/temporal
 	name = "temporal hourglass"
-	desc = "An arcane infused hourglass that glows with magick."
+	desc = "An arcyne infused hourglass that glows with magick."
 	icon = 'icons/obj/hourglass.dmi'
 	icon_state = "hourglass_idle"
 	var/turf/target
@@ -309,8 +314,8 @@
 	on = FALSE
 
 /obj/item/clothing/ring/arcanesigil
-	name = "arcane sigil"
-	desc = "A radiantly shimmering sigil within an amulet, It seems to pulse with intense arcanic flows."
+	name = "arcyne sigil"
+	desc = "A radiantly shimmering sigil within an amulet, It seems to pulse with intense arcynic flows."
 	icon = 'icons/roguetown/items/misc.dmi'
 	icon_state = "amulet"
 	var/cdtime = 30 MINUTES
@@ -319,7 +324,7 @@
 /obj/item/clothing/ring/arcanesigil/attack_self(mob/living/carbon/human/user, params)
 	if(ready)
 		if(do_after(user, 25, target = src))
-			to_chat(user,span_notice("[src] heats up to an almost burning temperature, flooding you with overwhelming arcane knowledge!"))
+			to_chat(user,span_notice("[src] heats up to an almost burning temperature, flooding you with overwhelming arcyne knowledge!"))
 			ready = FALSE
 			addtimer(CALLBACK(src, PROC_REF(revert), user), cdtime,TIMER_STOPPABLE) // Minus two so we play the sound and decap faster
 			user.adjust_skillrank(/datum/skill/magic/arcane, 1, TRUE)
@@ -415,7 +420,7 @@
 
 /obj/item/rope/chain/bindingshackles
 	name = "planar binding shackles"
-	desc = "arcane shackles imbued to bind other-planar creatures intelligence to this plane. They will not be under your thrall and a deal will need to be made."
+	desc = "arcyne shackles imbued to bind other-planar creatures intelligence to this plane. They will not be under your thrall and a deal will need to be made."
 	var/mob/living/fam
 	var/tier = 1
 	var/being_used = FALSE
@@ -595,6 +600,7 @@
 	slot_flags = ITEM_SLOT_HEAD|ITEM_SLOT_MASK
 	body_parts_covered = NONE
 	alternate_worn_layer  = 8.9
+	mob_overlay_icon = 'icons/roguetown/clothing/onmob/head_items.dmi'
 	list_reagents = list(/datum/reagent/toxin/manabloom_juice = SNACK_CHUNKY)
 	seed = /obj/item/neuFarm/seed/manabloom
 
@@ -615,7 +621,7 @@
 
 //combined items
 /obj/item/natural/melded
-	name = "arcane meld"
+	name = "arcyne meld"
 	icon_state = "wessence"
 	desc = "You should not be seeing this"
 	resistance_flags = FLAMMABLE
@@ -649,25 +655,22 @@
 /obj/item/natural/melded/t5
 	name = "arcanic aberation"
 	icon_state = "wessence"
-	desc = "A melding of arcane fusion and voidstone. It pulses erratically, power coiled tightly within and dangerous. Many would be afraid of going near this, let alone holding it."
+	desc = "A melding of arcyne fusion and voidstone. It pulses erratically, power coiled tightly within and dangerous. Many would be afraid of going near this, let alone holding it."
 
 
 /obj/structure/soul
 	name = "soul"
 	desc = "The soul of the dead"
-
 	icon = 'icons/roguetown/misc/mana.dmi'
 	icon_state = "soul"
-
 	plane = LEYLINE_PLANE
 	invisibility = INVISIBILITY_LEYLINES
 	anchored = TRUE
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
+	no_over_text = TRUE
 
-	var/mana_amount = 75
-
+	var/mana_amount = 7
 	var/datum/weakref/drainer
-
 	var/qdel_timer
 
 /obj/structure/soul/Initialize(mapload)

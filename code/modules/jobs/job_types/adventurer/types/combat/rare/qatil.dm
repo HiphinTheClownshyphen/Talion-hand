@@ -1,5 +1,5 @@
-/datum/advclass/adventurer/qatil
-	name = "Qatil"
+/datum/job/advclass/adventurer/qatil
+	title = "Qatil"
 	tutorial = "Hailing from Zalad lands, you are a killer for hire that is trained both in murdering unseen and seen with your trusty knife."
 	allowed_races = list(\
 		SPEC_ID_HUMEN,\
@@ -8,16 +8,17 @@
 		SPEC_ID_HALF_ELF,\
 		SPEC_ID_TIEFLING,\
 		SPEC_ID_DROW,\
+		SPEC_ID_HALF_DROW,\
 	)
-	outfit = /datum/outfit/job/adventurer/qatil
-	maximum_possible_slots = 1
+	outfit = /datum/outfit/adventurer/qatil
+	total_positions = 1
 	min_pq = 0
-	pickprob = 25
+	roll_chance = 25
 	category_tags = list(CTAG_ADVENTURER)
 
 	cmode_music = 'sound/music/cmode/adventurer/CombatOutlander3.ogg'
 
-/datum/outfit/job/adventurer/qatil/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/qatil/pre_equip(mob/living/carbon/human/H)
 	..()
 	if(H.mind)
 		H.adjust_skillrank(/datum/skill/combat/knives, 4, TRUE)
@@ -54,3 +55,13 @@
 
 	ADD_TRAIT(H, TRAIT_DODGEEXPERT, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_STEELHEARTED, TRAIT_GENERIC)
+
+	if(H.dna?.species)
+		if(H.dna.species.id == SPEC_ID_HUMEN)
+			H.dna.species.native_language = "Zalad"
+			H.dna.species.accent_language = H.dna.species.get_accent(H.dna.species.native_language)
+		if((H.dna.species.id == SPEC_ID_HALF_ELF) || (H.dna.species.id == SPEC_ID_HALF_DROW))
+			if(H.dna.species.native_language == "Imperial")
+				H.dna.species.native_language = "Zalad"
+				H.dna.species.accent_language = H.dna.species.get_accent(H.dna.species.native_language)
+

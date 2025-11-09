@@ -38,9 +38,6 @@ SUBSYSTEM_DEF(mapping)
 	///list of all z level indices that form multiz connections and whether theyre linked up or down
 	///list of lists, inner lists are of the form: list("up or down link direction" = TRUE)
 	var/list/multiz_levels = list()
-	///shows the default gravity value for each z level. recalculated when gravity generators change.
-	///associative list of the form: list("[z level num]" = max generator gravity in that z level OR the gravity level trait)
-	var/list/gravity_by_z_level = list()
 	var/datum/space_level/transit
 	var/datum/space_level/empty_space
 	var/num_of_res_levels = 1
@@ -70,6 +67,9 @@ SUBSYSTEM_DEF(mapping)
 		if(!adjust.map_file_name)
 			continue
 		var/map = config.map_file
+		if(islist(map))
+			var/list/maps = map
+			map = maps[1]
 		if(!map)
 			break
 		if(map_adjustment)
@@ -112,12 +112,7 @@ SUBSYSTEM_DEF(mapping)
 	require_area_resort()
 	initialize_reserved_level(transit.z_value)
 	generate_z_level_linkages()
-	calculate_default_z_level_gravities()
 	return ..()
-
-/datum/controller/subsystem/mapping/proc/calculate_default_z_level_gravities()
-	for(var/z_level in 1 to length(z_list))
-		calculate_z_level_gravity(z_level)
 
 /datum/controller/subsystem/mapping/proc/generate_z_level_linkages()
 	for(var/z_level in 1 to length(z_list))
@@ -137,16 +132,6 @@ SUBSYSTEM_DEF(mapping)
 	multiz_levels[z_level] = new /list(LARGEST_Z_LEVEL_INDEX)
 	multiz_levels[z_level][Z_LEVEL_UP] = !!z_above
 	multiz_levels[z_level][Z_LEVEL_DOWN] = !!z_below
-
-/datum/controller/subsystem/mapping/proc/calculate_z_level_gravity(z_level_number)
-	if(!isnum(z_level_number) || z_level_number < 1)
-		return FALSE
-
-	var/max_gravity = 0
-
-	max_gravity = max_gravity || level_trait(z_level_number, ZTRAIT_GRAVITY) || 0//just to make sure no nulls
-	gravity_by_z_level["[z_level_number]"] = max_gravity
-	return max_gravity
 
 
 /datum/controller/subsystem/mapping/Recover()
@@ -168,7 +153,7 @@ SUBSYSTEM_DEF(mapping)
 	multiz_levels = SSmapping.multiz_levels
 
 #define INIT_ANNOUNCE(X) to_chat(world, span_boldannounce("[X]")); log_world(X)
-/datum/controller/subsystem/mapping/proc/LoadGroup(list/errorList, name, path, files, list/traits, list/default_traits, silent = FALSE)
+/datum/controller/subsystem/mapping/proc/LoadGroup(list/errorList, name, path, files, list/traits, list/default_traits, silent = FALSE, delve = 0)
 	. = list()
 	var/start_time = REALTIMEOFDAY
 
@@ -202,7 +187,7 @@ SUBSYSTEM_DEF(mapping)
 	var/start_z = world.maxz + 1
 	var/i = 0
 	for (var/level in traits)
-		add_new_zlevel("[name][i ? " [i + 1]" : ""]", level)
+		add_new_zlevel("[name][i ? " [i + 1]" : ""]", level, delve = delve)
 		++i
 
 	// load the maps
@@ -216,26 +201,27 @@ SUBSYSTEM_DEF(mapping)
 	return parsed_maps
 
 /datum/controller/subsystem/mapping/proc/loadWorld()
-	//if any of these fail, something has gone horribly, HORRIBLY, wrong
 	var/list/FailedZs = list()
-
-	// ensure we have space_level datums for compiled-in maps
 	InitializeDefaultZLevels()
-
-	// load the station
 	station_start = world.maxz + 1
+
 	#ifdef TESTING
 	INIT_ANNOUNCE("Loading [config.map_name]...")
 	#endif
-
-	LoadGroup(FailedZs, "Station", config.map_path, config.map_file, config.traits, ZTRAITS_TOWN)
-
+	LoadGroup(FailedZs, "Station", config.map_path, config.map_file, config.traits, ZTRAITS_TOWN, delve = config.delve)
 	var/list/otherZ = list()
-
 	for(var/map_json in config.other_z)
 		otherZ += load_map_config(map_json)
+
 	#ifndef NO_DUNGEON
-	otherZ += load_map_config("_maps/map_files/shared/dungeon.json")
+	// Load base dungeon level
+	if(SSmapping.config.map_name != "Voyage")
+		otherZ += load_map_config("_maps/map_files/shared/dungeon.json")
+
+		// Load additional delve levels if multi-level dungeons are enabled
+		if(SSdungeon_generator.multilevel_dungeons)
+			for(var/level = 2; level <= SSdungeon_generator.max_delve_levels; level++)
+				otherZ += load_map_config("_maps/map_files/shared/dungeon_delve[level].json")
 	#endif
 
 	//For all maps
@@ -246,7 +232,7 @@ SUBSYSTEM_DEF(mapping)
 
 	if(length(otherZ))
 		for(var/datum/map_config/OtherZ in otherZ)
-			LoadGroup(FailedZs, OtherZ.map_name, OtherZ.map_path, OtherZ.map_file, OtherZ.traits, ZTRAITS_STATION)
+			LoadGroup(FailedZs, OtherZ.map_name, OtherZ.map_path, OtherZ.map_file, OtherZ.traits, ZTRAITS_STATION, delve = OtherZ.delve)
 
 	if(SSdbcore.Connect())
 		var/datum/DBQuery/query_round_map_name = SSdbcore.NewQuery({"
@@ -529,7 +515,6 @@ SUBSYSTEM_DEF(mapping)
 	require_area_resort()
 	initialize_reserved_level(transit.z_value)
 	generate_z_level_linkages()
-	calculate_default_z_level_gravities()
 
 
 /datum/controller/subsystem/mapping/proc/generate_random_world()

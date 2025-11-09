@@ -32,10 +32,9 @@
 /obj/effect/whirlpool
 	name = "swirling vortex"
 	desc = "A powerful whirlpool pulling everything toward its center."
-	icon = 'icons/obj/whirlpool.dmi'  // Replace with appropriate icon
-	icon_state = "whirlpool"  // Replace with appropriate icon_state
-	pixel_x = -96
-	pixel_y = -96
+	icon = 'icons/obj/whirlpool.dmi'  //! Replace with appropriate icon (coder sprite used)
+	icon_state = "whirlpool"  //! Replace with appropriate icon_state (coder sprite used)
+	SET_BASE_PIXEL(-96, -96)
 	anchored = TRUE
 	layer = ABOVE_MOB_LAYER
 	var/mob/creator

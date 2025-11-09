@@ -17,6 +17,7 @@
 	innate_traits = list(
 		TRAIT_NOSTAMINA,
 		TRAIT_NOHUNGER,
+		TRAIT_NOHYGIENE,
 		TRAIT_NOBREATH,
 		TRAIT_NOPAIN,
 		TRAIT_TOXIMMUNE,
@@ -45,11 +46,15 @@
 		/datum/action/cooldown/spell/raise_undead,
 		/datum/action/cooldown/spell/diagnose,
 		/datum/action/cooldown/spell/eyebite,
+		/datum/action/cooldown/spell/control_undead
 	)
 
 /datum/antagonist/lich/on_gain()
 	SSmapping.retainer.liches |= owner
-	owner.current?.purge_combat_knowledge() // purge all their combat skills first
+	var/mob/living/carbon/human/lich = owner?.current
+	lich.purge_combat_knowledge() // purge all their combat skills first
+	lich.reset_and_reroll_stats()
+	lich.remove_all_traits()
 	. = ..()
 	if(iscarbon(owner.current))
 		lich_body_ref = WEAKREF(owner.current)
@@ -59,7 +64,8 @@
 	owner.special_role = name
 	move_to_spawnpoint()
 	remove_job()
-	owner.current?.roll_mob_stats()
+	lich.delete_equipment()
+	owner.current?.remove_stat_modifier(STATMOD_AGE)
 	skele_look()
 	equip_lich()
 
@@ -102,10 +108,10 @@
 	L.dna.species.species_traits |= NOBLOOD
 	L.grant_undead_eyes()
 	L.skeletonize(FALSE)
-	L.equipOutfit(/datum/outfit/job/lich)
+	L.equipOutfit(/datum/outfit/lich)
 	L.set_patron(/datum/patron/inhumen/zizo)
 
-/datum/outfit/job/lich/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/lich/pre_equip(mob/living/carbon/human/H)
 	..()
 	head = /obj/item/clothing/head/helmet/skullcap/cult
 	pants = /obj/item/clothing/pants/chainlegs
@@ -125,14 +131,14 @@
 	H.set_skillrank(/datum/skill/craft/alchemy, 5, TRUE)
 	H.set_skillrank(/datum/skill/magic/arcane, 5, TRUE)
 	H.set_skillrank(/datum/skill/misc/riding, 4, TRUE)
-	H.set_skillrank(/datum/skill/combat/polearms, 1, TRUE)
+	H.set_skillrank(/datum/skill/combat/polearms, 4, TRUE)
 	H.set_skillrank(/datum/skill/combat/wrestling, 3, TRUE)
 	H.set_skillrank(/datum/skill/combat/unarmed, 1, TRUE)
 	H.set_skillrank(/datum/skill/misc/swimming, 1, TRUE)
 	H.set_skillrank(/datum/skill/misc/climbing, 1, TRUE)
 	H.set_skillrank(/datum/skill/misc/athletics, 1, TRUE)
 	H.set_skillrank(/datum/skill/combat/swords, 2, TRUE)
-	H.set_skillrank(/datum/skill/combat/knives, 5, TRUE)
+	H.set_skillrank(/datum/skill/combat/knives, 2, TRUE)
 	H.set_skillrank(/datum/skill/craft/crafting, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/labor/mathematics, 4, TRUE)
 
@@ -141,14 +147,17 @@
 	H.change_stat(STATKEY_CON, 5)
 	H.change_stat(STATKEY_END, -1)
 	H.change_stat(STATKEY_SPD, -1)
-
-
+	H.adjust_spell_points(17) //Same as CM - Until they receive their spellbook.
+	H.grant_language(/datum/language/undead)
+	if(H.dna?.species)
+		H.dna.species.native_language = "Zizo Chant"
+		H.dna.species.accent_language = H.dna.species.get_accent(H.dna.species.native_language)
 	H.dna.species.soundpack_m = new /datum/voicepack/lich()
 	H.ambushable = FALSE
 
 	addtimer(CALLBACK(H, TYPE_PROC_REF(/mob/living/carbon/human, choose_name_popup), "LICH"), 5 SECONDS)
 
-/datum/outfit/job/lich/post_equip(mob/living/carbon/human/H)
+/datum/outfit/lich/post_equip(mob/living/carbon/human/H)
 	..()
 	var/datum/antagonist/lich/lichman = H.mind.has_antag_datum(/datum/antagonist/lich)
 	for(var/i in 1 to 3)
@@ -158,7 +167,7 @@
 		H.equip_to_slot_if_possible(new_phylactery,ITEM_SLOT_BACKPACK, TRUE)
 
 /// called via COMSIG_LIVING_DEATH
-/datum/antagonist/lich/proc/on_death(/datum/source)
+/datum/antagonist/lich/proc/on_death(datum/source)
 	SIGNAL_HANDLER
 	INVOKE_ASYNC(src, PROC_REF(attempt_resurrection)) // this proc sleeps
 
@@ -252,5 +261,5 @@
 
 /obj/item/phylactery/proc/start_shaking()
 	var/offset = prob(50) ? -2 : 2
-	animate(src, pixel_x = pixel_x + offset, time = 0.2, loop = -1) //start shaking
+	animate(src, pixel_x = offset, time = 0.2 DECISECONDS, loop = -1, flags = ANIMATION_RELATIVE|ANIMATION_PARALLEL) //start shaking
 	visible_message(span_warning("[src] begins to glow and shake violently!"))

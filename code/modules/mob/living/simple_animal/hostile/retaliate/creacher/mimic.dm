@@ -35,7 +35,7 @@
 	stat_attack = UNCONSCIOUS
 
 	food_type = list(/obj/item/reagent_containers/food/snacks/meat, /obj/item/bodypart, /obj/item/organ)
-	food = 0
+
 	pooptype = null
 
 	base_constitution = 6
@@ -43,7 +43,7 @@
 	base_speed = 5
 
 	ai_controller = /datum/ai_controller/mimic
-
+	dendor_taming_chance = DENDOR_TAME_PROB_NONE
 
 
 /mob/living/simple_animal/hostile/retaliate/mimic/Initialize(mapload)

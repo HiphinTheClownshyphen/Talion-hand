@@ -1,26 +1,25 @@
-/datum/advclass/combat/monk
-	name = "Monk"
+/datum/job/advclass/combat/monk
+	title = "Monk"
 	allowed_races = RACES_PLAYER_NONHERETICAL
 	allowed_patrons = ALL_TEMPLE_PATRONS
 	tutorial = "A traveling monk of the Ten, unmatched in the unarmed arts, with an unwavering devotion to their patron God's Justice."
-	maximum_possible_slots = 4
+	total_positions = 4
 
-	outfit = /datum/outfit/job/adventurer/monk
+	outfit = /datum/outfit/adventurer/monk
 	min_pq = 0
 	category_tags = list(CTAG_ADVENTURER)
 	cmode_music = 'sound/music/cmode/adventurer/CombatMonk.ogg'
-	vampcompat = FALSE
 
-/datum/outfit/job/adventurer/monk
 	allowed_patrons = ALL_TEMPLE_PATRONS  //randomize patron if not in ten
 
-/datum/outfit/job/adventurer/monk/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/monk/pre_equip(mob/living/carbon/human/H)
 	..()
 	head = /obj/item/clothing/head/roguehood/colored/brown
 	shoes = /obj/item/clothing/shoes/shortboots
 	cloak = /obj/item/clothing/cloak/raincloak/furcloak/colored/brown
 	armor = /obj/item/clothing/shirt/robe/colored/plain
 	wrists = /obj/item/clothing/wrists/bracers/leather
+	gloves = /obj/item/clothing/gloves/bandages/pugilist
 	belt = /obj/item/storage/belt/leather/rope
 	beltr = /obj/item/storage/belt/pouch/coins/poor
 	backl = /obj/item/storage/backpack/backpack
@@ -34,7 +33,7 @@
 		if(/datum/patron/divine/eora)
 			neck = /obj/item/clothing/neck/psycross/silver/eora
 		if(/datum/patron/divine/noc)
-			neck = /obj/item/clothing/neck/psycross/noc
+			neck = /obj/item/clothing/neck/psycross/silver/noc
 		if(/datum/patron/divine/pestra)
 			neck = /obj/item/clothing/neck/psycross/silver/pestra
 		if(/datum/patron/divine/dendor)
@@ -69,10 +68,10 @@
 	H.change_stat(STATKEY_PER, -1)
 	H.change_stat(STATKEY_SPD, 2)
 
-	var/datum/devotion/cleric_holder/C = new /datum/devotion/cleric_holder(H, H.patron)
-	C.grant_spells_churchling(H)
-	H.verbs += list(/mob/living/carbon/human/proc/devotionreport, /mob/living/carbon/human/proc/clericpray)
+	var/holder = H.patron?.devotion_holder
+	if(holder)
+		var/datum/devotion/devotion = new holder()
+		devotion.make_churching()
+		devotion.grant_to(H)
 
 	ADD_TRAIT(H, TRAIT_DODGEEXPERT, TRAIT_GENERIC)
-
-

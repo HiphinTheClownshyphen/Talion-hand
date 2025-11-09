@@ -38,7 +38,7 @@
 	volume = 100
 	falloff_exponent = 2
 	extra_range = 5
-	var/stress2give = /datum/stressevent/music
+	var/stress2give = /datum/stress_event/music
 	persistent_loop = TRUE
 	sound_group = /datum/sound_group/instruments
 
@@ -116,7 +116,7 @@
 			continue
 		if((L.mob_biotypes & MOB_UNDEAD) && !(user.mob_biotypes & MOB_UNDEAD))
 			continue
-		L.add_stress(/datum/stressevent/bardicbuff)
+		L.add_stress(/datum/stress_event/bardicbuff)
 		if(!instrument_buff)
 			continue
 		if(L.mind?.has_antag_datum(/datum/antagonist))
@@ -189,25 +189,25 @@
 			return
 
 	var/note_color = "#7f7f7f" // uses MMO item rarity color grading
-	var/stressevent = /datum/stressevent/music
+	var/stress_event = /datum/stress_event/music
 	switch(music_level)
 		if(1)
-			stressevent = /datum/stressevent/music
+			stress_event = /datum/stress_event/music
 		if(2)
 			note_color = "#ffffff"
-			stressevent = /datum/stressevent/music/two
+			stress_event = /datum/stress_event/music/two
 		if(3)
 			note_color = "#1eff00"
-			stressevent = /datum/stressevent/music/three
+			stress_event = /datum/stress_event/music/three
 		if(4)
 			note_color = "#0070dd"
-			stressevent = /datum/stressevent/music/four
+			stress_event = /datum/stress_event/music/four
 		if(5)
 			note_color = "#a335ee"
-			stressevent = /datum/stressevent/music/five
+			stress_event = /datum/stress_event/music/five
 		if(6)
 			note_color = "#ff8000"
-			stressevent = /datum/stressevent/music/six
+			stress_event = /datum/stress_event/music/six
 
 	// BARDIC BUFFS CODE START //
 	if(HAS_TRAIT(user, TRAIT_BARDIC_TRAINING)) // Non-bards will never get this prompt. Prompt doesn't show if you cancel song selection either.
@@ -251,10 +251,10 @@
 	playing = TRUE
 	soundloop.mid_sounds = list(curfile)
 	soundloop.cursound = null
-	soundloop.stress2give = stressevent
+	soundloop.stress2give = stress_event
 	soundloop.set_parent(user)
 	soundloop.start()
-	user.apply_status_effect(/datum/status_effect/buff/playing_music, stressevent, note_color)
+	user.apply_status_effect(/datum/status_effect/buff/playing_music, stress_event, note_color)
 	record_round_statistic(STATS_SONGS_PLAYED)
 	if(dynamic_icon)
 		lift_to_mouth()
@@ -439,3 +439,19 @@
 	desc = "The blessed essence of harpysong. How did you get this... you monster!"
 	icon = 'icons/obj/surgery.dmi'
 	not_held = TRUE
+
+/obj/item/instrument/psyaltery
+	name = "psyaltery"
+	desc = "A traditional form of boxed zither or box-harp that may be played plucked, with a plectrum or with hammers. They are particularly associated with divine beings, aasimars and liturgies."
+	icon_state = "psyaltery"
+	song_list = list(
+	"Disciples Tower" = 'sound/instruments/psyaltery (1).ogg',
+	"Green Sleeves" = 'sound/instruments/psyaltery (2).ogg',
+	"Midyear Melancholy" = 'sound/instruments/psyaltery (3).ogg',
+	"Santa Psydonia" = 'sound/instruments/psyaltery (4).ogg',
+	"Le Venardine" = 'sound/instruments/psyaltery (5).ogg',
+	"Azurea Fair" = 'sound/instruments/psyaltery (6).ogg',
+	"Amoroso" = 'sound/instruments/psyaltery (7).ogg',
+	"Lupian's Lullaby" = 'sound/instruments/psyaltery (8).ogg',
+	"White Wine Before Breakfast" = 'sound/instruments/psyaltery (9).ogg',
+	"Chevalier de Valeur" = 'sound/instruments/psyaltery (10).ogg')

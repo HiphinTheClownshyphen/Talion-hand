@@ -1,18 +1,17 @@
-/datum/advclass/pilgrim/rare/preacher
-	name = "Preacher"
+/datum/job/advclass/pilgrim/rare/preacher
+	title = "Preacher"
 	tutorial = "A devout follower of Psydon, you came to this land with nothing more than \
 	the clothes on your back and the faith in your heart. \n\
 	Sway these nonbelievers to the right path!"
 	allowed_races = RACES_PLAYER_GRENZ
-	outfit = /datum/outfit/job/adventurer/preacher
+	outfit = /datum/outfit/adventurer/preacher
 	category_tags = list(CTAG_PILGRIM)
-	maximum_possible_slots = 1
-	pickprob = 30
+	total_positions = 1
 	min_pq = 0
 
 	cmode_music = 'sound/music/cmode/church/CombatInquisitor.ogg'
 
-/datum/outfit/job/adventurer/preacher/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/preacher/pre_equip(mob/living/carbon/human/H)
 	..()
 	shoes = /obj/item/clothing/shoes/shortboots
 	belt = /obj/item/storage/belt/leather/rope
@@ -31,5 +30,8 @@
 		if(!H.has_language(/datum/language/oldpsydonic))
 			H.grant_language(/datum/language/oldpsydonic)
 			to_chat(H, "<span class='info'>I can speak Old Psydonic with ,m before my speech.</span>")
-		H.set_patron(/datum/patron/psydon)
+		H.set_patron(/datum/patron/psydon, TRUE)
 	ADD_TRAIT(H, TRAIT_FOREIGNER, TRAIT_GENERIC)
+	if(H.dna?.species.id == SPEC_ID_HUMEN)
+		H.dna.species.native_language = "Old Psydonic"
+		H.dna.species.accent_language = H.dna.species.get_accent(H.dna.species.native_language)

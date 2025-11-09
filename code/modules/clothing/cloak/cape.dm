@@ -13,10 +13,14 @@
 	inhand_mod = FALSE
 	slot_flags = ITEM_SLOT_BACK_R | ITEM_SLOT_CLOAK
 
-/obj/item/clothing/cloak/cape/knight
+/obj/item/clothing/cloak/cape/colored
+	misc_flags = CRAFTING_TEST_EXCLUDE
+
+/obj/item/clothing/cloak/cape/colored/knight
 	color = CLOTHING_PLUM_PURPLE
 
 /obj/item/clothing/cloak/cape/guard
+	name = "guard's cape"
 	color = CLOTHING_BLOOD_RED
 	uses_lord_coloring = LORD_PRIMARY
 

@@ -23,8 +23,8 @@
 	name = name + plant_type.name
 	desc = desc + plant_type.name
 
-	pixel_x = rand(-12, 12)
-	pixel_y = rand(-12, 12)
+	pixel_x = base_pixel_x + rand(-12, 12)
+	pixel_y = base_pixel_y + rand(-12, 12)
 
 	icon_state = "[plant_type.icon_state]2"
 
@@ -206,3 +206,23 @@
 /obj/structure/wild_plant/nospread/fyritiusflower
 	icon_state = "fyritius2"
 	plant_type = /datum/plant_def/fyritiusflower
+
+/obj/structure/wild_plant/nospread/mango
+	icon_state = "mangotree2"
+	plant_type = /datum/plant_def/mango
+
+/obj/structure/wild_plant/nospread/avocado
+	icon_state = "avocadotree2"
+	plant_type = /datum/plant_def/avocado
+
+/obj/structure/wild_plant/nospread/mangosteen
+	icon_state = "mangosteentree2"
+	plant_type = /datum/plant_def/mangosteen
+
+/obj/structure/wild_plant/nospread/pineapple
+	icon_state = "pineapple2"
+	plant_type = /datum/plant_def/pineapple
+
+/obj/structure/wild_plant/nospread/dragonfruit
+	icon_state = "dragonfruit2"
+	plant_type = /datum/plant_def/dragonfruit

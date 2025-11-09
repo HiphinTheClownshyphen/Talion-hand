@@ -11,11 +11,12 @@
 	list_reagents = list(/datum/reagent/consumable/honey = 5, /datum/reagent/consumable/nutriment = SNACK_DECENT)
 	grind_results = list()
 	tastes = list("sweetness" = 1)
+	var/honey_color
 
 /obj/item/reagent_containers/food/snacks/spiderhoney/Initialize()
 	. = ..()
-	pixel_x = rand(8,-8)
-	pixel_y = rand(8,-8)
+	pixel_x = base_pixel_x + rand(8,-8)
+	pixel_y = base_pixel_y + rand(8,-8)
 
 /obj/item/reagent_containers/food/snacks/spiderhoney/proc/set_reagent(reagent)
 	var/datum/reagent/R = GLOB.chemical_reagents_list[reagent]

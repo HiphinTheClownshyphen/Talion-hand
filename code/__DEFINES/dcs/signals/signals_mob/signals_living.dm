@@ -26,6 +26,7 @@
 #define COMSIG_PROCESS_BORGCHARGER_OCCUPANT "living_charge"		//sent from borg recharge stations: (amount, repairs)
 #define COMSIG_BORG_SAFE_DECONSTRUCT "borg_safe_decon"			//sent from borg mobs to itself, for tools to catch an upcoming destroy() due to safe decon (rather than detonation)
 #define COMSIG_MOB_ACTIVE_PERCEPTION "comsig_mob_active_perception"	//sent from mob/living/proc/look_around(): (mob/living/source)
+#define COMSIG_LIVING_WOUND_GAINED "wound_gained"
 
 // Client
 /// sent when a mob/login() finishes: (client)
@@ -73,6 +74,9 @@
 #define COMSIG_LIVING_MANA_CHANGED "living_mana_changed"
 /// from base of [datum/devotion/cleric_holder/update_devotion()]
 #define COMSIG_LIVING_DEVOTION_CHANGED "living_devotion_changed"
+#define COMSIG_LIVING_RAGE_CHANGED "living_devotion_changed"
+#define COMSIG_RAGE_BOTTOMED "living_rage_bottomed"
+#define COMSIG_RAGE_OVERRAGE "living_rage_over"
 
 ///from base of
 #define COMSIG_LIVING_DREAM_END  "living_sleep_advancement_end"
@@ -81,3 +85,24 @@
 #define COMSIG_LIVING_TRY_PUT_IN_HAND "living_try_put_in_hand"
 	/// Can't pick up
 	#define COMPONENT_LIVING_CANT_PUT_IN_HAND (1<<0)
+
+///From mob/living/proc/wabbajack(): (randomize_type)
+#define COMSIG_LIVING_PRE_WABBAJACKED "living_mob_wabbajacked"
+	/// Return to stop the rest of the wabbajack from triggering.
+	#define STOP_WABBAJACK (1<<0)
+///From mob/living/proc/on_wabbajack(): (mob/living/new_mob)
+#define COMSIG_LIVING_ON_WABBAJACKED "living_wabbajacked"
+
+/// From /datum/status_effect/shapechange_mob/on_apply(): (mob/living/shape)
+#define COMSIG_LIVING_SHAPESHIFTED "living_shapeshifted"
+/// From /datum/status_effect/shapechange_mob/after_unchange(): (mob/living/caster)
+#define COMSIG_LIVING_UNSHAPESHIFTED "living_unshapeshifted"
+
+/// Kind of jank, refactor at a later day when I can think of a better solution.
+/// Just be sure to call update_limbless_locomotion() after applying / removal
+#define TRAIT_NO_LEG_AID "no_leg_aid"
+
+/// Updating a mob's movespeed when lacking limbs. (list/modifiers)
+#define COMSIG_LIVING_LIMBLESS_MOVESPEED_UPDATE "living_get_movespeed_modifiers"
+
+#define COMSIG_LIVING_ADJUSTED "living_damage_adjusted"

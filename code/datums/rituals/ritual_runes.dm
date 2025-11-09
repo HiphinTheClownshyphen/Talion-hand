@@ -374,6 +374,53 @@ GLOBAL_LIST(teleport_runes)
 			to_chat(living_invoker,  span_italics("[src] saps your strength!"))
 	do_invoke_glow()
 
+/obj/effect/decal/cleanable/roguerune/arcyne/leylines	//used for better quality of learning, grants temporary 2 minute INT bonus.
+	name = "leyline attunement matrix"
+	desc = "geometric shapes and lines on the ground resonate with power..."
+	icon = 'icons/effects/96x96.dmi'
+	icon_state = "empowerment"
+	runesize = 1
+	tier = 2
+	pixel_x = -32 //So the big ol' 96x96 sprite shows up right
+	pixel_y = -32
+	pixel_z = 0
+	//icon_state = "6"
+	invocation = "Thal’miren vek’laris un’vethar!"
+	color = "#a70808ce"
+	scribe_damage = 10
+	can_be_scribed = TRUE
+	associated_ritual = /datum/runerituals/leyattunement
+	var/buffed = FALSE
+
+/obj/effect/decal/cleanable/roguerune/arcyne/leylines/invoke(list/invokers, datum/runerituals/runeritual)
+	runeritual = associated_ritual
+	if(!..())	//VERY important. Calls parent and checks if it fails. parent/invoke has all the checks for ingredients
+		return
+	var/mob/living/user = usr
+	if (user.mana_pool.intrinsic_recharge_sources & MANA_SOULS) //unavailable to lich
+		to_chat(user, span_warning("I cannot attune to leylines now."))
+	else
+		if (user.mana_pool.intrinsic_recharge_sources & MANA_ALL_LEYLINES)
+			to_chat(user, span_warning("Already attuned to leylines!"))
+		else
+			user.mana_pool.set_intrinsic_recharge(MANA_ALL_LEYLINES)
+			playsound(user, 'sound/magic/blink.ogg', 80, FALSE)
+			to_chat(user, span_warning("Leylines fill me with power!"))
+			//	SEND_SIGNAL(user, COMSIG_BAPTISM_RECEIVED, user)  //for the baptism reference
+
+	if(ritual_result)
+		pickritual.cleanup_atoms(selected_atoms)
+
+	for(var/atom/invoker in invokers)
+		if(!isliving(invoker))
+			continue
+		var/mob/living/living_invoker = invoker
+		if(invocation)
+			living_invoker.say(invocation, language = /datum/language/common, ignore_spam = TRUE, forced = "cult invocation")
+		if(invoke_damage)
+			living_invoker.apply_damage(invoke_damage, BRUTE)
+			to_chat(living_invoker,  span_italics("[src] saps your strength!"))
+	do_invoke_glow()
 
 /obj/effect/decal/cleanable/roguerune/arcyne/empowerment	//used for better quality of learning, grants temporary 2 minute INT bonus.
 	name = "empowerment array"
@@ -381,8 +428,7 @@ GLOBAL_LIST(teleport_runes)
 	icon = 'icons/effects/96x96.dmi'
 	icon_state = "empowerment"
 	tier = 2
-	pixel_x = -32 //So the big ol' 96x96 sprite shows up right
-	pixel_y = -32
+	SET_BASE_PIXEL(-32, -32)
 	pixel_z = 0
 	invocation = "Thal’miren vek’laris un’vethar!"
 	layer = SIGIL_LAYER
@@ -529,8 +575,7 @@ GLOBAL_LIST(teleport_runes)
 	invocation = "Thar’morak dul’vorr keth’alor!"
 	ritual_number = FALSE
 	runesize = 2
-	pixel_x = -64 //So the big ol' 96x96 sprite shows up right
-	pixel_y = -64
+	SET_BASE_PIXEL(-64, -64)
 	pixel_z = 0
 	can_be_scribed = TRUE
 //	var/id = "arcyne_fortress"
@@ -589,8 +634,7 @@ GLOBAL_LIST(teleport_runes)
 	ritual_number = FALSE
 	req_keyword = TRUE
 	runesize = 2
-	pixel_x = -64 //So the big ol' 96x96 sprite shows up right
-	pixel_y = -64
+	SET_BASE_PIXEL(-64, -64)
 	pixel_z = 0
 	can_be_scribed = TRUE
 	associated_ritual = /datum/runerituals/teleport
@@ -757,8 +801,7 @@ GLOBAL_LIST(teleport_runes)
 	icon_state = "sealate"
 	runesize = 1
 	tier = 2
-	pixel_x = -32 //So the big ol' 96x96 sprite shows up right
-	pixel_y = -32
+	SET_BASE_PIXEL(-32, -32)
 	pixel_z = 0
 	can_be_scribed = TRUE
 
@@ -769,8 +812,7 @@ GLOBAL_LIST(teleport_runes)
 	icon_state = "warded"
 	runesize = 2
 	tier = 3
-	pixel_x = -64 //So the big ol' 160x160 sprite shows up right
-	pixel_y = -64
+	SET_BASE_PIXEL(-64, -64)
 	pixel_z = 0
 	can_be_scribed = TRUE
 
@@ -782,8 +824,7 @@ GLOBAL_LIST(teleport_runes)
 	runesize = 3
 	req_invokers = 3
 	tier = 4
-	pixel_x = -96 //So the big ol' 96x96 sprite shows up right
-	pixel_y = -96
+	SET_BASE_PIXEL(-96, -96)
 	pixel_z = 0
 	can_be_scribed = TRUE
 
@@ -830,8 +871,7 @@ GLOBAL_LIST(teleport_runes)
 	ritual_number = FALSE
 	req_keyword = TRUE
 	runesize = 2
-	pixel_x = -64 //So the big ol' 96x96 sprite shows up right
-	pixel_y = -64
+	SET_BASE_PIXEL(-64, -64)
 	pixel_z = 0
 	can_be_scribed = TRUE
 	associated_ritual = /datum/runerituals/attunement

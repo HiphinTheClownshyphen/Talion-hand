@@ -111,7 +111,7 @@
 	var/gatherspeed =  3.5 SECONDS - (skill_level * 3)
 	if (istype(target, /turf/open/lava))
 		if (do_after(owner, gatherspeed, target))
-			to_chat(owner, span_notice("I mold a handful of oozing lava  with my arcane power, rapidly hardening it!"))
+			to_chat(owner, span_notice("I mold a handful of oozing lava  with my arcyne power, rapidly hardening it!"))
 			new /obj/item/natural/obsidian(owner.loc)
 
 /datum/action/cooldown/spell/undirected/touch/prestidigitation/proc/create_spark()
@@ -190,9 +190,9 @@
 	desc = "A tiny display of arcyne power used to illuminate."
 	icon = 'icons/roguetown/items/lighting.dmi'
 	icon_state = "wisp"
-	pixel_x = 20
 	light_outer_range =  4
 	light_color = "#3FBAFD"
+	SET_BASE_PIXEL(20, 0)
 
 #undef PRESTI_CLEAN
 #undef PRESTI_GATHER

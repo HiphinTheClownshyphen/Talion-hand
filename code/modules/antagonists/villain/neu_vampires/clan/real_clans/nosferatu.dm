@@ -6,14 +6,15 @@
 
 /datum/clan_leader/nosferatu
 	lord_spells = list(
+		/datum/action/cooldown/spell/enslave_mortal,
 		/datum/action/cooldown/spell/undirected/mansion_portal,
-		/datum/action/cooldown/spell/undirected/shapeshift/rat
+		/datum/action/cooldown/spell/undirected/shapeshift/rat_vampire
 	)
 	lord_verbs = list(
 		/mob/living/carbon/human/proc/demand_submission,
 		/mob/living/carbon/human/proc/punish_spawn
 	)
-	lord_traits = list(TRAIT_HEAVYARMOR)
+	lord_traits = list(TRAIT_HEAVYARMOR, TRAIT_NOSTAMINA)
 	lord_title = "Nosferatu"
 
 
@@ -31,7 +32,8 @@
 	blood_preference = BLOOD_PREFERENCE_RATS | BLOOD_PREFERENCE_DEAD | BLOOD_PREFERENCE_KIN
 	clane_traits = list(
 		TRAIT_STRONGBITE,
-		TRAIT_NOSTAMINA,
+		TRAIT_KEENEARS,
+		TRAIT_NOENERGY,
 		TRAIT_NOHUNGER,
 		TRAIT_NOBREATH,
 		TRAIT_NOPAIN,
@@ -62,7 +64,7 @@
 /datum/clan/nosferatu/apply_clan_components(mob/living/carbon/human/H)
 	H.AddComponent(/datum/component/sunlight_vulnerability, damage = 2, drain = 2)
 	H.AddComponent(/datum/component/vampire_disguise)
-	H.AddComponent(/datum/component/hideous_face, CALLBACK(TYPE_PROC_REF(/datum/clan/nosferatu, face_seen)))
+	H.AddComponent(/datum/component/hideous_face, CALLBACK(src, TYPE_PROC_REF(/datum/clan/nosferatu, face_seen)))
 
 /datum/clan/nosferatu/proc/face_seen(mob/living/carbon/human/nosferatu)
 	nosferatu.AdjustMasquerade(-1)

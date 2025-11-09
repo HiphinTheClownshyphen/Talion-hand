@@ -156,14 +156,14 @@
 							"<span class='notice'>I consume [src]!</span>")
 			playsound(get_turf(user), pick(dismemsound), 100, FALSE, -1)
 			new /obj/effect/gibspawner/generic(get_turf(src), user)
-			user.fully_heal()
+			user.reagents.add_reagent(/datum/reagent/medicine/healthpot, 30)
 			qdel(src)
 		return
 	return ..()
 
 /obj/item/bodypart/MiddleClick(mob/living/user, params)
 	var/obj/item/held_item = user.get_active_held_item()
-	var/datum/species/S = original_owner.dna.species
+	var/datum/species/S = original_owner?.dna?.species
 	if(held_item)
 		if(held_item.get_sharpness() && held_item.wlength == WLENGTH_SHORT)
 			if(!skeletonized)
@@ -183,8 +183,9 @@
 				var/amt2raise = user.STAINT/3
 				if(do_after(user, used_time, src))
 					var/obj/item/reagent_containers/food/snacks/meat/steak/steak
+					var/steak_type = S?.meat || /obj/item/reagent_containers/food/snacks/meat/steak
 					for(steaks, steaks>0, steaks--)
-						steak = new S.meat(get_turf(src))	//Meat depends on species.
+						steak = new steak_type(get_turf(src))	//Meat depends on species.
 						if(rotted)
 							steak.become_rotten()
 					new /obj/effect/decal/cleanable/blood/splatter(get_turf(src))
@@ -192,6 +193,20 @@
 					qdel(src)
 			else
 				to_chat(user, span_warning("[src] has no meat to butcher."))
+	else if(isanimal(user))
+		if(!skeletonized)
+			visible_message("[user] begins to eat \the [src].")
+			playsound(src, 'sound/foley/gross.ogg', 100, FALSE)
+			if(do_after(user, 3 SECONDS, src))
+				var/obj/item/reagent_containers/food/snacks/meat/steak/steak
+				var/steak_type = S?.meat || /obj/item/reagent_containers/food/snacks/meat/steak
+				steak = new steak_type(get_turf(src))	//Meat depends on species.
+				if(rotted)
+					steak.become_rotten()
+				new /obj/effect/decal/cleanable/blood/splatter(get_turf(src))
+				qdel(src)
+		else
+			to_chat(user, span_warning("[src] has no meat to eat."))
 	..()
 
 /obj/item/bodypart/attack(mob/living/carbon/C, mob/user)
@@ -227,8 +242,8 @@
 	. = ..()
 	if(status != BODYPART_ROBOTIC)
 		playsound(get_turf(src), 'sound/blank.ogg', 50, TRUE, -1)
-	pixel_x = rand(-3, 3)
-	pixel_y = rand(-3, 3)
+	pixel_x = base_pixel_x + rand(-3, 3)
+	pixel_y = base_pixel_y + rand(-3, 3)
 	if(!skeletonized)
 		new /obj/effect/decal/cleanable/blood/splatter(get_turf(src))
 
@@ -270,7 +285,7 @@
 //Applies brute and burn damage to the organ. Returns 1 if the damage-icon states changed at all.
 //Damage will not exceed max_damage using this proc
 //Cannot apply negative damage
-/obj/item/bodypart/proc/receive_damage(brute = 0, burn = 0, blocked = 0, updating_health = TRUE, required_status = null)
+/obj/item/bodypart/proc/receive_damage(brute = 0, burn = 0, blocked = 0, updating_health = TRUE, required_status = null, flashes = TRUE)
 	update_HP()
 	var/hit_percent = (100-blocked)/100
 	if((!brute && !burn) || hit_percent <= 0)
@@ -300,7 +315,7 @@
 	else
 		set_burn_dam(burn_dam + burn)
 
-	if(owner)
+	if(owner && flashes)
 		if((brute + burn) < 10)
 			owner.flash_fullscreen("redflash1")
 		else if((brute + burn) < 20)
@@ -313,6 +328,16 @@
 			update_disabled()
 		if(updating_health)
 			owner.updatehealth()
+
+	// Add new lingering pain when taking significant damage
+	var/current_damage_percent = ((brute_dam + burn_dam) / max_damage) * 100
+	if(current_damage_percent > 40) // Only significant injuries cause lingering pain
+		var/new_lingering = (current_damage_percent - 40) * 0.5 // Scale factor
+		lingering_pain += max(0, (new_lingering - lingering_pain) / 4)
+
+		// Track severe injuries for chronic pain development
+		if(current_damage_percent > 60)
+			last_severe_injury_time = world.time
 
 	return update_bodypart_damage_state() || .
 
@@ -820,13 +845,6 @@
 	. = ..()
 	if(. == FALSE)
 		return
-	if(owner)
-		if(HAS_TRAIT(owner, TRAIT_PARALYSIS_L_ARM))
-			ADD_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_L_ARM)
-			RegisterSignal(owner, SIGNAL_REMOVETRAIT(TRAIT_PARALYSIS_L_ARM), PROC_REF(on_owner_paralysis_loss))
-		else
-			REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_L_ARM)
-			RegisterSignal(owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_L_ARM), PROC_REF(on_owner_paralysis_gain))
 	if(.)
 		var/mob/living/carbon/old_owner = .
 		if(HAS_TRAIT(old_owner, TRAIT_PARALYSIS_L_ARM))
@@ -835,6 +853,13 @@
 				REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_L_ARM)
 		else
 			UnregisterSignal(old_owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_L_ARM))
+	if(owner)
+		if(HAS_TRAIT(owner, TRAIT_PARALYSIS_L_ARM))
+			ADD_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_L_ARM)
+			RegisterSignal(owner, SIGNAL_REMOVETRAIT(TRAIT_PARALYSIS_L_ARM), PROC_REF(on_owner_paralysis_loss))
+		else
+			REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_L_ARM)
+			RegisterSignal(owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_L_ARM), PROC_REF(on_owner_paralysis_gain))
 
 ///Proc to react to the owner gaining the TRAIT_PARALYSIS_L_ARM trait.
 /obj/item/bodypart/l_arm/proc/on_owner_paralysis_gain(mob/living/carbon/source)
@@ -913,13 +938,6 @@
 	. = ..()
 	if(. == FALSE)
 		return
-	if(owner)
-		if(HAS_TRAIT(owner, TRAIT_PARALYSIS_R_ARM))
-			ADD_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_R_ARM)
-			RegisterSignal(owner, SIGNAL_REMOVETRAIT(TRAIT_PARALYSIS_R_ARM), PROC_REF(on_owner_paralysis_loss))
-		else
-			REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_R_ARM)
-			RegisterSignal(owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_R_ARM), PROC_REF(on_owner_paralysis_gain))
 	if(.)
 		var/mob/living/carbon/old_owner = .
 		if(HAS_TRAIT(old_owner, TRAIT_PARALYSIS_R_ARM))
@@ -928,6 +946,13 @@
 				REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_R_ARM)
 		else
 			UnregisterSignal(old_owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_R_ARM))
+	if(owner)
+		if(HAS_TRAIT(owner, TRAIT_PARALYSIS_R_ARM))
+			ADD_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_R_ARM)
+			RegisterSignal(owner, SIGNAL_REMOVETRAIT(TRAIT_PARALYSIS_R_ARM), PROC_REF(on_owner_paralysis_loss))
+		else
+			REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_R_ARM)
+			RegisterSignal(owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_R_ARM), PROC_REF(on_owner_paralysis_gain))
 
 ///Proc to react to the owner gaining the TRAIT_PARALYSIS_R_ARM trait.
 /obj/item/bodypart/r_arm/proc/on_owner_paralysis_gain(mob/living/carbon/source)
@@ -1003,13 +1028,6 @@
 	. = ..()
 	if(. == FALSE)
 		return
-	if(new_owner)
-		if(HAS_TRAIT(owner, TRAIT_PARALYSIS_L_LEG))
-			ADD_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_L_LEG)
-			RegisterSignal(owner, SIGNAL_REMOVETRAIT(TRAIT_PARALYSIS_L_LEG), PROC_REF(on_owner_paralysis_loss))
-		else
-			REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_L_LEG)
-			RegisterSignal(owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_L_LEG), PROC_REF(on_owner_paralysis_gain))
 	if(.)
 		var/mob/living/carbon/old_owner = .
 		if(HAS_TRAIT(old_owner, TRAIT_PARALYSIS_L_LEG))
@@ -1018,6 +1036,13 @@
 				REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_L_LEG)
 		else
 			UnregisterSignal(old_owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_L_LEG))
+	if(new_owner)
+		if(HAS_TRAIT(owner, TRAIT_PARALYSIS_L_LEG))
+			ADD_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_L_LEG)
+			RegisterSignal(owner, SIGNAL_REMOVETRAIT(TRAIT_PARALYSIS_L_LEG), PROC_REF(on_owner_paralysis_loss))
+		else
+			REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_L_LEG)
+			RegisterSignal(owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_L_LEG), PROC_REF(on_owner_paralysis_gain))
 
 ///Proc to react to the owner gaining the TRAIT_PARALYSIS_L_LEG trait.
 /obj/item/bodypart/l_leg/proc/on_owner_paralysis_gain(mob/living/carbon/source)
@@ -1085,13 +1110,6 @@
 	. = ..()
 	if(. == FALSE)
 		return
-	if(owner)
-		if(HAS_TRAIT(owner, TRAIT_PARALYSIS_R_LEG))
-			ADD_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_R_LEG)
-			RegisterSignal(owner, SIGNAL_REMOVETRAIT(TRAIT_PARALYSIS_R_LEG), PROC_REF(on_owner_paralysis_loss))
-		else
-			REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_R_LEG)
-			RegisterSignal(owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_R_LEG), PROC_REF(on_owner_paralysis_gain))
 	if(.)
 		var/mob/living/carbon/old_owner = .
 		if(HAS_TRAIT(old_owner, TRAIT_PARALYSIS_R_LEG))
@@ -1100,6 +1118,13 @@
 				REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_R_LEG)
 		else
 			UnregisterSignal(old_owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_R_LEG))
+	if(owner)
+		if(HAS_TRAIT(owner, TRAIT_PARALYSIS_R_LEG))
+			ADD_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_R_LEG)
+			RegisterSignal(owner, SIGNAL_REMOVETRAIT(TRAIT_PARALYSIS_R_LEG), PROC_REF(on_owner_paralysis_loss))
+		else
+			REMOVE_TRAIT(src, TRAIT_PARALYSIS, TRAIT_PARALYSIS_R_LEG)
+			RegisterSignal(owner, SIGNAL_ADDTRAIT(TRAIT_PARALYSIS_R_LEG), PROC_REF(on_owner_paralysis_gain))
 
 ///Proc to react to the owner gaining the TRAIT_PARALYSIS_R_LEG trait.
 /obj/item/bodypart/r_leg/proc/on_owner_paralysis_gain(mob/living/carbon/source)

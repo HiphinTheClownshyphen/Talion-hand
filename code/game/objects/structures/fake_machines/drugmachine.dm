@@ -1,4 +1,4 @@
-/obj/item/roguemachine/drugtrade
+/obj/item/fake_machine/drugtrade
 	name = "NARCOS"
 	desc = "A machine that exports drugs throughout a network of pneumatic pipes."
 	icon = 'icons/roguetown/misc/machines.dmi'
@@ -7,7 +7,6 @@
 	blade_dulling = DULLING_BASH
 	var/next_canister
 	var/accepted_items
-	max_integrity = 0
 	anchored = TRUE
 	w_class = WEIGHT_CLASS_GIGANTIC
 
@@ -20,7 +19,7 @@
 	layer = BELOW_OBJ_LAYER
 	anchored = TRUE
 
-/obj/item/roguemachine/drugtrade/attack_hand(mob/living/user)
+/obj/item/fake_machine/drugtrade/attack_hand(mob/living/user)
 	if(!anchored)
 		return ..()
 	user.changeNext_move(CLICK_CD_MELEE)
@@ -38,7 +37,7 @@
 	popup.set_content(contents)
 	popup.open()
 
-/obj/item/roguemachine/drugtrade/Initialize()
+/obj/item/fake_machine/drugtrade/Initialize()
 	. = ..()
 	if(anchored)
 		START_PROCESSING(SSroguemachine, src)
@@ -49,12 +48,12 @@
 			continue
 		new /obj/structure/fake_machine/drug_chute(T)
 
-/obj/item/roguemachine/drugtrade/Destroy()
+/obj/item/fake_machine/drugtrade/Destroy()
 	STOP_PROCESSING(SSroguemachine, src)
 	set_light(0)
 	return ..()
 
-/obj/item/roguemachine/drugtrade/process()
+/obj/item/fake_machine/drugtrade/process()
 	if(!anchored)
 		return TRUE
 	if(world.time > next_canister)
@@ -105,23 +104,27 @@
 	icon_state = "goldvendor"
 	density = TRUE
 	blade_dulling = DULLING_BASH
-	max_integrity = 0
 	anchored = TRUE
 	layer = BELOW_OBJ_LAYER
 	lock = /datum/lock/key/purity
 	var/list/held_items = list()
 	var/budget = 0
 	var/upgrade_flags
-	var/current_cat = "1"
+	var/current_cat
+	var/list/available_categories = list("Narcotics", "Instruments")
 
 /obj/structure/fake_machine/drugmachine/Initialize()
 	. = ..()
 	set_light(1, 1, 1, l_color =  "#8f06b5")
 
-/obj/structure/fake_machine/drugmachine/obj_break(damage_flag, silent)
+/obj/structure/fake_machine/drugmachine/atom_break(damage_flag)
 	. = ..()
 	budget2change(budget)
 	set_light(0)
+
+/obj/structure/fake_machine/drugmachine/atom_fix()
+	. = ..()
+	set_light(1, 1, 1, l_color =  "#8f06b5")
 
 /obj/structure/fake_machine/drugmachine/Destroy()
 	. = ..()
@@ -130,6 +133,8 @@
 
 /obj/structure/fake_machine/drugmachine/attackby(obj/item/I, mob/user, params)
 	. = ..()
+	if(istype(I, /obj/item/coin/inqcoin))
+		return
 	if(istype(I, /obj/item/coin))
 		var/money = I.get_real_price()
 		budget += money
@@ -177,7 +182,12 @@
 			budget2change(budget, usr)
 			budget = 0
 	if(href_list["changecat"])
-		current_cat = href_list["changecat"]
+		var/selected_category = href_list["changecat"]
+
+		if (selected_category in available_categories)
+			current_cat = selected_category
+		else
+			current_cat = null
 	if(href_list["secrets"])
 		var/list/options = list()
 		if(upgrade_flags & UPGRADE_NOTAX)
@@ -223,15 +233,14 @@
 
 	contents += "</center><BR>"
 
-	var/list/unlocked_cats = list("Narcotics","Instruments")
-	if(current_cat == "1")
+	if(isnull(current_cat))
 		contents += "<center>"
-		for(var/X in unlocked_cats)
-			contents += "<a href='byond://?src=[REF(src)];changecat=[X]'>[X]</a><BR>"
+		for(var/category in available_categories)
+			contents += "<a href='byond://?src=[REF(src)];changecat=[category]'>[category]</a><BR>"
 		contents += "</center>"
 	else
 		contents += "<center>[current_cat]<BR></center>"
-		contents += "<center><a href='byond://?src=[REF(src)];changecat=1'>\[RETURN\]</a><BR><BR></center>"
+		contents += "<center><a href='byond://?src=[REF(src)];changecat=0'>\[RETURN\]</a><BR><BR></center>"
 		var/list/pax = list()
 		for(var/pack in SSmerchant.supply_packs)
 			var/datum/supply_pack/PA = SSmerchant.supply_packs[pack]

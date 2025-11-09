@@ -4,7 +4,6 @@
 	You work your fingers to the bone nearly every dae, \
 	and have naught to show for it but boney fingers. \
 	Perhaps this week you will finally be recognized, or allowed some respite?"
-	flag = SERVANT
 	department_flag = APPRENTICES
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_SERVANT
@@ -17,18 +16,20 @@
 	allowed_ages = list(AGE_CHILD, AGE_ADULT, AGE_IMMORTAL)
 	allowed_races = RACES_PLAYER_ALL
 
-	outfit = /datum/outfit/job/servant
+	outfit = /datum/outfit/servant
 	give_bank_account = TRUE
-
+	cmode_music = 'sound/music/cmode/towner/CombatPrisoner.ogg'
 	can_have_apprentices = FALSE
 
-/datum/outfit/job/servant/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/servant/pre_equip(mob/living/carbon/human/H)
 	..()
 	shoes = /obj/item/clothing/shoes/simpleshoes
 	pants = /obj/item/clothing/pants/tights/colored/uncolored
 	shirt = /obj/item/clothing/shirt/undershirt/colored/uncolored
 	belt = /obj/item/storage/belt/leather/rope
 	beltl = /obj/item/storage/belt/pouch/coins/poor
+	backl = /obj/item/storage/backpack/satchel
+	backpack_contents = list(/obj/item/recipe_book/cooking = 1)
 	neck = /obj/item/key/manor
 	if(H.gender == MALE)
 		armor = /obj/item/clothing/armor/leather/vest/colored/black
@@ -47,13 +48,12 @@
 	H.adjust_skillrank(/datum/skill/misc/music, pick(0,1,1), TRUE)
 	H.change_stat(STATKEY_SPD, 1)
 	H.change_stat(STATKEY_END, 1)
-	backpack_contents = list(/obj/item/recipe_book/cooking = 1)
+	ADD_TRAIT(H, TRAIT_ROYALSERVANT, TRAIT_GENERIC)
 
 /datum/job/tapster
 	title = "Tapster"
 	f_title = "Alemaid"
 	tutorial = "The Innkeeper needed waiters and extra hands. So here am I, serving the food and drinks while ensuring the tavern rooms are kept clean."
-	flag = SERVANT
 	department_flag = APPRENTICES
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_SERVANT
@@ -65,18 +65,21 @@
 
 	allowed_races = RACES_PLAYER_ALL
 
-	outfit = /datum/outfit/job/tapster
+	outfit = /datum/outfit/tapster
 	give_bank_account = TRUE
 
 	can_have_apprentices = FALSE
+	cmode_music = 'sound/music/cmode/towner/CombatInn.ogg'
 
-/datum/outfit/job/tapster/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/tapster/pre_equip(mob/living/carbon/human/H)
 	..()
 	shoes = /obj/item/clothing/shoes/simpleshoes
 	pants = /obj/item/clothing/pants/tights/colored/uncolored
 	shirt = /obj/item/clothing/shirt/undershirt/colored/uncolored
 	belt = /obj/item/storage/belt/leather/rope
 	beltl = /obj/item/storage/belt/pouch/coins/poor
+	backl = /obj/item/storage/backpack/satchel
+	backpack_contents = list(/obj/item/recipe_book/cooking = 1)
 	neck = /obj/item/key/tavern
 	if(H.gender == MALE)
 		armor = /obj/item/clothing/armor/leather/vest/colored/black
@@ -102,7 +105,6 @@
 	title = "Orphanage Assistant"
 	tutorial = "I once was an orphan, the matron took me in and now I am forever in her debt. \
 	That orphanage, those who were like me need guidance, I shall assist the matron in her tasks."
-	flag = SERVANT
 	department_flag = APPRENTICES
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_SERVANT
@@ -114,12 +116,12 @@
 
 	allowed_races = RACES_PLAYER_ALL
 
-	outfit = /datum/outfit/job/matron_assistant
+	outfit = /datum/outfit/matron_assistant
 	give_bank_account = TRUE
 
 	can_have_apprentices = FALSE
 
-/datum/outfit/job/matron_assistant/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/matron_assistant/pre_equip(mob/living/carbon/human/H)
 	..()
 	shoes = /obj/item/clothing/shoes/simpleshoes
 	pants = /obj/item/clothing/pants/tights/colored/uncolored
@@ -127,6 +129,8 @@
 	belt = /obj/item/storage/belt/leather/rope
 	beltl = /obj/item/storage/belt/pouch/coins/poor
 	neck = /obj/item/key/matron
+	backl = /obj/item/storage/backpack/satchel
+	backpack_contents = list(/obj/item/recipe_book/cooking = 1)
 	if(H.gender == MALE)
 		armor = /obj/item/clothing/armor/leather/vest/colored/black
 	else
@@ -161,11 +165,11 @@
 	bypass_lastclass = TRUE
 
 	allowed_races = RACES_PLAYER_ALL
-
-	outfit = /datum/outfit/job/gaffer_assistant
+	cmode_music = 'sound/music/cmode/adventurer/CombatIntense.ogg'
+	outfit = /datum/outfit/gaffer_assistant
 	give_bank_account = TRUE
 
-/datum/outfit/job/gaffer_assistant/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/gaffer_assistant/pre_equip(mob/living/carbon/human/H)
 	..()
 	shoes = /obj/item/clothing/shoes/simpleshoes
 	pants = /obj/item/clothing/pants/tights/colored/uncolored
@@ -173,6 +177,8 @@
 	belt = /obj/item/storage/belt/leather/rope
 	beltl = /obj/item/storage/belt/pouch/coins/poor
 	beltr = /obj/item/storage/keyring/gaffer_assistant
+	backl = /obj/item/storage/backpack/satchel
+	backpack_contents = list(/obj/item/recipe_book/cooking = 1)
 	if(H.gender == MALE)
 		armor = /obj/item/clothing/armor/leather/vest/colored/black
 	else

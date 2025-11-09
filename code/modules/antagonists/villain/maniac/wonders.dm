@@ -107,7 +107,7 @@
 	var/obj/item/organ/heart/H = V.getorganslot(ORGAN_SLOT_HEART)
 	if(H && !QDELETED(dream_master))
 		if(!length(H.maniacs))
-			V.add_stress(/datum/stressevent/saw_wonder)
+			V.add_stress(/datum/stress_event/saw_wonder)
 			V.add_curse(/datum/curse/schizophrenic, silent = TRUE) //let's not jumpscare normal people
 		//	V.add_client_colour(/datum/client_colour/maniac_marked) //Hurt peoples's eyes, we instead give them zizo's curse which make them experience the maniac's hallucinations, how cool.
 		if(!(dream_master in H.maniacs))
@@ -123,4 +123,4 @@
 			gazed_at = TRUE
 			to_chat(V, span_userdanger("It is WONDERFUL!"))
 			var/N = dream_master.owner?.name
-			V.log_message("was marked by Maniac [N ? "[N]'s " : ""]Wonder #[wonder_id]: \"[strip_html_simple(inscryption)].\"", LOG_ATTACK)
+			V.log_message("was marked by Maniac [N ? "[N]'s " : ""]Wonder #[wonder_id]: \"[STRIP_HTML_SIMPLE(inscryption, MAX_MESSAGE_LEN)].\"", LOG_ATTACK)

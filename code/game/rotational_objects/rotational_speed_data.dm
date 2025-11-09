@@ -51,8 +51,6 @@
 	. = ..()
 	if(!user.Adjacent(src))
 		return
-	if(!rotation_structure && !istype(src, /obj/structure/water_pipe))
-		return
 	var/obj/item/contraption/linker/linker = user.get_active_held_item()
 	if(!istype(linker))
 		return
@@ -73,14 +71,13 @@
 /obj/structure/CanAStarPass(ID, to_dir, requester)
 	. = climbable || ..()
 
-/obj/structure/return_rotation_chat(atom/movable/screen/movable/mouseover/mouseover)
+/obj/structure/return_rotation_chat()
 	if(!rotation_network)
 		return
-	mouseover.maptext_height = 112
-	return {"<span style='font-size:8pt;font-family:"Pterra";color:#e6b120;text-shadow:0 0 1px #fff, 0 0 2px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;' class='center maptext '>
-			RPM:[rotations_per_minute ? rotations_per_minute : "0"]
-			[rotation_network.total_stress ? "[rotation_network.overstressed ? "OVER:" : "STRESS:"][round(((rotation_network?.used_stress / max(1, rotation_network?.total_stress)) * 100), 1)]%" : "Stress: [rotation_network.used_stress]"]
-			DIR:[rotation_direction == 4 ? "CW" : rotation_direction == 8 ? "CCW" : ""]</span>"}
+
+	return "RPM:[rotations_per_minute ? rotations_per_minute : "0"]\n\
+			[rotation_network.total_stress ? "[rotation_network.overstressed ? "OVER:" : "STRESS:"][round(((rotation_network?.used_stress / max(1, rotation_network?.total_stress)) * 100), 1)]%" : "Stress: [rotation_network.used_stress]"]\n\
+			DIR:[rotation_direction == 4 ? "CW" : rotation_direction == 8 ? "CCW" : ""]"
 
 /obj/structure/setDir(newdir)
 	if(rotation_network)

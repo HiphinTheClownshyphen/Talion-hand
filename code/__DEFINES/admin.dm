@@ -57,6 +57,7 @@
 #define ADMIN_SMITE(user) "(<a href='?_src_=holder;[HrefToken(TRUE)];adminsmite=[REF(user)]'>SMITE</a>)"
 #define ADMIN_LOOKUP(user) "[key_name_admin(user)][ADMIN_QUE(user)]"
 #define ADMIN_LOOKUPFLW(user) "[key_name_admin(user)][ADMIN_QUE(user)] [ADMIN_FLW(user)]"
+#define ADMIN_LOOKUPFLW_PP(user) "[key_name_admin(user)][ADMIN_QUE(user)] [ADMIN_PP(user)] [ADMIN_FLW(user)]"
 #define ADMIN_SET_SD_CODE "(<a href='?_src_=holder;[HrefToken(TRUE)];set_selfdestruct_code=1'>SETCODE</a>)"
 #define ADMIN_FULLMONTY_NONAME(user) "[ADMIN_QUE(user)] [ADMIN_PP(user)] [ADMIN_VV(user)] [ADMIN_SM(user)] [ADMIN_FLW(user)] [ADMIN_TP(user)] [ADMIN_INDIVIDUALLOG(user)] [ADMIN_SMITE(user)]"
 #define ADMIN_FULLMONTY(user) "[ADMIN_QUE(user)] [key_name_admin(user)] [ADMIN_FULLMONTY_NONAME(user)]"
@@ -67,6 +68,7 @@
 #define ADMIN_COORDJMP(src) "[src ? src.Admin_Coordinates_Readable(FALSE, TRUE) : "nonexistent location"]"
 #define ADMIN_VERBOSEJMP(src) "[src ? src.Admin_Coordinates_Readable(TRUE, TRUE) : "nonexistent location"]"
 #define ADMIN_INDIVIDUALLOG(user) "(<a href='?_src_=holder;[HrefToken(TRUE)];individuallog=[REF(user)]'>LOGS</a>)"
+#define ADMIN_BIRD_LETTER(user) "(<a href='?_src_=holder;[HrefToken(TRUE)];adminbirdletter=[REF(user)]'>LETTER</a>)"
 
 /atom/proc/Admin_Coordinates_Readable(area_name, admin_jump_ref)
 	var/turf/turf_at_coords = Safe_COORD_Location()
@@ -89,6 +91,7 @@
 #define ADMIN_PUNISHMENT_LIGHTNING "Lightning bolt"
 #define ADMIN_PUNISHMENT_BRAINDAMAGE "Brain damage"
 #define ADMIN_PUNISHMENT_GIB "Gib"
+#define ADMIN_PUNISHMENT_PSYDON "Zesus Psyst"
 #define ADMIN_PUNISHMENT_BSA "Bluespace Artillery Device"
 #define ADMIN_PUNISHMENT_FIREBALL "Fireball"
 #define ADMIN_PUNISHMENT_ROD "Immovable Rod"
@@ -99,6 +102,8 @@
 #define ADMIN_PUNISHMENT_NECKSNAP "Snap Neck"
 #define ADMIN_PUNISHMENT_HUNTED "Mark for Assassins"
 #define ADMIN_PUNISHMENT_MEATPIE "Pie-ify"
+#define ADMIN_PUNISHMENT_GODHAND "God Hand"
+#define ADMIN_PUNISHMENT_FORCECOLLAR "Force Collar"
 
 #define AHELP_ACTIVE 1
 #define AHELP_CLOSED 2
@@ -120,11 +125,8 @@
 #define MAX_KEYS_PER_KEYBIND 3
 ///Max amount of keypress messages per second over two seconds before client is autokicked
 #define MAX_KEYPRESS_AUTOKICK 50
-///Length of held key rolling buffer
-#define HELD_KEY_BUFFER_LENGTH 15
-
-#define STICKYBAN_DB_CACHE_TIME 10 SECONDS
-#define STICKYBAN_ROGUE_CHECK_TIME 5
+/// Max keys that can be held down at once by a client
+#define MAX_HELD_KEYS 15
 
 
 /// Shown to vicitm of staff of change and related effects.

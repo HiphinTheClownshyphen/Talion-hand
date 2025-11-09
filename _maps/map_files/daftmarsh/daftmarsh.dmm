@@ -79,7 +79,7 @@
 	dir = 1
 	},
 /obj/item/paper/scroll,
-/obj/item/roguemachine/mastermail{
+/obj/item/fake_machine/mastermail{
 	pixel_y = 0;
 	pixel_x = -32
 	},
@@ -633,7 +633,7 @@
 /area/rogue/under/town/sewer)
 "aHf" = (
 /obj/structure/closet/crate/chest/neu,
-/obj/item/fishing/bait/dough,
+/obj/item/fishing/lure/dough,
 /obj/machinery/light/fueled/torchholder/r,
 /turf/open/floor/wood,
 /area/rogue/indoors/town)
@@ -4410,6 +4410,10 @@
 /obj/structure/flora/grass,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/town)
+"esu" = (
+/obj/structure/bars,
+/turf/open/floor/cobble,
+/area/rogue/under/town/basement)
 "esw" = (
 /obj/structure/door/violet,
 /obj/effect/mapping_helpers/access/keyset/town/merchant,
@@ -6030,7 +6034,7 @@
 /area/rogue/indoors/town/bath)
 "fYy" = (
 /obj/structure/closet/crate/chest/wicker,
-/obj/item/fishing/bait/meat,
+/obj/item/fishing/lure/meat,
 /turf/open/floor/wood,
 /area/rogue/indoors/town)
 "fYI" = (
@@ -6909,6 +6913,14 @@
 /obj/item/bedsheet/fabric_double,
 /turf/open/floor/carpet/green,
 /area/rogue/indoors/town)
+"gQS" = (
+/obj/structure/door/viewport{
+	dir = 1;
+	name = "Stockpiles"
+	},
+/obj/effect/mapping_helpers/access/keyset/manor/vault,
+/turf/open/floor/cobble,
+/area/rogue/under/town/basement)
 "gQZ" = (
 /obj/machinery/light/fueled/hearth,
 /turf/open/floor/tile/checker,
@@ -7607,7 +7619,7 @@
 /turf/open/floor/blocks,
 /area/rogue/indoors/town/cell)
 "hzY" = (
-/obj/effect/landmark/start/shepherd{
+/obj/effect/landmark/start/orthodoxist{
 	dir = 1
 	},
 /obj/structure/chair/bench/church/r{
@@ -8431,6 +8443,14 @@
 "ipu" = (
 /turf/open/floor/ruinedwood/chevron,
 /area/rogue/indoors/town/bath)
+"ipY" = (
+/obj/structure/door/viewport{
+	dir = 8;
+	name = "Metals"
+	},
+/obj/effect/mapping_helpers/access/keyset/manor/vault,
+/turf/open/floor/cobble,
+/area/rogue/under/town/basement)
 "iqN" = (
 /turf/closed/wall/mineral/wooddark/end{
 	dir = 8
@@ -8553,7 +8573,7 @@
 /turf/open/floor/woodturned,
 /area/rogue/indoors/town/shop)
 "ivi" = (
-/obj/item/roguemachine/drugtrade,
+/obj/item/fake_machine/drugtrade,
 /turf/open/floor/ruinedwood/chevron,
 /area/rogue/indoors/town/bath)
 "ivL" = (
@@ -9684,7 +9704,7 @@
 /turf/closed/wall/mineral/wooddark,
 /area/rogue/indoors/town/dwarfin)
 "jye" = (
-/obj/effect/landmark/start/shepherd{
+/obj/effect/landmark/start/orthodoxist{
 	dir = 1
 	},
 /obj/structure/chair/bench/church{
@@ -9888,7 +9908,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/church/chapel)
 "jEn" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/blocks,
 /area/rogue/outdoors/town/roofs)
 "jEr" = (
@@ -10385,7 +10405,7 @@
 /area/rogue/outdoors/town)
 "kcy" = (
 /obj/structure/closet/crate/chest/crate,
-/obj/item/fishing/bait,
+/obj/item/fishing/lure,
 /turf/open/floor/wood,
 /area/rogue/indoors/town)
 "kcX" = (
@@ -10677,6 +10697,10 @@
 /obj/machinery/light/fueled/firebowl/standing,
 /turf/open/floor/wood,
 /area/rogue/outdoors/town/roofs)
+"kps" = (
+/obj/structure/stockpile_storage/food,
+/turf/open/floor/cobble,
+/area/rogue/under/town/basement)
 "kqa" = (
 /obj/structure/water_pipe,
 /turf/open/transparent/openspace,
@@ -11376,7 +11400,7 @@
 /area/rogue/outdoors/town)
 "lhB" = (
 /obj/structure/closet/crate/chest/crate,
-/obj/item/fishing/bait/deluxe,
+/obj/item/fishing/lure/deluxe,
 /turf/open/floor/wood,
 /area/rogue/indoors/town)
 "lhK" = (
@@ -11849,7 +11873,7 @@
 /area/rogue/indoors/town/church/inquisition)
 "lCR" = (
 /obj/structure/closet/crate/chest/neu,
-/obj/item/fishing/bait/dough,
+/obj/item/fishing/lure/dough,
 /obj/machinery/light/fueled/torchholder/l,
 /turf/open/floor/wood,
 /area/rogue/indoors/town)
@@ -13355,7 +13379,7 @@
 /turf/open/floor/wood,
 /area/rogue/outdoors/town/roofs)
 "mZp" = (
-/obj/effect/landmark/start/shepherd{
+/obj/effect/landmark/start/orthodoxist{
 	dir = 1
 	},
 /obj/structure/chair/bench/church/mid{
@@ -14130,7 +14154,7 @@
 /area/rogue/outdoors/town)
 "nSz" = (
 /obj/structure/closet/crate/chest,
-/obj/item/fishing/bait/speckled,
+/obj/item/fishing/lure/speckled,
 /turf/open/floor/wood,
 /area/rogue/indoors/town)
 "nSU" = (
@@ -15693,6 +15717,10 @@
 	dir = 4
 	},
 /area/rogue/under/town/sewer)
+"pwi" = (
+/obj/structure/stockpile_storage,
+/turf/open/floor/cobble,
+/area/rogue/under/town/basement)
 "pxj" = (
 /obj/structure/fluff/walldeco/church/line{
 	dir = 4
@@ -15906,6 +15934,10 @@
 	},
 /turf/open/floor/carpet/royalblack,
 /area/rogue/indoors/town/manor)
+"pHo" = (
+/obj/structure/stockpile_storage/metal,
+/turf/open/floor/cobble,
+/area/rogue/under/town/basement)
 "pHw" = (
 /turf/closed/wall/mineral/stone/window,
 /area/rogue/indoors/town)
@@ -19419,11 +19451,11 @@
 	pixel_y = 7;
 	pixel_x = 9
 	},
-/obj/item/clothing/neck/psycross/noc{
+/obj/item/clothing/neck/psycross/silver/noc{
 	pixel_y = 7;
 	pixel_x = 3
 	},
-/obj/item/clothing/neck/psycross/noc,
+/obj/item/clothing/neck/psycross/silver/noc,
 /obj/item/clothing/neck/psycross/silver/astrata,
 /obj/item/clothing/neck/psycross/silver/astrata{
 	pixel_y = 4;
@@ -20045,6 +20077,14 @@
 /obj/item/weapon/surgery/retractor,
 /turf/open/floor/churchmarble,
 /area/rogue/indoors/town/clinic_large)
+"tAK" = (
+/obj/structure/door/viewport{
+	dir = 4;
+	name = "Food and Materials"
+	},
+/obj/effect/mapping_helpers/access/keyset/manor/vault,
+/turf/open/floor/cobble,
+/area/rogue/under/town/basement)
 "tAS" = (
 /obj/structure/closet/crate/chest,
 /obj/machinery/light/fueled/wallfire/candle{
@@ -21011,7 +21051,7 @@
 /area/rogue/indoors/town/merc_guild)
 "uwn" = (
 /obj/structure/closet/crate/chest/neu,
-/obj/item/fishing/bait/gray,
+/obj/item/fishing/lure/gray,
 /turf/open/floor/wood,
 /area/rogue/indoors/town)
 "uwy" = (
@@ -21503,8 +21543,8 @@
 /area/rogue/outdoors/town/roofs)
 "uVN" = (
 /obj/structure/rack,
-/obj/item/clothing/neck/psycross/silver/malum_steel,
-/obj/item/clothing/neck/psycross/silver/malum_steel{
+/obj/item/clothing/neck/psycross/silver/malum/steel,
+/obj/item/clothing/neck/psycross/silver/malum/steel{
 	pixel_y = -5;
 	pixel_x = -11
 	},
@@ -21826,7 +21866,7 @@
 /area/rogue/under/town/basement)
 "viM" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/item/fishing/bait/gray,
+/obj/item/fishing/lure/gray,
 /obj/machinery/light/fueled/torchholder/r,
 /turf/open/floor/wood,
 /area/rogue/indoors/town)
@@ -83537,9 +83577,9 @@ hdd
 hdd
 sWx
 kSn
-tRv
-tRv
-tRv
+hOf
+fzM
+hOf
 uPM
 iXs
 iXs
@@ -83739,10 +83779,10 @@ hdd
 hdd
 sWx
 kSn
-tRv
-tRv
-tRv
-uPM
+hOf
+pHo
+hOf
+esu
 iXs
 iXs
 iKO
@@ -83941,10 +83981,10 @@ hdd
 hdd
 sWx
 kSn
-tRv
-tRv
-tRv
-uPM
+hOf
+hOf
+hOf
+esu
 uNN
 iXs
 wJn
@@ -84143,9 +84183,9 @@ hdd
 hdd
 sWx
 uPM
-tRv
-tRv
-tRv
+esu
+ipY
+esu
 uPM
 uNN
 hmP
@@ -84345,10 +84385,10 @@ vDk
 hdd
 sWx
 uPM
-tRv
-tRv
-tRv
-uPM
+xco
+hOf
+hOf
+gQS
 uNN
 uNN
 wJn
@@ -84547,9 +84587,9 @@ vDk
 hdd
 hdd
 uPM
-tRv
-tRv
-tRv
+esu
+tAK
+esu
 uPM
 iXs
 uNN
@@ -84749,10 +84789,10 @@ vDk
 rLN
 hdd
 kSn
-tRv
-tRv
-tRv
-uPM
+hOf
+hOf
+hOf
+esu
 uNN
 iXs
 iKO
@@ -84951,10 +84991,10 @@ vDk
 hdd
 hdd
 kSn
-tRv
-tRv
-tRv
-uPM
+hOf
+kps
+hOf
+esu
 iXs
 iXs
 wJn
@@ -85153,9 +85193,9 @@ vDk
 hdd
 hdd
 uPM
-tRv
-tRv
-tRv
+hOf
+pwi
+hOf
 uPM
 bzY
 iXs
@@ -85355,8 +85395,8 @@ vDk
 hdd
 hdd
 uPM
-tRv
-tRv
+qhJ
+hOf
 eqo
 eqo
 bYL

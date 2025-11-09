@@ -4,8 +4,7 @@
 	In your tenure with the garrison, you've cleaved through the wildlife-- \
 	and for your service in the short-lived Goblin War, the king has granted you nobility. \
 	In turn, you've been entrusted to keep his lands clear of \
-	the foul creechers that taint his land. Alone, you will die in these woods."
-	flag = FORWARDEN
+	the foul creachers that taint his land. Alone, you will die in these woods."
 	department_flag = GARRISON
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
@@ -16,19 +15,18 @@
 	bypass_lastclass = TRUE
 	selection_color = "#0d6929"
 
-
-	allowed_ages = list(AGE_MIDDLEAGED, AGE_OLD)
+	allowed_ages = list(AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
 	allowed_races = RACES_PLAYER_NONDISCRIMINATED
+	blacklisted_species = list(SPEC_ID_HALFLING)
 
-	outfit = /datum/outfit/job/forestwarden
+	outfit = /datum/outfit/forestwarden
 	spells = list(/datum/action/cooldown/spell/undirected/list_target/convert_role/guard/forest)
 	give_bank_account = 45
 	cmode_music = 'sound/music/cmode/garrison/CombatForestGarrison.ogg'
 
-/datum/outfit/job/forestwarden
 	job_bitflag = BITFLAG_GARRISON
 
-/datum/outfit/job/forestwarden/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/forestwarden/pre_equip(mob/living/carbon/human/H)
 	..()
 	cloak = /obj/item/clothing/cloak/wardencloak
 	armor = /obj/item/clothing/armor/plate
@@ -60,7 +58,7 @@
 	H.adjust_skillrank(/datum/skill/craft/crafting, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/labor/lumberjacking, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/craft/carpentry, 1, TRUE)
-	H.adjust_skillrank(/datum/skill/misc/sewing, 2, TRUE)
+	H.adjust_skillrank(/datum/skill/misc/sewing, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/craft/tanning, 2, TRUE)
 	H.change_stat(STATKEY_STR, 2)
 	H.change_stat(STATKEY_PER, 1)

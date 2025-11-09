@@ -62,9 +62,6 @@
 	///overlays managed by update_overlays() to prevent removing overlays that weren't added by the same proc
 	var/list/managed_overlays
 
-	///Used for changing icon states for different base sprites.
-	var/base_icon_state
-
 	///Cooldown tick timer for buckle messages
 	var/buckle_message_cooldown = 0
 	///Last fingerprints to touch this atom
@@ -91,6 +88,13 @@
 
 	///AI controller that controls this atom. type on init, then turned into an instance during runtime
 	var/datum/ai_controller/ai_controller
+
+	///Default pixel x shifting for the atom's icon.
+	var/base_pixel_x = 0
+	///Default pixel y shifting for the atom's icon.
+	var/base_pixel_y = 0
+	///Used for changing icon states for different base sprites.
+	var/base_icon_state
 
 	///The config type to use for greyscaled sprites. Both this and greyscale_colors must be assigned to work.
 	var/greyscale_config
@@ -121,7 +125,7 @@
 	var/xyoverride = FALSE //so we can 'face' a click catcher even though it doesn't have an x or a y
 
 	/// This means that the mouse over text will not be displayed when the mouse is over this atom
-	var/nomouseover = FALSE
+	var/no_over_text = FALSE
 	var/hover_color = "#a1bac4"
 
 	///this is the path to the enchantment not the actual enchantment
@@ -133,6 +137,27 @@
 	var/datum/component/orbiter/orbiters
 
 	var/blockscharging = FALSE
+
+	/// Any atom that uses integrity and can be damaged must set this to true, otherwise the integrity procs will throw an error
+	var/uses_integrity = FALSE
+	///Armor datum used by the atom
+	var/datum/armor/armor
+	///Current integrity, defaults to max_integrity on init
+	VAR_PRIVATE/atom_integrity
+	///Maximum integrity
+	var/max_integrity = 500
+	///Integrity level when this atom will "break" (whatever that means) 0 if we have no special broken behavior, otherwise is a percentage of at what point the atom breaks. 0.5 being 50%
+	var/integrity_failure = 0
+	///Damage under this value will be completely ignored
+	var/damage_deflection = 0
+	/// Determines the damage calculation from an item attacking this atom
+	var/blade_dulling
+
+	var/break_sound
+	var/break_message
+	var/attacked_sound
+
+	var/resistance_flags = NONE // INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | ON_FIRE | UNACIDABLE | ACID_PROOF
 
 /**
  * Called when an atom is created in byond (built in engine proc)
@@ -217,7 +242,12 @@
 
 	SETUP_SMOOTHING()
 
-	InitializeAIController()
+	if(uses_integrity)
+		atom_integrity = max_integrity
+	TEST_ONLY_ASSERT((!armor || istype(armor)), "[type] has an armor that contains an invalid value at intialize")
+
+	if(ispath(ai_controller))
+		ai_controller = new ai_controller(src)
 
 	return INITIALIZE_HINT_NORMAL
 
@@ -246,7 +276,7 @@
  * * clears overlays and priority overlays
  * * clears the light object
  */
-/atom/Destroy()
+/atom/Destroy(force)
 	if(alternate_appearances)
 		for(var/K in alternate_appearances)
 			var/datum/atom_hud/alternate_appearance/AA = alternate_appearances[K]
@@ -273,6 +303,9 @@
 
 /atom/proc/handle_ricochet(obj/projectile/P)
 	return
+
+/atom/proc/get_explosion_resistance()
+	return 0
 
 ///Can the mover object pass this atom, while heading for the target turf
 /atom/proc/CanPass(atom/movable/mover, turf/target)
@@ -474,25 +507,19 @@
 				if(user.can_see_reagents()) //Show each individual reagent
 					. += "It contains:"
 					for(var/datum/reagent/R in reagents.reagent_list)
-						if(R.volume / 3 < 1)
-							. += "less than 1 oz of <font color=[R.color]>[R.name]</font>"
-						else
-							. += "[round(R.volume / 3)] oz of <font color=[R.color]>[R.name]</font>"
+						. += "[(UNIT_FORM_STRING(R.volume))] of <font color=[R.color]>[R.name]</font>"
 				else //Otherwise, just show the total volume
 					var/total_volume = 0
 					var/reagent_color
 					for(var/datum/reagent/R in reagents.reagent_list)
 						total_volume += R.volume
 					reagent_color = mix_color_from_reagents(reagents.reagent_list)
-					if(total_volume / 3 < 1)
-						. += "It contains less than 1 oz of <font color=[reagent_color]>something.</font>"
-					else
-						. += "It contains [round(total_volume / 3)] oz of <font color=[reagent_color]>something.</font>"
+					. += "It contains [(UNIT_FORM_STRING(total_volume))] of <font color=[reagent_color]>something.</font>"
 			else
 				. += "It's empty."
 		else if(reagents.flags & AMOUNT_VISIBLE)
 			if(reagents.total_volume)
-				. += "<span class='notice'>It has [round(reagents.total_volume / 3, 0.1)] oz left.</span>"
+				. += "<span class='notice'>It has [(UNIT_FORM_STRING(round(reagents.total_volume, 0.1)))] left.</span>"
 			else
 				. += "<span class='danger'>It's empty.</span>"
 		//SNIFFING
@@ -655,17 +682,7 @@
  */
 /atom/proc/hitby(atom/movable/AM, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum, damage_type = "blunt")
 	SEND_SIGNAL(src, COMSIG_ATOM_HITBY, AM, skipcatch, hitpush, blocked, throwingdatum, damage_type)
-	if(density && !has_gravity(AM)) //thrown stuff bounces off dense stuff in no grav, unless the thrown stuff ends up inside what it hit(embedding, bola, etc...).
-		addtimer(CALLBACK(src, PROC_REF(hitby_react), AM), 2)
 
-/**
- * We have have actually hit the passed in atom
- *
- * Default behaviour is to move back from the item that hit us
- */
-/atom/proc/hitby_react(atom/movable/AM)
-	if(AM && isturf(AM.loc))
-		step(AM, turn(AM.dir, 180))
 
 ///Handle the atom being slipped over
 /atom/proc/handle_slip(mob/living/carbon/C, knockdown_amount, obj/O, lube, paralyze, force_drop)
@@ -1311,54 +1328,6 @@
 /atom/proc/intercept_zImpact(atom/movable/AM, levels = 1)
 	. |= SEND_SIGNAL(src, COMSIG_ATOM_INTERCEPT_Z_FALL, AM, levels)
 
-/**
- * Returns true if this atom has gravity for the passed in turf
- *
- * Sends signals COMSIG_ATOM_HAS_GRAVITY and COMSIG_TURF_HAS_GRAVITY, both can force gravity with
- * the forced gravity var
- *
- * Gravity situations:
- * * No gravity if you're not in a turf
- * * No gravity if this atom is in is a space turf
- * * Gravity if the area it's in always has gravity
- * * Gravity if there's a gravity generator on the z level
- * * Gravity if the Z level has an SSMappingTrait for ZTRAIT_GRAVITY
- * * otherwise no gravity
- */
-/atom/proc/has_gravity(turf/gravity_turf)
-	if(!isturf(gravity_turf))
-		gravity_turf = get_turf(src)
-
-	if(!gravity_turf)//no gravity in nullspace
-		return 0
-
-	//the list isnt created every time as this proc is very hot, its only accessed if anything is actually listening to the signal too
-	var/static/list/forced_gravity = list()
-	if(SEND_SIGNAL(src, COMSIG_ATOM_HAS_GRAVITY, gravity_turf, forced_gravity))
-		if(!length(forced_gravity))
-			SEND_SIGNAL(gravity_turf, COMSIG_TURF_HAS_GRAVITY, src, forced_gravity)
-
-		var/max_grav = 0
-		for(var/i in forced_gravity)//our gravity is the strongest return forced gravity we get
-			max_grav = max(max_grav, i)
-		forced_gravity.Cut()
-		//cut so we can reuse the list, this is ok since forced gravity movers are exceedingly rare compared to all other movement
-		return max_grav
-
-	var/area/turf_area = gravity_turf.loc
-	// force_no_gravity has been removed because this is Roguetown code
-	// it'd be trivial to readd if you needed it, though
-	return SSmapping.gravity_by_z_level["[gravity_turf.z]"] || turf_area.has_gravity
-
-/**
-* Instantiates the AI controller of this atom. Override this if you want to assign variables first.
-*
-* This will work fine without manually passing arguments.
-+*/
-/atom/proc/InitializeAIController()
-	if(ai_controller)
-		ai_controller = new ai_controller(src)
-
 /obj/proc/propagate_temp_change(value, weight, falloff = 0.5, max_depth = 3)
 	var/key = REF(src)
 	temperature_affected_turfs = list()
@@ -1393,3 +1362,39 @@
 			if(!start.CanAtmosPass(adj))
 				continue
 			_propagate_turf_heat(source, adj, key, next_value, next_weight, falloff, max_depth, depth + 1, seen)
+
+///Setter for the `base_pixel_x` variable to append behavior related to its changing.
+/atom/proc/set_base_pixel_x(new_value)
+	if(base_pixel_x == new_value)
+		return
+	. = base_pixel_x
+	base_pixel_x = new_value
+	pixel_x = pixel_x + base_pixel_x - .
+
+///Setter for the `base_pixel_y` variable to append behavior related to its changing.
+/atom/proc/set_base_pixel_y(new_value)
+	if(base_pixel_y == new_value)
+		return
+	. = base_pixel_y
+	base_pixel_y = new_value
+	pixel_y = pixel_y + base_pixel_y - .
+
+/// Returns the indice in filters of the given filter name.
+/// If it is not found, returns null.
+/atom/proc/get_filter_index(name)
+	return filter_data?.Find(name)
+
+/atom/proc/do_alert_effect()
+	var/mutable_appearance/alert = mutable_appearance('icons/effects/32x48.dmi', "alert_effect")
+	var/atom/movable/flick_visual/exclamation = flick_overlay_view(alert, 1 SECONDS)
+	exclamation.plane = src.plane
+	exclamation.alpha = 0
+	exclamation.pixel_x = -pixel_x
+	animate(exclamation, pixel_z = 32, alpha = 255, time = 0.5 SECONDS, easing = ELASTIC_EASING)
+
+	// Intentionally less time then the flick so we don't get weird shit
+	addtimer(CALLBACK(src, PROC_REF(forget_alert), exclamation), 0.8 SECONDS, TIMER_CLIENT_TIME)
+
+/atom/proc/forget_alert(atom/movable/flick_visual/alert)
+	animate(alert, time = 0.5 SECONDS, alpha = 0)
+	QDEL_IN(alert, 0.5 SECONDS)

@@ -33,6 +33,22 @@
 	craftdiff = 1
 	category = "Pants"
 
+/datum/repeatable_crafting_recipe/sewing/weaving/feld_mask
+	name = "feldsher mask"
+	output = /obj/item/clothing/face/feld
+	requirements = list(/obj/item/natural/cloth = 3,
+				/obj/item/natural/silk = 1)
+	craftdiff = 1
+	category = "Mask"
+
+/datum/repeatable_crafting_recipe/sewing/weaving/phys_mask
+	name = "physicker mask"
+	output = /obj/item/clothing/face/phys
+	requirements = list(/obj/item/natural/cloth = 2,
+				/obj/item/natural/silk = 1)
+	craftdiff = 1
+	category = "Mask"
+
 /* craftdif of 2 = APPRENTICE */
 
 /datum/repeatable_crafting_recipe/sewing/weaving/shadowgloves
@@ -42,6 +58,15 @@
 				/obj/item/natural/silk = 1)
 	craftdiff = 2
 	category = "Gloves"
+
+/datum/repeatable_crafting_recipe/sewing/weaving/courtphys_mask
+	name = "court physician mask"
+	output = /obj/item/clothing/face/courtphysician
+	requirements = list(/obj/item/natural/cloth = 3,
+				/obj/item/natural/silk = 2,
+				/obj/item/alch/bone = 1)
+	craftdiff = 2
+	category = "Mask"
 
 /* craftdif of 3 = JOURNEYMAN */
 
@@ -66,6 +91,14 @@
 	output = /obj/item/clothing/head/roguehood/phys
 	requirements = list(/obj/item/natural/cloth = 2,
 				/obj/item/natural/silk = 1)
+	craftdiff = 3
+	category = "Hat"
+
+/datum/repeatable_crafting_recipe/sewing/weaving/courtphys_hat
+	name = "court physician's beret"
+	output = /obj/item/clothing/head/courtphysician
+	requirements = list(/obj/item/natural/cloth = 3,
+				/obj/item/natural/silk = 2)
 	craftdiff = 3
 	category = "Hat"
 
@@ -137,7 +170,7 @@
 
 /datum/repeatable_crafting_recipe/sewing/weaving/eoramask
 	name = "mask (Eora)"
-	output = /obj/item/clothing/head/padded/operavisage
+	output = /obj/item/clothing/face/operavisage
 	requirements = list(/obj/item/ingot/silver = 1,
 				/obj/item/natural/silk = 4)
 	craftdiff = 3
@@ -172,22 +205,6 @@
 	requirements = list(/obj/item/natural/cloth = 3,
 			/obj/item/natural/silk = 1)
 	craftdiff = 3
-
-/datum/repeatable_crafting_recipe/sewing/weaving/feld_mask
-	name = "feldsher mask"
-	output = /obj/item/clothing/face/feld
-	requirements = list(/obj/item/natural/cloth = 3,
-				/obj/item/natural/silk = 1)
-	craftdiff = 1
-	category = "Mask"
-
-/datum/repeatable_crafting_recipe/sewing/weaving/phys_mask
-	name = "physicker mask"
-	output = /obj/item/clothing/face/phys
-	requirements = list(/obj/item/natural/cloth = 2,
-				/obj/item/natural/silk = 1)
-	craftdiff = 1
-	category = "Mask"
 
 /datum/repeatable_crafting_recipe/sewing/weaving/nunhood
 	name = "hood (nun)"
@@ -601,3 +618,27 @@
 				/obj/item/natural/cloth = 2)
 	craftdiff = 6
 	category = "Undershirt"
+
+/datum/repeatable_crafting_recipe/sewing/weaving/weddingdress
+	name = "wedding silk dress"
+	output = /obj/item/clothing/shirt/dress/silkdress/weddingdress
+	requirements = list(
+		/obj/item/natural/silk = 3
+	)
+	craftdiff = 3
+
+/datum/repeatable_crafting_recipe/sewing/weaving/absolver
+	name = "absolver's robe"
+	output = /obj/item/clothing/cloak/absolutionistrobe
+	requirements = list(
+		/obj/item/natural/silk = 3
+	)
+	craftdiff = 3
+
+/datum/repeatable_crafting_recipe/sewing/weaving/ordinatorcape
+	name = "ordinator cape"
+	output = /obj/item/clothing/cloak/ordinatorcape
+	requirements = list(
+		/obj/item/natural/silk = 3
+	)
+	craftdiff = 3

@@ -1,5 +1,6 @@
 /obj/item/mould
 	name = "mould"
+	desc = "You shouldn't be seeing this one."
 
 	icon = 'icons/roguetown/weapons/crucible.dmi'
 	icon_state = "flat-mold"
@@ -13,6 +14,11 @@
 
 	var/cooling = FALSE
 	var/cooling_progress = 0
+	var/cooling_bonus = 1
+
+	// Quality tracking variables
+	var/total_quality_points = 0  // Sum of (amount * quality) for weighted average
+	var/average_quality = 0       // Current weighted average quality
 
 /obj/item/mould/Initialize()
 	. = ..()
@@ -32,9 +38,11 @@
 
 	if(fufilled_metal)
 		var/reagent_color = initial(filling_metal.color)
-		. += "[src] has [round(fufilled_metal / 3, 1)] oz of <font color=[reagent_color]> Molten [initial(filling_metal.name)]</font> out of [round(required_metal / 3, 1)] oz.</font>"
+		. += "[src] has [UNIT_FORM_STRING(fufilled_metal)] of <font color=[reagent_color]> Molten [initial(filling_metal.name)]</font> out of [UNIT_FORM_STRING(required_metal)].</font>"
+		if(average_quality > 0)
+			. += "The metal quality appears to be [average_quality]."
 	else
-		. += "[src] requires [required_metal / 3] oz of Molten Metal to form.</font>"
+		. += "[src] requires [UNIT_FORM_STRING(required_metal)] of Molten Metal to form.</font>"
 
 /obj/item/mould/attackby(obj/item/I, mob/living/user, params)
 	. = ..()
@@ -49,6 +57,8 @@
 	if(!filling_metal)
 		var/list/names = list()
 		for(var/datum/material/material as anything in metal.data)
+			if(!ispath(material))
+				continue
 			if(crucible.reagents.chem_temp < initial(material.melting_point))
 				continue
 			names |= initial(material.name)
@@ -57,6 +67,8 @@
 		if(!choice)
 			return
 		for(var/datum/material/material as anything in metal.data)
+			if(!ispath(material))
+				continue
 			if(choice != initial(material.name))
 				continue
 			filling_metal = material
@@ -70,6 +82,19 @@
 	var/metal_amount = metal.data[filling_metal]
 	if(metal_amount > required_metal - fufilled_metal)
 		metal_amount = required_metal - fufilled_metal
+
+	var/pour_quality = metal.recipe_quality
+
+	// Update weighted average quality
+	if(fufilled_metal > 0)
+		// Calculate new weighted average: (old_total + new_contribution) / new_total_amount
+		total_quality_points += metal_amount * pour_quality
+		average_quality = total_quality_points / (fufilled_metal + metal_amount)
+	else
+		// First pour - set initial quality
+		total_quality_points = metal_amount * pour_quality
+		average_quality = pour_quality
+
 	metal.data[filling_metal] -= metal_amount
 	if(!metal.data[filling_metal])
 		metal.data -= filling_metal
@@ -106,7 +131,7 @@
 	START_PROCESSING(SSobj, src)
 
 /obj/item/mould/process()
-	cooling_progress += 2.5
+	cooling_progress += 7.5 * cooling_bonus
 	update_appearance(UPDATE_OVERLAYS)
 	if(cooling_progress >= 100)
 		STOP_PROCESSING(SSobj, src)
@@ -114,16 +139,33 @@
 
 /obj/item/mould/proc/create_item()
 	if(output_atom)
-		new output_atom(get_turf(src))
+		var/obj/item/new_item = new output_atom(get_turf(src))
+
+		if(average_quality > 0)
+			var/datum/quality_calculator/metallurgy/metal_calc = new(
+				base_qual = 0,
+				mat_qual = average_quality, // Use the stored weighted average quality
+				skill_qual = 1, // Could add blacksmithing skill here but I'd need to track from start of the process
+				perf_qual = 0,
+				diff_mod = 0,
+				components = 1
+			)
+			metal_calc.apply_quality_to_item(new_item, TRUE)
+			qdel(metal_calc)
+
+	// Reset all variables
 	fufilled_metal = 0
 	filling_metal = null
 	cooling = FALSE
 	cooling_progress = 0
+	total_quality_points = 0
+	average_quality = 0
 	update_appearance(UPDATE_OVERLAYS)
 
 
 /obj/item/mould/ingot
-	name = "ingot mold"
+	name = "ingot mould"
+	desc = "A clay mould for making metal ingots."
 
 	icon_state = "ingot-mold"
 	filling_icon_state = "ingot-mold-color"
@@ -138,8 +180,31 @@
 	to_create = initial(filling_metal.ingot_type)
 	if(filling_metal.ingot_type == /obj/item/ingot/blacksteel)
 		record_round_statistic(STATS_BLACKSTEEL_SMELTED)
-	new to_create(get_turf(src))
+
+	var/obj/item/new_item = new to_create(get_turf(src))
+
+	if(average_quality > 0)
+		var/datum/quality_calculator/metallurgy/metal_calc = new(
+			base_qual = 0,
+			mat_qual = average_quality,
+			skill_qual = 1,
+			perf_qual = 0,
+			diff_mod = 0,
+			components = 1
+		)
+		metal_calc.apply_quality_to_item(new_item, TRUE)
+		qdel(metal_calc)
+
+	// Reset all variables
 	fufilled_metal = 0
 	filling_metal = null
 	cooling = FALSE
+	cooling_progress = 0
+	total_quality_points = 0
+	average_quality = 0
 	update_appearance(UPDATE_OVERLAYS)
+
+/obj/item/mould/ingot/advanced
+	name = "advanced ingot mould"
+	desc = "An ingot mould that utilizes water for faster cooling."
+	cooling_bonus = 2

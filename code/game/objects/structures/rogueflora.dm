@@ -1,6 +1,6 @@
 /obj/structure/flora
-	base_icon_state
 	var/num_random_icons = 0
+	layer = FLORA_LAYER
 
 /obj/structure/flora/Initialize()
 	. = ..()
@@ -20,8 +20,7 @@
 	density = TRUE
 	max_integrity = 200
 	blade_dulling = DULLING_CUT
-	pixel_x = -16
-	layer = 4.81
+	SET_BASE_PIXEL(-16, 0)
 	plane = GAME_PLANE_UPPER
 	attacked_sound = 'sound/misc/woodhit.ogg'
 	destroy_sound = 'sound/misc/treefall.ogg'
@@ -37,7 +36,7 @@
 		return
 	if(user.mind && isliving(user))
 		if(user.mind.special_items && user.mind.special_items.len)
-			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
+			var/item = browser_input_list(user, "What will I take?", "STASH", user.mind.special_items)
 			if(item)
 				if(user.Adjacent(src))
 					if(user.mind.special_items[item])
@@ -48,12 +47,10 @@
 		return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 
 /obj/structure/flora/tree/attacked_by(obj/item/I, mob/living/user)
-	var/was_destroyed = obj_destroyed
 	. = ..()
-	if(.)
-		if(!was_destroyed && obj_destroyed)
-			record_featured_stat(FEATURED_STATS_TREE_FELLERS, user)
-			record_round_statistic(STATS_TREES_CUT)
+	if(atom_integrity <= 0)
+		record_featured_stat(FEATURED_STATS_TREE_FELLERS, user)
+		record_round_statistic(STATS_TREES_CUT)
 
 /obj/structure/flora/tree/fire_act(added, maxstacks)
 	if(added > 5)
@@ -65,10 +62,10 @@
 		var/turf/T = loc
 		T.ChangeTurf(/turf/open/floor/dirt)
 
-/obj/structure/flora/tree/obj_destruction(damage_flag)
+/obj/structure/flora/tree/atom_destruction(damage_flag)
 	if(stump_type)
 		new stump_type(loc)
-	. = ..()
+	return ..()
 
 /obj/structure/flora/tree/evil
 	base_icon_state = "wv"
@@ -171,13 +168,12 @@
 	icon_state = "t1"
 	num_random_icons = 4
 	stump_type = /obj/structure/table/wood/treestump/burnt
-	pixel_x = -32
+	SET_BASE_PIXEL(-32, 0)
 	metalizer_result = /obj/machinery/anvil
-
 
 /obj/structure/flora/tree/underworld
 	name = "screaming tree"
-	desc = "human faces everywhere."
+	desc = "humen faces everywhere."
 	icon = 'icons/roguetown/misc/foliagetall.dmi'
 	icon_state = "screaming1"
 	base_icon_state = "screaming"
@@ -190,7 +186,7 @@
 	icon = 'icons/obj/flora/pines.dmi'
 	static_debris = list(/obj/item/ore/coal/charcoal = 1)
 	stump_type = null
-	pixel_x = -32
+	SET_BASE_PIXEL(-32, 0)
 
 /obj/structure/flora/tree/stump/pine/Initialize()
 	. = ..()
@@ -251,7 +247,7 @@
 								"<span class='notice'>I unearth \the [src].</span>")
 			if(isunburnt)
 				new stump_loot(loc) // Rewarded with an extra small log if done the right way.return
-			obj_destruction("brute")
+			atom_destruction("brute")
 		return
 	return ..()
 
@@ -277,8 +273,7 @@
 	static_debris = list(/obj/item/grown/log/tree = 1)
 	max_integrity = 200
 	sleepy = 0.2
-	pixel_x = -14
-	pixel_y = 7
+	SET_BASE_PIXEL(-14, 7)
 	pass_flags_self = PASSTABLE
 
 /obj/structure/chair/bench/ancientlog/Initialize()
@@ -321,7 +316,9 @@
 	AddComponent(/datum/component/grass)
 
 /obj/structure/flora/grass/Destroy()
-	if(prob(5))
+	if(isliving(usr) && HAS_TRAIT(usr, TRAIT_SEED_FINDER))
+		new /obj/item/neuFarm/seed/mixed_seed(get_turf(src))
+	else if(prob(5))
 		new /obj/item/neuFarm/seed/mixed_seed(get_turf(src))
 	return ..()
 
@@ -479,7 +476,11 @@
 	desc = "A tall bush that has grown into a hedge."
 	icon_state = "tallbush1"
 	base_icon_state = "tallbush"
-	pixel_x = -16
+	opacity = TRUE
+	SET_BASE_PIXEL(-16, 0)
+	num_random_icons = 2
+	debris = null
+	static_debris = null
 
 /obj/structure/flora/grass/bush/wall/tall/tundra
 	name = "tundra great bush"
@@ -590,8 +591,7 @@
 	num_random_icons = 5
 	max_integrity = 120
 	blade_dulling = DULLING_CUT
-	pixel_x = -16
-	layer = 4.81
+	SET_BASE_PIXEL(-16, 0)
 	attacked_sound = 'sound/misc/woodhit.ogg'
 	destroy_sound = 'sound/misc/woodhit.ogg'
 	static_debris = list(/obj/item/grown/log/tree/small = 1)
@@ -602,7 +602,7 @@
 		return
 	if(user.mind && isliving(user))
 		if(user.mind.special_items && user.mind.special_items.len)
-			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
+			var/item = browser_input_list(user, "What will I take?", "STASH", user.mind.special_items)
 			if(item)
 				if(user.Adjacent(src))
 					if(user.mind.special_items[item])
@@ -636,16 +636,19 @@
 	if(added > 5)
 		return ..()
 
-/obj/structure/flora/shroom_tree/obj_destruction(damage_flag)
+/obj/structure/flora/shroom_tree/atom_destruction(damage_flag)
 	var/obj/structure/S = new /obj/structure/table/wood/treestump/shroomstump(loc)
 	S.icon_state = "stump_[icon_state]"
-	. = ..()
+	return ..()
 
 /obj/structure/table/wood/treestump/shroomstump
 	name = "shroom stump"
 	desc = "It was a very happy shroom. Not anymore."
 	icon = 'icons/roguetown/misc/foliagetall.dmi'
 	icon_state = "stump_mush1"
+	alpha = 255
+	SET_BASE_PIXEL(-16, 0)
+	climb_offset = 14
 	stump_loot = /obj/item/reagent_containers/food/snacks/truffles
 
 /obj/structure/table/wood/treestump/shroomstump/Initialize()
@@ -796,8 +799,10 @@
 // bush crossing
 /obj/structure/flora/grass/bush_meagre/Crossed(atom/movable/AM)
 	..()
-	if(isliving(AM))
+	if(isliving(AM) && !HAS_TRAIT(AM, TRAIT_BRUSHWALK))
 		var/mob/living/L = AM
+		if(L.pulledby)
+			return
 		L.Immobilize(5)
 		if(L.m_intent == MOVE_INTENT_WALK)
 			L.Immobilize(5)
@@ -873,12 +878,39 @@
 	prob2findgoodie = 15
 	luckydouble	= 3
 
-
 /obj/structure/flora/grass/bush_meagre/bog
 	desc = "These large bushes are known to be well-liked by silkworms who make their nests in their dark depths."
 	icon = 'icons/mob/creacher/trolls/troll.dmi'
 	icon_state = "troll_hide"
+	SET_BASE_PIXEL(-16, -1)
 	num_random_icons = 0
-	pixel_x = -16
-	pixel_y = -1
 	silky = TRUE
+
+
+/obj/structure/flora/grass/mushroom
+	name = "leafy mushrooms"
+	desc = "A number of mushrooms, each of which surrounds a greenish sporangium with a number of leaf-like structures."
+	icon_state = "l_mushroom_red1"
+
+/obj/structure/flora/grass/mushroom/Initialize()
+	. = ..()
+	var/shroom_color = pick("red", "green", "blue")
+	var/turf/open/floor/mushroom/turf = get_turf(src)
+	if(istype(turf))
+		shroom_color = turf.mushroom_color
+
+	icon_state = "[pick(list("l", "r", "t"))]_mushroom_[shroom_color]1"
+
+/obj/structure/flora/tree/dead_bush
+	name = "dead brush"
+	desc = "The blazing sun has killed this brush."
+	icon_state = "deadbush_1"
+	base_icon_state = "deadbush_"
+	num_random_icons = 3
+
+/obj/structure/flora/tree/dying_bush
+	name = "dying brush"
+	desc = "The blazing sun is killing this brush."
+	icon_state = "livebush_1"
+	base_icon_state = "livebush_"
+	num_random_icons = 3

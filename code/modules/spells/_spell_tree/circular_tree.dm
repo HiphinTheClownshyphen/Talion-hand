@@ -1,6 +1,6 @@
 /datum/spell_node/arcyne_eye
-	name = "Arcane Eye"
-	desc = "Create an invisible, magical eye."
+	name = "Arcyne Eye"
+	desc = "Imbue yourself with the ability to percieve magical phenomena."
 	node_x = 0
 	node_y = 0
 	spell_type = /datum/action/cooldown/spell/undirected/arcyne_eye
@@ -38,35 +38,36 @@
 
 /datum/spell_node/mana_well
 	name = "Mana Well"
-	desc = "Dig deeper into your magical reserves."
+	desc = "Dig deeper into your magical reserves and recovery."
 	node_x = -290
 	node_y = 290
-	cost = 6
+	cost = 3
 	is_passive = TRUE
 
 /datum/spell_node/mana_well/on_node_buy(mob/user)
 	var/current_max = user.mana_pool?.maximum_mana_capacity || 100
-	user.mana_pool?.set_max_mana(current_max + 50, TRUE, TRUE)
-	user.mana_overload_threshold += 50
-	to_chat(user, span_notice("Your magical well deepens considerably."))
+	user.mana_pool?.set_max_mana(current_max + 25, TRUE, TRUE)
+	user.mana_overload_threshold += 25
+	user.mana_pool?.set_natural_recharge(user.mana_pool.ethereal_recharge_rate + 0.1)
+	to_chat(user, span_notice("Your magical well deepens and your mind achieves clarity."))
 
 /datum/spell_node/meditation
 	name = "Meditation"
 	desc = "Improve your natural mana recovery."
-	cost = 6
+	cost = 4
 	node_x = -290
 	node_y = 390
 	prerequisites = list(/datum/spell_node/mana_well)
 	is_passive = TRUE
 
 /datum/spell_node/meditation/on_node_buy(mob/user)
-	user.mana_pool?.set_natural_recharge(user.mana_pool.ethereal_recharge_rate + 0.25)
-	to_chat(user, span_notice("Your mind achieves greater focus and clarity."))
+	user.mana_pool?.set_natural_recharge(user.mana_pool.ethereal_recharge_rate + 0.15)
+	to_chat(user, span_notice("Your mind achieves even greater focus and clarity."))
 
 /datum/spell_node/expanded_reserves
 	name = "Expanded Reserves"
 	desc = "Increase your magical capacity."
-	cost = 8
+	cost = 4
 	node_x = -390
 	node_y = 290
 	prerequisites = list(/datum/spell_node/mana_well)
@@ -74,14 +75,14 @@
 
 /datum/spell_node/expanded_reserves/on_node_buy(mob/user)
 	var/current_max = user.mana_pool?.maximum_mana_capacity || 100
-	user.mana_pool?.set_max_mana(current_max + 100, TRUE, TRUE)
-	user.mana_overload_threshold += 100
-	to_chat(user, span_notice("Your magical reserves expand."))
+	user.mana_pool?.set_max_mana(current_max + 125, TRUE, TRUE)
+	user.mana_overload_threshold += 125
+	to_chat(user, span_notice("Your magical reserves expand deeper."))
 
 /datum/spell_node/eternal_wellspring
 	name = "Eternal Wellspring"
-	desc = "Achieve perfect harmony with magical forces."
-	cost = 12
+	desc = "Immensely empower your mana capacity and your rate of mana recovery."
+	cost = 6
 	node_x = -440
 	node_y = 440
 	prerequisites = list(/datum/spell_node/expanded_reserves, /datum/spell_node/meditation)
@@ -105,7 +106,7 @@
 
 /datum/spell_node/primal_savagery
 	name = "Primal Savagery"
-	desc = "Channel primal magic to grow claws or fangs."
+	desc = "Channel primal magic to grow poisonous fangs."
 	node_x = -50
 	node_y = -50
 	prerequisites = list(/datum/spell_node/earth_affinity, /datum/spell_node/arcyne_affinity)
@@ -114,7 +115,7 @@
 
 /datum/spell_node/blood_pact
 	name = "Blood Pact"
-	desc = "Bind your life force to dark magic."
+	desc = "Bind your life force to blood magic."
 	cost = 5
 	node_x = -50
 	node_y = 50
@@ -192,7 +193,7 @@
 
 /datum/spell_node/infestation
 	name = "Infestation"
-	desc = "Cause a cloud of mites, fleas, and other parasites."
+	desc = "Cause a cloud of mites, fleas, and other parasites to swarm an enemy."
 	node_x = RIGHT_X_TIER_2
 	node_y = RIGHT_Y_LEFT - 50
 	prerequisites = list(/datum/spell_node/death_affinity)
@@ -207,8 +208,8 @@
 	spell_type = /datum/action/cooldown/spell/decompose
 
 /datum/spell_node/poison_spray
-	name = "Poison Spray"
-	desc = "Extend your hand and release a puff of noxious gas."
+	name = "Create Cloud"
+	desc = "Produce smoke from the liquid within an open bottle."
 	node_x = RIGHT_X_TIER_3
 	node_y = RIGHT_Y_LEFT
 	prerequisites = list(/datum/spell_node/acid_splash)
@@ -254,6 +255,14 @@
 	prerequisites = list(/datum/spell_node/arcyne_eye)
 	spell_type = /datum/action/cooldown/spell/undirected/message
 
+/datum/spell_node/phantom_ear
+	name = "Phantom Ear"
+	desc = "Conjure a spectral ear to perceive distant sounds."
+	node_x = 0
+	node_y = -140
+	prerequisites = list(/datum/spell_node/message)
+	spell_type = /datum/action/cooldown/spell/conjure/phantom_ear
+
 /datum/spell_node/arcyne_affinity
 	name = "Arcyne Affinity"
 	desc = "Devote yourself to Noc."
@@ -278,7 +287,7 @@
 
 /datum/spell_node/booming_blade
 	name = "Booming Blade"
-	desc = "Evoke thunderous energy around your weapon."
+	desc = "Evoke thunderous energy around an enemy, which will burst if they move."
 	node_x = 0
 	node_y = DOWN_Y_TIER_1 - 30
 	prerequisites = list(/datum/spell_node/air_affinity, /datum/spell_node/arcyne_affinity)
@@ -286,7 +295,7 @@
 
 /datum/spell_node/blade_ward
 	name = "Blade Ward"
-	desc = "Extend your hand and trace a sigil of warding."
+	desc = "Trace a sigil of warding, making you more difficult to injure."
 	node_x = 0
 	node_y = DOWN_Y_TIER_1 - 70
 	prerequisites = list(/datum/spell_node/air_affinity, /datum/spell_node/arcyne_affinity)
@@ -298,7 +307,7 @@
 
 /datum/spell_node/longstrider
 	name = "Longstrider"
-	desc = "Increase your walking speed."
+	desc = "Ignore the effects of rough terrain."
 	node_x = DOWN_X_RIGHT
 	node_y = DOWN_Y_TIER_2
 	prerequisites = list(/datum/spell_node/air_affinity)
@@ -314,7 +323,7 @@
 
 /datum/spell_node/repel
 	name = "Repel"
-	desc = "Push creatures away from you with force."
+	desc = "Push creatures away from you with a bolt of force."
 	node_x = DOWN_X_RIGHT + 100
 	node_y = DOWN_Y_TIER_3
 	prerequisites = list(/datum/spell_node/haste)
@@ -329,8 +338,8 @@
 	spell_type = /datum/action/cooldown/spell/undirected/feather_falling
 
 /datum/spell_node/slowdown_aoe
-	name = "Mass Slowdown"
-	desc = "Slow multiple creatures in an area."
+	name = "Ensnare"
+	desc = "Root creatures to the floor in an area."
 	node_x = DOWN_X_RIGHT + 50
 	node_y = DOWN_Y_TIER_2 - 50
 	prerequisites = list(/datum/spell_node/featherfall)
@@ -338,14 +347,14 @@
 
 /datum/spell_node/fetch
 	name = "Fetch"
-	desc = "Magically retrieve distant objects."
+	desc = "Magically retrieve distant objects with a telekinetic bolt."
 	node_x = DOWN_X_LEFT
 	node_y = DOWN_Y_TIER_2
 	prerequisites = list(/datum/spell_node/arcyne_affinity)
 	spell_type = /datum/action/cooldown/spell/projectile/fetch
 
 /datum/spell_node/arcane_bolt
-	name = "Arcane Bolt"
+	name = "Arcyne Bolt"
 	desc = "Launch a bolt of pure magical energy."
 	node_x = DOWN_X_LEFT -50
 	node_y = DOWN_Y_TIER_2
@@ -353,7 +362,7 @@
 	spell_type = /datum/action/cooldown/spell/projectile/arcyne_bolt
 
 /datum/spell_node/arcyne_storm
-	name = "Arcane Storm"
+	name = "Arcyne Storm"
 	desc = "Unleash a devastating storm of magical energy."
 	node_x = DOWN_X_LEFT -25
 	node_y = DOWN_Y_TIER_3
@@ -404,15 +413,16 @@
 
 /datum/spell_node/guidance
 	name = "Guidance"
-	desc = "Provide divine assistance to aid in tasks."
+	desc = "Provide arcyne assistance to aid in both study and combat." //this was "divine assistance" before??? its an arcyne spell you wot
 	node_x = LEFT_X_TIER_2
 	node_y = LEFT_Y_LEFT
 	prerequisites = list(/datum/spell_node/earth_affinity)
 	spell_type = /datum/action/cooldown/spell/status/guidance
 
+
 /datum/spell_node/magic_stone
-	name = "Magician's Brick"
-	desc = "Conjure a magical brick in your hand"
+	name = "Magicians Brick"
+	desc = "Concentrate your intelect into an arcyne brick."
 	node_x = LEFT_X_TIER_2
 	node_y = LEFT_Y_LEFT - 50
 	prerequisites = list(/datum/spell_node/earth_affinity)
@@ -420,7 +430,7 @@
 
 /datum/spell_node/flower_field
 	name = "Flower Field"
-	desc = "Summons a field of flowers"
+	desc = "Use a flower as a catalyst to create a magical field of that flower."
 	node_x = LEFT_X_TIER_3
 	node_y = LEFT_Y_LEFT - 50
 	prerequisites = list(/datum/spell_node/magic_stone)
@@ -450,7 +460,7 @@
 
 /datum/spell_node/mana_conservation
 	name = "Mana Conservation"
-	desc = "Learn to use magic more efficiently."
+	desc = "Learn to passively recharge your mana."
 	cost = 5
 	node_x = LEFT_X_TIER_3
 	node_y = LEFT_Y_RIGHT
@@ -463,7 +473,7 @@
 
 /datum/spell_node/sundering_lightning
 	name = "Sundering Lightning"
-	desc = "Lightning that tears through magical defenses."
+	desc = "Conjure a miniature thunderstorm that bypasses magical defenses."
 	node_x = LEFT_X_TIER_3
 	node_y = LEFT_Y_RIGHT + 50
 	prerequisites = list(/datum/spell_node/lightning_bolt, /datum/spell_node/mana_conservation)
@@ -471,7 +481,7 @@
 
 /datum/spell_node/blade_burst
 	name = "Blade Burst"
-	desc = "Create a burst of spectral blades around you."
+	desc = "Create a spectral blade to slice a target."
 	node_x = LEFT_X_TIER_3
 	node_y = LEFT_Y_LEFT
 	prerequisites = list(/datum/spell_node/guidance)
@@ -479,7 +489,7 @@
 
 /datum/spell_node/prestidigitation
 	name = "Prestidigitation"
-	desc = "Simple magical tricks and minor illusions."
+	desc = "Perform a variety of simple magical tricks."
 	node_x = 0
 	node_y = 100
 	prerequisites = list(/datum/spell_node/arcyne_eye)
@@ -500,7 +510,7 @@
 
 /datum/spell_node/snap_freeze
 	name = "Snap Freeze"
-	desc = "Instantly freeze the moisture around a target."
+	desc = "Instantly freeze the moisture in an area."
 	node_x = UP_X_RIGHT + 50
 	node_y = UP_Y_TIER_1
 	prerequisites = list(/datum/spell_node/frost_affinity)
@@ -521,15 +531,15 @@
 
 /datum/spell_node/eldritch_blast
 	name = "Eldritch Blast"
-	desc = "A crackling beam of otherworldly energy."
+	desc = "Let forth a wave of maddening mind-energy."
 	node_x = UP_X_LEFT
 	node_y = UP_Y_TIER_2
 	prerequisites = list(/datum/spell_node/dark_attunement)
-	spell_type = /datum/action/cooldown/spell/projectile/eldritch_blast
+	spell_type = /datum/action/cooldown/spell/cone/staggered/eldritch_blast
 
 /datum/spell_node/encode_thoughts
 	name = "Encode Thoughts"
-	desc = "Extract a memory and crystallize it into a thought strand."
+	desc = "Incept an intrusive thought into the mind of your target. They may not agree with it."
 	node_x = UP_X_LEFT - 50
 	node_y = UP_Y_TIER_2
 	prerequisites = list(/datum/spell_node/dark_attunement)
@@ -537,7 +547,7 @@
 
 /datum/spell_node/mind_sliver
 	name = "Mind Spike"
-	desc = "Drive a disorienting spike of psychic energy."
+	desc = "Drive a disorienting spike of psychic energy into the brain of your enemy."
 	node_x = UP_X_LEFT - 50
 	node_y = UP_Y_TIER_3
 	prerequisites = list(/datum/spell_node/encode_thoughts)
@@ -545,7 +555,7 @@
 
 /datum/spell_node/gravity
 	name = "Gravity"
-	desc = "Manipulate gravitational forces."
+	desc = "Manipulate gravitational forces around a target to force them to the ground."
 	node_x = UP_X_LEFT
 	node_y = UP_Y_TIER_3
 	prerequisites = list(/datum/spell_node/mind_sliver, /datum/spell_node/eldritch_blast)
@@ -554,7 +564,7 @@
 
 /datum/spell_node/beam_of_frost
 	name = "Ray of Frost"
-	desc = "A frigid beam of blue-white light."
+	desc = "Set a frigid beam of hyperborean energy upon a target."
 	node_x = UP_X_RIGHT
 	node_y = UP_Y_TIER_2
 	prerequisites = list(/datum/spell_node/frost_affinity)
@@ -562,23 +572,23 @@
 
 /datum/spell_node/chill_touch
 	name = "Chill Touch"
-	desc = "Create a ghostly, skeletal hand that we	akens foes."
+	desc = "Create a ghostly, skeletal hand that wrestles with foes."
 	node_x = UP_X_RIGHT + 50
 	node_y = UP_Y_TIER_2
 	prerequisites = list(/datum/spell_node/frost_affinity)
 	spell_type = /datum/action/cooldown/spell/chill_touch
 
-/datum/spell_node/frostbite
-	name = "Frostbite"
-	desc = "Cause numbing frost to form on a creature."
+/datum/spell_node/cone_of_frost
+	name = "Cone of Frost"
+	desc = "Let forth a wave of frost to form."
 	node_x = UP_X_RIGHT + 50
 	node_y = UP_Y_TIER_2 + 50
 	prerequisites = list(/datum/spell_node/chill_touch)
-	spell_type = /datum/action/cooldown/spell/status/frostbite
+	spell_type = /datum/action/cooldown/spell/cone/staggered/cone_of_cold
 
 /datum/spell_node/frostbolt
 	name = "Frostbolt"
-	desc = "Launch a shard of ice at your enemy."
+	desc = "Launch a shard of arcyne ice at your enemy."
 	node_x = UP_X_RIGHT
 	node_y = UP_Y_TIER_3
 	prerequisites = list(/datum/spell_node/beam_of_frost)
@@ -586,10 +596,10 @@
 
 
 /datum/spell_node/gib
-	name = "Xylix's Cruel Prank"
+	name = "Xylixs Cruel Prank"
 	desc = "Fucked up and evil."
-	node_x = -100000
-	node_y = -100000
+	node_x = -500
+	node_y = -500
 	is_passive = TRUE
 
 /datum/spell_node/gib/on_node_buy(mob/user)

@@ -30,9 +30,17 @@
 	deconstructible = FALSE
 	flags_1 = ON_BORDER_1
 	climbable = TRUE
-	pass_flags_self = LETPASSTHROW|PASSSTRUCTURE
-	var/passcrawl = TRUE
 	layer = ABOVE_MOB_LAYER
+	pass_flags_self = PASSSTRUCTURE|LETPASSCLICKS
+
+	/// Living mobs can lay down to go past
+	var/pass_crawl = TRUE
+	/// Projectiles can go past
+	var/pass_projectile = TRUE
+	/// Throwing atoms can go past
+	var/pass_throwing = TRUE
+	/// Throwing/Flying non mobs can always exit the turf regardless of other flags
+	var/allow_flying_outwards = TRUE
 
 /obj/structure/fluff/railing/Initialize()
 	. = ..()
@@ -59,47 +67,64 @@
 
 /obj/structure/fluff/railing/CanPass(atom/movable/mover, turf/target)
 	. = ..()
-	if(get_dir(loc, target) == dir)
-		if(passcrawl && isliving(mover))
-			var/mob/living/M = mover
-			if(M.body_position == LYING_DOWN)
-				return TRUE
-		return . || mover.throwing || (mover.movement_type & (FLOATING|FLYING))
-	return TRUE
+	if(get_dir(loc, target) != dir)
+		return TRUE
+	if(pass_crawl && isliving(mover))
+		var/mob/living/M = mover
+		if(M.body_position == LYING_DOWN)
+			return TRUE
+	if(mover.movement_type & (FLOATING|FLYING))
+		if(istype(mover, /obj/projectile) && !pass_projectile)
+			return FALSE
+		return TRUE
+	if(pass_throwing && mover.throwing)
+		return TRUE
 
 /obj/structure/fluff/railing/CanAStarPass(ID, to_dir, requester)
 	if(dir in CORNERDIRS)
 		return TRUE
+	if(ismovable(requester))
+		var/atom/movable/mover = requester
+		if(mover.movement_type & (FLOATING|FLYING))
+			return TRUE
 	if(to_dir == dir)
 		return FALSE
 	return TRUE
 
 /obj/structure/fluff/railing/proc/on_exit(datum/source, atom/movable/leaving, atom/new_location)
 	SIGNAL_HANDLER
+
 	if(dir in CORNERDIRS)
 		return
-	if(istype(leaving, /obj/projectile))
-		return
-	if(leaving.throwing)
-		return
+
 	if(isobserver(leaving))
 		return
-	if(leaving.movement_type & FLYING)
+
+	if(get_dir(leaving.loc, new_location) != dir)
 		return
-	if(passcrawl && isliving(leaving))
+
+	if(leaving.movement_type & (FLOATING|FLYING))
+		if(istype(leaving, /obj/projectile) && (pass_projectile || allow_flying_outwards))
+			return
+
+	if(leaving.throwing)
+		if(pass_throwing || (allow_flying_outwards && !ismob(leaving)))
+			return
+
+	if(pass_crawl && isliving(leaving))
 		var/mob/living/M = leaving
 		if(M.body_position == LYING_DOWN)
 			return
-	if(get_dir(leaving.loc, new_location) == dir)
-		leaving.Bump(src)
-		return COMPONENT_ATOM_BLOCK_EXIT
+
+	leaving.Bump(src)
+	return COMPONENT_ATOM_BLOCK_EXIT
 
 /obj/structure/fluff/railing/OnCrafted(dirin, mob/user)
 	dir = dirin
 	var/lay = getwlayer(dir)
 	if(lay)
 		layer = lay
-	. = ..()
+	return ..()
 
 /obj/structure/fluff/railing/corner
 	icon_state = "railing_corner"
@@ -121,47 +146,26 @@
 	name = "border"
 	desc = ""
 	icon_state = "border"
-	passcrawl = FALSE
+	pass_crawl = FALSE
 
-/obj/structure/fluff/railing/fence
-	name = "palisade"
-	desc = "A sturdy fence of wooden stakes."
-	icon_state = "fence"
-	density = TRUE
-	opacity = TRUE
-	anchored = TRUE
-	layer = 2.91
-	climbable = FALSE
-	max_integrity = 400
-	pass_flags_self = PASSSTRUCTURE
-	passcrawl = FALSE
-	climb_offset = 6
-
-/obj/structure/fluff/railing/fence/CanAllowThrough(atom/movable/mover, turf/target)
-	. = ..()
-	if(get_dir(loc, target) == dir)
-		return FALSE
-	return TRUE
-
-/obj/structure/fluff/railing/woodfence
+/obj/structure/fluff/railing/tall
 	name = "wooden fence"
 	desc = "A sturdy fence of wooden planks."
 	icon = 'icons/roguetown/misc/tallwoodenrailing.dmi'
 	icon_state = "tallwoodenrailing"
-	density = TRUE
-	opacity = FALSE
-	anchored = TRUE
-	layer = 2.91
-	climbable = FALSE
 	max_integrity = 500
-	passcrawl = FALSE
-	climb_offset = 6
+	pass_crawl = FALSE
+	pass_throwing = FALSE
+	pass_projectile = TRUE
 
-/obj/structure/fluff/railing/woodfence/CanAllowThrough(atom/movable/mover, turf/target)
-	. = ..()
-	if(get_dir(loc, target) == dir)
-		return FALSE
-	return TRUE
+/obj/structure/fluff/railing/tall/palisade
+	name = "palisade"
+	desc = "A sturdy fence of wooden stakes."
+	icon = 'icons/roguetown/misc/railing.dmi'
+	icon_state = "fence"
+	opacity = TRUE
+	climb_offset = 6
+	pass_projectile = FALSE
 
 /obj/structure/bars
 	name = "bars"
@@ -200,10 +204,15 @@
 	plane = GAME_PLANE
 	layer = WALL_OBJ_LAYER+0.05
 
-/obj/structure/bars/obj_break(damage_flag, silent)
+/obj/structure/bars/atom_break(damage_flag)
+	. = ..()
 	icon_state = "[initial(icon_state)]b"
 	density = FALSE
-	..()
+
+/obj/structure/bars/atom_fix()
+	. = ..()
+	density = initial(density)
+	icon_state = initial(icon_state)
 
 /obj/structure/bars/cemetery
 	icon_state = "cemetery"
@@ -266,9 +275,9 @@
 	dir = pick(GLOB.cardinals)
 	return ..()
 
-/obj/structure/bars/grille/obj_break(damage_flag, silent)
+/obj/structure/bars/grille/atom_break(damage_flag)
+	. = ..()
 	obj_flags = CAN_BE_HIT
-	..()
 
 /obj/structure/bars/grille/redstone_triggered(mob/user)
 	if(obj_broken)
@@ -286,6 +295,18 @@
 		icon_state = "floorgrille"
 		obj_flags = CAN_BE_HIT | BLOCK_Z_OUT_DOWN | BLOCK_Z_IN_UP
 
+
+/obj/structure/plank
+	name = "plank"
+	desc = ""
+	icon = 'icons/turf/floors.dmi'
+	icon_state = "plank2"
+	density = FALSE
+	layer = TABLE_LAYER
+	plane = GAME_PLANE
+	damage_deflection = 5
+	blade_dulling = DULLING_BASHCHOP
+	obj_flags = CAN_BE_HIT | BLOCK_Z_OUT_DOWN | BLOCK_Z_IN_UP
 
 /obj/structure/bars/pipe
 	name = "bronze pipe"
@@ -306,7 +327,7 @@
 	desc = ""
 	icon_state = "pipe2"
 	dir = WEST
-	pixel_x = 19
+	SET_BASE_PIXEL(19, 0)
 
 //===========================
 
@@ -326,7 +347,6 @@
 	break_sound = "glassbreak"
 	destroy_sound = 'sound/combat/hits/onwood/destroyfurniture.ogg'
 	attacked_sound = 'sound/combat/hits/onglass/glasshit.ogg'
-	var/broke = FALSE
 	var/datum/looping_sound/clockloop/soundloop
 	drag_slowdown = 3
 	metalizer_result = /obj/item/gear/metal/bronze
@@ -343,14 +363,18 @@
 		QDEL_NULL(soundloop)
 	return ..()
 
-/obj/structure/fluff/clock/obj_break(damage_flag, silent)
-	if(!broke)
-		broke = TRUE
-		icon_state = "b[initial(icon_state)]"
-		if(soundloop)
-			soundloop.stop()
-		attacked_sound = list('sound/combat/hits/onwood/woodimpact (1).ogg','sound/combat/hits/onwood/woodimpact (2).ogg')
-	..()
+/obj/structure/fluff/clock/atom_break(damage_flag)
+	. = ..()
+	icon_state = "b[initial(icon_state)]"
+	if(soundloop)
+		soundloop.stop()
+	attacked_sound = list('sound/combat/hits/onwood/woodimpact (1).ogg','sound/combat/hits/onwood/woodimpact (2).ogg')
+
+/obj/structure/fluff/clock/atom_fix()
+	. = ..()
+	icon_state = initial(icon_state)
+	soundloop.start()
+	attacked_sound = initial(attacked_sound)
 
 /obj/structure/fluff/clock/attack_hand_secondary(mob/user, params)
 	. = ..()
@@ -358,7 +382,7 @@
 		return
 	if(user.mind && isliving(user))
 		if(user.mind.special_items && user.mind.special_items.len)
-			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
+			var/item = browser_input_list(user, "What will I take?", "STASH", user.mind.special_items)
 			if(item)
 				if(user.Adjacent(src))
 					if(user.mind.special_items[item])
@@ -370,7 +394,7 @@
 
 /obj/structure/fluff/clock/examine(mob/user)
 	. = ..()
-	if(!broke)
+	if(!obj_broken)
 		var/day = "... actually, WHAT dae is it?"
 		switch(GLOB.dayspassed)
 			if(1)
@@ -425,8 +449,7 @@
 	break_sound = "glassbreak"
 	destroy_sound = 'sound/combat/hits/onwood/destroyfurniture.ogg'
 	attacked_sound = 'sound/combat/hits/onglass/glasshit.ogg'
-	var/broke = FALSE
-	pixel_y = 32
+	SET_BASE_PIXEL(0, 32)
 	metalizer_result = /obj/item/gear/metal/bronze
 
 /obj/structure/fluff/wallclock/Destroy()
@@ -436,7 +459,7 @@
 
 /obj/structure/fluff/wallclock/examine(mob/user)
 	. = ..()
-	if(!broke)
+	if(!obj_broken)
 		var/day = "... actually, WHAT dae is it?"
 		switch(GLOB.dayspassed)
 			if(1)
@@ -461,21 +484,25 @@
 	soundloop.start()
 	. = ..()
 
-/obj/structure/fluff/wallclock/obj_break(damage_flag, silent)
-	if(!broke)
-		broke = TRUE
-		icon_state = "b[initial(icon_state)]"
-		if(soundloop)
-			soundloop.stop()
-		attacked_sound = list('sound/combat/hits/onwood/woodimpact (1).ogg','sound/combat/hits/onwood/woodimpact (2).ogg')
-	..()
+/obj/structure/fluff/wallclock/atom_break(damage_flag)
+	. = ..()
+	icon_state = "b[initial(icon_state)]"
+	if(soundloop)
+		soundloop.stop()
+	attacked_sound = list('sound/combat/hits/onwood/woodimpact (1).ogg','sound/combat/hits/onwood/woodimpact (2).ogg')
+
+/obj/structure/fluff/wallclock/atom_fix()
+	. = ..()
+	icon_state = initial(icon_state)
+	soundloop.start()
+	attacked_sound = initial(attacked_sound)
 
 /obj/structure/fluff/wallclock/l
-	pixel_y = 0
-	pixel_x = -32
+	SET_BASE_PIXEL(-32, 0)
+
 /obj/structure/fluff/wallclock/r
-	pixel_y = 0
-	pixel_x = 32
+	SET_BASE_PIXEL(32, 0)
+
 //vampire
 /obj/structure/fluff/wallclock/vampire
 	name = "ancient clock"
@@ -488,14 +515,13 @@
 	blade_dulling = DULLING_BASHCHOP
 	max_integrity = 100
 	integrity_failure = 0.5
-	pixel_y = 32
+	SET_BASE_PIXEL(0, 32)
 
 /obj/structure/fluff/wallclock/vampire/l
-	pixel_y = 0
-	pixel_x = -32
+	SET_BASE_PIXEL(-32, 0)
+
 /obj/structure/fluff/wallclock/vampire/r
-	pixel_y = 0
-	pixel_x = 32
+	SET_BASE_PIXEL(32, 0)
 
 /obj/structure/fluff/signage
 	name = "sign"
@@ -610,7 +636,7 @@
 		return
 	if(user.mind && isliving(user))
 		if(user.mind.special_items && user.mind.special_items.len)
-			var/item = input(user, "What will I take?", "STASH") as null|anything in user.mind.special_items
+			var/item = browser_input_list(user, "What will I take?", "STASH", user.mind.special_items)
 			if(item)
 				if(user.Adjacent(src))
 					if(user.mind.special_items[item])
@@ -657,12 +683,12 @@
 /obj/structure/fluff/statue/astrata
 	name = "statue of Astrata"
 	desc = "Astrata, the Sun Queen, reigns over light, order, and conquest. She is worshipped and feared in equal measure."
+	icon = 'icons/roguetown/misc/tallandwide.dmi'
+	icon_state = "astrata"
 	max_integrity = 100 // You wanted descructible statues, you'll get them.
 	deconstructible = FALSE
 	density = TRUE
 	blade_dulling = DULLING_BASH
-	icon_state = "astrata"
-	icon = 'icons/roguetown/misc/tallandwide.dmi'
 	var/breaking = FALSE
 
 /obj/structure/fluff/statue/astrata/Initialize()
@@ -695,7 +721,7 @@
 
 /obj/structure/fluff/statue/astrata/OnCrafted(dirin, mob/user)
 	. = ..()
-	pixel_x = -16
+	SET_BASE_PIXEL(-16, 0)
 
 /obj/structure/fluff/statue/astrata/bling
 	icon_state = "astrata_bling"
@@ -723,7 +749,7 @@
 /obj/structure/fluff/statue/psy
 	icon_state = "psy"
 	icon = 'icons/roguetown/misc/96x96.dmi'
-	pixel_x = -32
+	SET_BASE_PIXEL(-32, 0)
 
 /obj/structure/fluff/statue/small
 	icon = 'icons/roguetown/misc/structure.dmi'
@@ -736,8 +762,7 @@
 /obj/structure/fluff/statue/femalestatue
 	icon = 'icons/roguetown/misc/ay.dmi'
 	icon_state = "1"
-	pixel_x = -32
-	pixel_y = -16
+	SET_BASE_PIXEL(-32, -16)
 
 /obj/structure/fluff/statue/femalestatue/clean
 	icon_state = "12"
@@ -757,8 +782,7 @@
 /obj/structure/fluff/statue/musician
 	icon = 'icons/roguetown/misc/ay.dmi'
 	icon_state = "3"
-	pixel_x = -32
-
+	SET_BASE_PIXEL(-32, 0)
 
 /obj/structure/fluff/statue/zizo
 	name = "statue of Zizo"
@@ -978,55 +1002,66 @@
 	if(user.mind)
 		var/datum/antagonist/bandit/B = user.mind.has_antag_datum(/datum/antagonist/bandit)
 		if(B)
-			if(istype(W, /obj/item/reagent_containers/lux))
-				user.adjust_triumphs(1, reason = "Offered Lux")
-				qdel(W)
+			if(B.tri_amt >= 8)
+				to_chat(user, span_warning("The idol had collected enough tribute from you."))
 				return
-			if(istype(W, /obj/item/coin) || istype(W, /obj/item/gem) || istype(W, /obj/item/reagent_containers/glass/cup/silver) || istype(W, /obj/item/reagent_containers/glass/cup/golden) || istype(W, /obj/item/reagent_containers/glass/carafe) || istype(W, /obj/item/clothing/ring) || istype(W, /obj/item/clothing/head/crown/circlet) || istype(W, /obj/item/statue))
-				if(B.tri_amt >= 10)
-					to_chat(user, "<span class='warning'>The mouth doesn't open.</span>")
-					return
+			if(istype(W, /obj/item/reagent_containers/lux))
+				B.contrib += 120
+				record_round_statistic(STATS_SHRINE_VALUE, 120)
+			else if(istype(W, /obj/item/coin) || istype(W, /obj/item/gem) || istype(W, /obj/item/reagent_containers/glass/cup/silver) || istype(W, /obj/item/reagent_containers/glass/cup/golden) || istype(W, /obj/item/reagent_containers/glass/carafe) || istype(W, /obj/item/clothing/ring) || istype(W, /obj/item/clothing/head/crown/circlet) || istype(W, /obj/item/statue))
 				if(!istype(W, /obj/item/coin))
-					B.contrib += (W.get_real_price() / 2) //sell jewerly and other fineries, though at a lesser price compared to fencing them first
+					B.contrib += (W.get_real_price() / 2) // sell jewelry and other fineries, though at a lesser price compared to fencing them first
 					record_round_statistic(STATS_SHRINE_VALUE, (W.get_real_price() / 2))
 				else
 					B.contrib += W.get_real_price()
 					record_round_statistic(STATS_SHRINE_VALUE, W.get_real_price())
-				if(B.contrib >= 100)
-					B.tri_amt++
-					user.mind.adjust_triumphs(1)
-					B.contrib -= 100
-					var/obj/item/I
-					switch(B.tri_amt)
-						if(1)
-							I = new /obj/item/reagent_containers/glass/bottle/healthpot(user.loc)
-						if(2)
-							if(HAS_TRAIT(user, TRAIT_MEDIUMARMOR))
-								I = new /obj/item/clothing/armor/medium/scale(user.loc)
-							else
-								I = new /obj/item/clothing/armor/chainmail/iron(user.loc)
-						if(4)
-							I = new /obj/item/clothing/head/helmet/horned(user.loc)
-						if(6)
-							if(user.get_skill_level(/datum/skill/combat/polearms) > 2)
-								I = new /obj/item/weapon/polearm/spear/billhook(user.loc)
-							else if(user.get_skill_level(/datum/skill/combat/bows) > 2)
-								I = new /obj/item/gun/ballistic/revolver/grenadelauncher/bow/long(user.loc)
-							else if(user.get_skill_level(/datum/skill/combat/swords) > 2)
-								I = new /obj/item/weapon/sword/long(user.loc)
-							else
-								I = new /obj/item/weapon/mace/steel(user.loc)
-						if(8)
-							I = new /obj/item/clothing/pants/chainlegs(user.loc)
-					if(I)
-						I.sellprice = 0
-					playsound(loc,'sound/items/matidol2.ogg', 50, TRUE)
-				else
-					playsound(loc,'sound/items/matidol1.ogg', 50, TRUE)
-				playsound(loc,'sound/misc/eat.ogg', rand(30,60), TRUE)
-				qdel(W)
+			else
+				to_chat(user, span_warning("The idol doesn't want your garbage."))
 				return
-	..()
+			if(B.contrib >= 80)
+				give_rewards(B, user)
+			else
+				playsound(loc,'sound/items/matidol1.ogg', 50, TRUE)
+			playsound(loc,'sound/misc/eat.ogg', rand(30, 60), TRUE)
+			qdel(W)
+			return
+
+	return ..()
+
+/obj/structure/fluff/statue/evil/proc/give_rewards(datum/antagonist/bandit/offering_bandit, mob/user)
+	offering_bandit.tri_amt++
+	user.mind.adjust_triumphs(1)
+	offering_bandit.contrib -= 80
+
+	var/obj/item/I
+	switch(offering_bandit.tri_amt)
+		if(1)
+			I = new /obj/item/reagent_containers/glass/bottle/healthpot(user.loc)
+		if(2)
+			if(HAS_TRAIT(user, TRAIT_MEDIUMARMOR))
+				I = new /obj/item/clothing/armor/medium/scale(user.loc)
+			else
+				I = new /obj/item/clothing/armor/chainmail/iron(user.loc)
+		if(4)
+			I = new /obj/item/clothing/head/helmet/horned(user.loc)
+		if(6)
+			if(user.get_skill_level(/datum/skill/combat/polearms) > 2)
+				I = new /obj/item/weapon/polearm/spear/billhook(user.loc)
+			else if(user.get_skill_level(/datum/skill/combat/bows) > 2)
+				I = new /obj/item/gun/ballistic/revolver/grenadelauncher/bow/long(user.loc)
+			else if(user.get_skill_level(/datum/skill/combat/swords) > 2)
+				I = new /obj/item/weapon/sword/long(user.loc)
+			else
+				I = new /obj/item/weapon/mace/steel(user.loc)
+		if(8)
+			I = new /obj/item/clothing/pants/chainlegs(user.loc)
+	if(I)
+		I.sellprice = 0
+
+	if(offering_bandit.contrib >= 100 && offering_bandit.tri_amt < 8)
+		give_rewards(offering_bandit, user)
+	else
+		playsound(loc,'sound/items/matidol2.ogg', 50, TRUE)
 
 /obj/structure/fluff/psycross
 	name = "pantheon cross"
@@ -1041,7 +1076,6 @@
 	layer = BELOW_MOB_LAYER
 	max_integrity = 100
 	sellprice = 40
-	var/chance2hear = 30
 	buckleverb = "crucifie"
 	can_buckle = 1
 	buckle_lying = 0
@@ -1087,7 +1121,6 @@
 	icon_state = "psycrosschurch"
 	break_sound = null
 	attacked_sound = list("sound/combat/hits/onmetal/metalimpact (1).ogg", "sound/combat/hits/onmetal/metalimpact (2).ogg")
-	chance2hear = 66
 
 /obj/structure/fluff/psycross/zizocross
 	name = "inverted cross"
@@ -1099,7 +1132,6 @@
 /obj/structure/fluff/psycross/crafted
 	name = "wooden pantheon cross"
 	icon_state = "psycrosscrafted"
-	chance2hear = 10
 
 /obj/structure/fluff/psycross/crafted/shrine
 	plane = GAME_PLANE_UPPER
@@ -1109,19 +1141,43 @@
 	dir = SOUTH
 
 /obj/structure/fluff/psycross/crafted/shrine/dendor_volf
-	name = "shrine to Dendor"
-	desc = "The life force of a Volf has consecrated this holy place.<br/> Present several blood bait here to craft a worthy sacrifice."
+	name = "devouring shrine to Dendor"
+	desc = "The life force of a Volf has consecrated this holy place. \n First present two blood baits to craft a red sacrifice. \n Then offer an egg and two feathers to craft a crimson sacrifice."
 	icon_state = "shrine_dendor_volf"
 
 /obj/structure/fluff/psycross/crafted/shrine/dendor_saiga
-	name = "shrine to Dendor"
-	desc = "The life force of a Saiga has consecrated this holy place.<br/> Present jacksberries, westleach leaves, and eels for crafting a worthy sacrifice."
+	name = "stinging shrine to Dendor"
+	desc = "The life force of a Saiga has consecrated this holy place. \n First present a jacksberry, westleach leaf, and eel to craft a yellow sacrifice. \n Then offer a jacksberry, calendula flower, and fiber to craft a citrine sacrifice."
 	icon_state = "shrine_dendor_saiga"
 
 /obj/structure/fluff/psycross/crafted/shrine/dendor_gote
-	name = "shrine to Dendor"
-	desc = "The life force of a Gote has consecrated this holy place.<br/> Present poppies, swampweed leaves, and silk grubs for crafting a worthy sacrifice."
+	name = "growing shrine to Dendor"
+	desc = "The life force of a Gote has consecrated this holy place. \n First present a poppy flower, swampweed leaf, and silk grub to craft a green sacrifice. \n Then offer a euphoriba flower, swampweed leaf, and two thorns to craft a viridian sacrifice."
 	icon_state = "shrine_dendor_gote"
+
+/obj/structure/fluff/psycross/crafted/shrine/dendor_troll
+	name = "lording shrine to Dendor"
+	desc = "The life force of a Troll has consecrated this holy place. \n First present two troll horns to craft a purple sacrifice. \n Then offer a piece of strange meat and two sinews to craft an indigo sacrifice."
+	icon_state = "shrine_dendor_troll"
+
+/obj/structure/fluff/psycross/psycrucifix
+	name = "wooden psydonic crucifix"
+	desc = "A rarely seen symbol of absolute and devoted certainty, more common in Grenzelhoft: HE yet lyves. HE yet breathes."
+	icon_state = "psycruci"
+	max_integrity = 80
+
+/obj/structure/fluff/psycross/psycrucifix/stone
+	name = "stone psydonic crucifix"
+	desc = "Formed of stone, this great Psycross symbolises that HE is forever ENDURING. Considered a rare sight upon the Peaks."
+	icon_state = "psycruci_r"
+	max_integrity = 120
+
+/obj/structure/fluff/psycross/psycrucifix/silver
+	name = "silver psydonic crucifix"
+	icon_state = "psycruci_s"
+	desc = "Constructed of Blessed Silver, this crucifix symbolises absolute faith in the ONE - For PSYDON WEEPS, for all mortal ilk. PSYDON WEEPS, for all who walk upon the soil. PSYDON WEEPS..."
+	attacked_sound = list("sound/combat/hits/onmetal/metalimpact (1).ogg", "sound/combat/hits/onmetal/metalimpact (2).ogg")
+	max_integrity = 450
 
 /obj/structure/fluff/psycross/attackby(obj/item/W, mob/living/carbon/human/user, params)
 	if(!user.mind)
@@ -1129,7 +1185,7 @@
 
 	var/is_priest = is_priest_job(user.mind.assigned_role)
 	var/is_eoran_acolyte = is_monk_job(user.mind.assigned_role) && (user.patron.type == /datum/patron/divine/eora)
-	if(!is_priest && !is_eoran_acolyte)
+	if(!is_priest && !is_eoran_acolyte && !HAS_TRAIT(user, TRAIT_SECRET_OFFICIANT))
 		return ..()
 
 	if(!istype(W, /obj/item/reagent_containers/food/snacks/produce/fruit/apple))
@@ -1201,28 +1257,55 @@
 		to_chat(user, span_warning("[bride.real_name] is already married!"))
 		return FALSE
 
-	var/surname
-	var/name_index = findtext(groom.real_name, " ")
-	var/bride_first_name = bride.real_name
-
 	groom.original_name = groom.real_name
 	bride.original_name = bride.real_name
 
-	if(!name_index)
-		surname = groom.dna.species.random_surname()
+	var/surname
+	var/groom_name_index = findlasttext(groom.real_name, " ")
+
+	if(!groom_name_index)
+		surname = " " + groom.dna.species.random_surname()
 	else
-		if(findtext(groom.real_name, " of ") || findtext(groom.real_name, " the "))
-			surname = groom.dna.species.random_surname()
-			groom.change_name(copytext(groom.real_name, 1, name_index))
+		var/last_word = copytext(groom.real_name, groom_name_index + 1)
+		var/second_last_index = findlasttext(groom.real_name, " ", 1, groom_name_index - 1)
+
+		var/is_title = FALSE
+		if(second_last_index)
+			var/second_last_word = copytext(groom.real_name, second_last_index + 1, groom_name_index)
+			if((lowertext(second_last_word) == "the" || lowertext(second_last_word) == "of") && last_word)
+				is_title = TRUE
+
+		if(is_title)
+			var/surname_index = findlasttext(groom.real_name, " ", 1, second_last_index - 1)
+			if(!surname_index)
+				surname = " " + copytext(groom.real_name, 1, second_last_index)
+				groom.change_name("")
+			else
+				surname = copytext(groom.real_name, surname_index, second_last_index)
+				groom.change_name(copytext(groom.real_name, 1, surname_index))
+		else if(findtext(groom.real_name, " the ") || findtext(groom.real_name, " of "))
+			surname = " " + groom.dna.species.random_surname()
 		else
-			surname = copytext(groom.real_name, name_index)
-			groom.change_name(copytext(groom.real_name, 1, name_index))
+			surname = copytext(groom.real_name, groom_name_index)
+			groom.change_name(copytext(groom.real_name, 1, groom_name_index))
 
-	name_index = findtext(bride.real_name, " ")
-	if(name_index)
-		bride.change_name(copytext(bride.real_name, 1, name_index))
+	var/bride_name_index = findlasttext(bride.real_name, " ")
+	var/bride_first_name = bride.real_name
 
-	bride_first_name = bride.real_name
+	if(bride_name_index)
+		var/last_word_bride = copytext(bride.real_name, bride_name_index + 1)
+		var/second_last_index_bride = findlasttext(bride.real_name, " ", 1, bride_name_index - 1)
+
+		var/is_title_bride = FALSE
+		if(second_last_index_bride)
+			var/second_last_word_bride = copytext(bride.real_name, second_last_index_bride + 1, bride_name_index)
+			if((lowertext(second_last_word_bride) == "the" || lowertext(second_last_word_bride) == "of") && last_word_bride)
+				is_title_bride = TRUE
+
+		if(!is_title_bride && !findtext(bride.real_name, " the ") && !findtext(bride.real_name, " of "))
+			bride.change_name(copytext(bride.real_name, 1, bride_name_index))
+
+		bride_first_name = bride.real_name
 
 	groom.change_name(groom.real_name + surname)
 	bride.change_name(bride.real_name + surname)
@@ -1235,8 +1318,6 @@
 		var/announcement_message = "Eora [groom.gender == bride.gender ? "begrudgingly accepts" : "proudly embraces"] the marriage between [groom.real_name] and [bride_first_name]!"
 		priority_announce(announcement_message, title = "Holy Union!", sound = 'sound/misc/bell.ogg')
 
-	groom.remove_stress(/datum/stressevent/eora_matchmaking)
-	bride.remove_stress(/datum/stressevent/eora_matchmaking)
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOBAL_MARRIAGE, groom, bride)
 	record_round_statistic(STATS_MARRIAGES)
 	qdel(apple)
@@ -1268,10 +1349,36 @@
 	else //caused by emp/remote signal
 		M.log_message("was [targeted? "flashed(targeted)" : "flashed(AOE)"]",LOG_ATTACK)
 	if(generic_message && M != user)
-		to_chat(M, "<span class='danger'>[src] emits a blinding light!</span>")
+		to_chat(M, span_danger("[src] emits a blinding light!"))
 	if(M.flash_act())
 		var/diff = power - M.confused
 		M.confused += min(power, diff)
+
+/obj/structure/fluff/psycross/psydon
+	name = "psydonian cross"
+	desc = "A wooden monument to Psydon. Let His name be naught but forgot'n."
+	icon_state = "psydon_wooden_cross"
+	icon = 'icons/roguetown/misc/psydon_cross.dmi'
+	divine = FALSE //this variable to my understanding is only used to prevent zizo prayers. He's dead, so he can't do anything.
+
+/obj/structure/fluff/psycross/psydon/metal
+	desc = "A metal monument to Psydon. Let His name be naught but forgot'n."
+	icon_state = "psydon_metal_cross"
+
+//this one is meant to be uncraftable
+/obj/structure/fluff/psycross/psydon/abandoned
+	name = "overgrown psydonian cross"
+	desc = "A decrepit monument to a dead god. Looking at it fills you with profound sadness."
+	icon_state = "psydon_abandoned_cross"
+
+/obj/structure/fluff/psycross/psydon/abandoned/examine(mob/user)
+	. = ..()
+	if(!isliving(user))
+		return
+	var/mob/living/living_user = user
+	if(istype(living_user.patron, /datum/patron/psydon))
+		living_user.add_stress(/datum/stress_event/painful_reminder)
+		. += " Never forget those we have lost."
 
 /obj/structure/fluff/statue/shisha
 	name = "shisha pipe"
@@ -1322,7 +1429,7 @@
 	. = ..()
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
 		. += "slumped and tortured, broken body pertrified and in pain, its chest rose and fell in synch with mine banishing any doubt left, it is me! my own visage glares back at me!"
-		user.add_stress(/datum/stressevent/ring_madness)
+		user.add_stress(/datum/stress_event/ring_madness)
 		return
 	if(ring_destroyed == TRUE)
 		. += "a statue depicting a decapitated man writhing in chains on the ground, it holds its hands out, pleading, in its palms is a glowing ring..."

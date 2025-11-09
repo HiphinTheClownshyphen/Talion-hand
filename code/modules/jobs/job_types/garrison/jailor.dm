@@ -6,7 +6,6 @@
 	You now live in this kingdom - a quiet peaceful place \
 	compared to the Asylum you once warded, \
 	having once kept bloodthirsty churls locked in the dark."
-	flag = JAILOR
 	department_flag = GARRISON
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_JAILOR
@@ -18,14 +17,13 @@
 	allowed_ages = list(AGE_OLD, AGE_IMMORTAL) // He's a wierd elderly man that is fucking jacked- this will make for a memorable character I think.
 	allowed_races = RACES_PLAYER_NONDISCRIMINATED
 
-	outfit = /datum/outfit/job/jailor
+	outfit = /datum/outfit/jailor
 	give_bank_account = 25
 	cmode_music = 'sound/music/cmode/nobility/CombatDungeoneer.ogg'
 
-/datum/outfit/job/jailor
 	job_bitflag = BITFLAG_GARRISON
 
-/datum/outfit/job/jailor/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/jailor/pre_equip(mob/living/carbon/human/H)
 	..()
 	head = /obj/item/clothing/head/roguehood/colored/black
 	neck = /obj/item/clothing/neck/coif

@@ -59,8 +59,7 @@
 /obj/item/clothing/neck/psycross/silver/astrata/do_rot()
 	return
 
-// Only non-refactored psycross because Noc likes vamps. Neeeerd!
-/obj/item/clothing/neck/psycross/noc
+/obj/item/clothing/neck/psycross/silver/noc
 	name = "amulet of Noc"
 	desc = "Diligence, study, pursuit of truth and wisdom. Let nothing deter you from it."
 	icon_state = "noc"
@@ -169,11 +168,10 @@
 	icon_state = "malum"
 	resistance_flags = FIRE_PROOF
 
-
 /obj/item/clothing/neck/psycross/silver/malum/do_rot()
 	return
 
-/obj/item/clothing/neck/psycross/silver/malum_steel
+/obj/item/clothing/neck/psycross/silver/malum/steel
 	name = "amulet of Malum"
 	desc = "Let the tools that guide thee be thy hands."
 	icon_state = "malum_alt"
@@ -184,7 +182,7 @@
 
 /obj/item/clothing/neck/psycross/g
 	name = "golden psycross"
-	desc = "Let His name be naught but forgot'n."
+	desc = "Let His name be naught but forgot'n. Let devotion to Him endure, in heart and in deed, beyond the veil of sight."
 	icon_state = "psycross_gold"
 	//dropshrink = 0.75
 	resistance_flags = FIRE_PROOF

@@ -1,9 +1,5 @@
 /mob/living/proc/Life(seconds, times_fired)
 	set waitfor = FALSE
-	set invisibility = 0
-
-	if((movement_type & FLYING) && !(movement_type & FLOATING))	//TODO: Better floating
-		float(on = TRUE)
 
 	if (client)
 		var/turf/T = get_turf(src)
@@ -24,30 +20,45 @@
 		log_game("Z-TRACKING: [src] of type [src.type] has a Z-registration despite not having a client.")
 		update_z(null)
 
-	if (notransform)
-		return
-	if(!loc)
+	if(isnull(loc) || HAS_TRAIT(src, TRAIT_NO_TRANSFORM))
 		return
 
-	//Breathing, if applicable
-	handle_temperature()
-	handle_breathing(times_fired)
-	if(HAS_TRAIT(src, TRAIT_SIMPLE_WOUNDS))
-		handle_wounds()
-		handle_embedded_objects()
-		handle_blood()
-		//passively heal even wounds with no passive healing
-		for(var/datum/wound/wound as anything in get_wounds())
-			wound.heal_wound(1)
+	if(!HAS_TRAIT(src, TRAIT_STASIS))
+		//Breathing, if applicable
+		handle_temperature()
+		handle_breathing(times_fired)
+		if(HAS_TRAIT(src, TRAIT_SIMPLE_WOUNDS))
+			handle_wounds()
+			handle_embedded_objects()
+			handle_blood()
+			//passively heal even wounds with no passive healing
+			for(var/datum/wound/wound as anything in get_wounds())
+				wound.heal_wound(1)
 
-	if (QDELETED(src)) // diseases can qdel the mob via transformations
-		return
+		/// ENDVRE AS HE DOES.
+		if(!stat && HAS_TRAIT(src, TRAIT_PSYDONIAN_GRIT) && !HAS_TRAIT(src, TRAIT_PARALYSIS))
+			handle_wounds()
+			//passively heal wounds, but not if you're skullcracked OR DEAD.
+			if(blood_volume > BLOOD_VOLUME_SURVIVE)
+				for(var/datum/wound/wound as anything in get_wounds())
+					wound.heal_wound(wound.passive_healing * 0.25)
 
-	//Random events (vomiting etc)
-	handle_random_events()
+		if(!stat && HAS_TRAIT(src, TRAIT_LYCANRESILENCE) && !HAS_TRAIT(src, TRAIT_PARALYSIS))
+			var/mob/living/carbon/human/human = src
+			if(human.rage_datum.check_rage(50))
+				handle_wounds()
+				if(blood_volume > BLOOD_VOLUME_SURVIVE)
+					for(var/datum/wound/wound as anything in get_wounds())
+						wound.heal_wound(1.2)
 
-	handle_traits() // eye, ear, brain damages
-	handle_status_effects() //all special effects, stun, knockdown, jitteryness, hallucination, sleeping, etc
+		if (QDELETED(src)) // diseases can qdel the mob via transformations
+			return
+
+		//Random events (vomiting etc)
+		handle_random_events()
+
+		handle_traits() // eye, ear, brain damages
+		handle_status_effects() //all special effects, stun, knockdown, jitteryness, hallucination, sleeping, etc
 
 	update_sneak_invis()
 	handle_fire()
@@ -60,12 +71,41 @@
 	if(istype(loc, /turf/open/water))
 		handle_inwater(loc)
 
+	if(!client && (world.time - last_island_check) > 20 SECONDS)
+		last_island_check = world.time
+		update_island_cache()
+
 	if(stat != DEAD)
 		return 1
 
+/mob/living/proc/update_island_cache()
+	if(!length(SSterrain_generation.island_registry))
+		last_island_check = world.time + 3 HOURS
+		return
+	var/turf/T = get_turf(src)
+	if(!T)
+		if(cached_island_id)
+			SSisland_mobs.remove_mob(src)
+			cached_island_id = null
+		return
+
+	var/datum/island_data/island = SSterrain_generation.get_island_at_location(T)
+	var/new_island_id = island?.island_id
+
+	if(new_island_id != cached_island_id)
+		if(new_island_id)
+			SSisland_mobs.register_mob(src, new_island_id)
+		else
+			SSisland_mobs.remove_mob(src)
+			cached_island_id = null
+
+/mob/living/proc/force_island_check()
+	last_island_check = 0
+	update_island_cache()
+
 /mob/living/proc/DeadLife()
 	set invisibility = 0
-	if (notransform)
+	if (HAS_TRAIT(src, TRAIT_NO_TRANSFORM))
 		return
 	if(!loc)
 		return
@@ -107,7 +147,7 @@
 
 /mob/living/proc/handle_fire()
 	if(fire_stacks < 0) //If we've doused ourselves in water to avoid fire, dry off slowly
-		fire_stacks = min(0, fire_stacks + 1)//So we dry ourselves back to default, nonflammable.
+		fire_stacks = min(0, fire_stacks + 0.4)//So we dry ourselves back to default, nonflammable.
 	if(!on_fire)
 		return TRUE //the mob is no longer on fire, no need to do the rest.
 	if(fire_stacks + divine_fire_stacks > 0)
@@ -177,8 +217,3 @@
 	animate(get_filter("gravity"), y = 1, time = 10)
 	sleep(10)
 	animate(get_filter("gravity"), y = 0, time = 10)
-
-/mob/living/proc/handle_high_gravity(gravity)
-	if(gravity >= GRAVITY_DAMAGE_TRESHOLD) //Aka gravity values of 3 or more
-		var/grav_stregth = gravity - GRAVITY_DAMAGE_TRESHOLD
-		adjustBruteLoss(min(grav_stregth,3))

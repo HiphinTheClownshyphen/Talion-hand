@@ -15,6 +15,11 @@
 	max_w_class = WEIGHT_CLASS_NORMAL
 	not_while_equipped = TRUE
 
+/datum/component/storage/concrete/grid/cannon
+	screen_max_rows = 3
+	screen_max_columns = 3
+	max_w_class = WEIGHT_CLASS_HUGE
+
 /datum/component/storage/concrete/grid/surgery_bag
 	screen_max_rows = 5
 	screen_max_columns = 4
@@ -83,8 +88,8 @@
 	. = ..()
 	if(!.)
 		return
-	if(istype(parent, /obj/item/roguemachine/mastermail))
-		var/obj/item/roguemachine/mastermail/mail_machine = parent
+	if(istype(parent, /obj/item/fake_machine/mastermail))
+		var/obj/item/fake_machine/mastermail/mail_machine = parent
 		if(mail_machine.new_mail)
 			mail_machine.new_mail = FALSE
 			mail_machine.update_appearance(UPDATE_ICON_STATE)
@@ -102,6 +107,18 @@
 	max_w_class = WEIGHT_CLASS_NORMAL
 	screen_max_rows = 5
 	screen_max_columns = 4
+	click_gather = TRUE
+	collection_mode = COLLECT_EVERYTHING
+	dump_time = 0
+	allow_quick_gather = TRUE
+	allow_quick_empty = TRUE
+	allow_dump_out = TRUE
+	insert_preposition = "in"
+
+/datum/component/storage/concrete/grid/handbasket
+	max_w_class = WEIGHT_CLASS_NORMAL
+	screen_max_rows = 3
+	screen_max_columns = 3
 	click_gather = TRUE
 	collection_mode = COLLECT_EVERYTHING
 	dump_time = 0
@@ -180,18 +197,9 @@
 
 /datum/component/storage/concrete/grid/headhook/New(datum/P, ...)
 	. = ..()
-	set_holdable(
-		typecacheof(list(/obj/item/natural/head/volf,
-		/obj/item/natural/head/saiga,
-		/obj/item/natural/head/rous,
-		/obj/item/natural/head/spider,
-		/obj/item/natural/head/bug,
-		/obj/item/bodypart/head/goblin,
-		/obj/item/bodypart/head/rousman,
-		/obj/item/bodypart/head,
-		/obj/item/bodypart/head/orc,
-		/obj/item/bodypart/head/zizombie)
-	))
+	set_holdable(list(/obj/item/natural/head,
+		/obj/item/bodypart/head)
+	)
 
 /datum/component/storage/concrete/grid/headhook/bronze
 	max_w_class = WEIGHT_CLASS_NORMAL
@@ -204,21 +212,6 @@
 	allow_quick_empty = TRUE
 	allow_dump_out = TRUE
 	insert_preposition = "in"
-
-/datum/component/storage/concrete/grid/headhook/bronze/New(datum/P, ...)
-	. = ..()
-	set_holdable(
-		typecacheof(list(/obj/item/natural/head/volf,
-		/obj/item/natural/head/saiga,
-		/obj/item/natural/head/rous,
-		/obj/item/natural/head/spider,
-		/obj/item/natural/head/bug,
-		/obj/item/bodypart/head/goblin,
-		/obj/item/bodypart/head/rousman,
-		/obj/item/bodypart/head,
-		/obj/item/bodypart/head/orc,
-		/obj/item/bodypart/head/zizombie)
-	))
 
 /datum/component/storage/concrete/grid/crucible
 	screen_max_rows = 5
@@ -270,6 +263,31 @@
 	screen_max_columns = 5
 	max_w_class = WEIGHT_CLASS_HUGE
 
+/datum/component/storage/concrete/grid/cup
+	screen_max_rows = 2
+	screen_max_columns = 1
+	max_w_class = WEIGHT_CLASS_TINY
+
+/datum/component/storage/concrete/grid/bucket
+	screen_max_rows = 4
+	screen_max_columns = 2
+	max_w_class = WEIGHT_CLASS_NORMAL
+
+/datum/component/storage/concrete/grid/bucket/New(datum/P, ...)
+	. = ..()
+	//the idea is as follows
+	//the bucket can hold items that you can put in, and reliably pull out without having to toss everything out
+	//so no coins or fibres, they are too small and would get stuck at the bottom
+	set_holdable(list(
+		/obj/item/reagent_containers/food/snacks/fish,
+		/obj/item/natural/worms,
+		/obj/item/natural/bundle/worms,
+		/obj/item/fishing/lure,
+		/obj/item/grown/log/tree/stick,
+		/obj/item/natural/bundle/stick,
+		/obj/item/weapon/knife,//wouldn't it be cool to smuggle a knife somewhere via a bucket?
+		))
+
 /datum/component/storage/concrete/grid/food/cooking
 	max_w_class = WEIGHT_CLASS_HUGE
 
@@ -284,6 +302,7 @@
 				/obj/item/mana_battery/mana_crystal,
 				/obj/item/reagent_containers/powder,
 				/obj/item/organ,
+				/obj/item/neuFarm/seed,
 				)
 			),
 		)
@@ -306,3 +325,49 @@
 	insert_verb = "slide"
 	insert_preposition = "in"
 
+/datum/component/storage/concrete/grid/porter
+	screen_max_rows = 8
+	screen_max_columns = 5
+	max_w_class = WEIGHT_CLASS_HUGE
+	not_while_equipped = TRUE
+	allow_big_nesting = TRUE
+
+/datum/component/storage/concrete/grid/pilltin
+	max_w_class = WEIGHT_CLASS_TINY
+	screen_max_rows = 1
+	screen_max_columns = 3
+	max_items = 3
+
+/datum/component/storage/concrete/grid/pilltin/New(datum/P, ...)
+	. = ..()
+	set_holdable(
+		typecacheof(
+			list(
+				/obj/item/reagent_containers/pill
+				)
+			)
+		)
+
+/datum/component/storage/concrete/grid/ifak
+	screen_max_rows = 2
+	screen_max_columns = 5
+	max_w_class = WEIGHT_CLASS_NORMAL
+
+/datum/component/storage/concrete/grid/ifak/New(datum/P, ...)
+	. = ..()
+	set_holdable(
+		typecacheof(
+			list(
+			/obj/item/weapon/surgery,
+			/obj/item/needle,
+			/obj/item/natural/worms/leech,
+			/obj/item/reagent_containers/lux,
+			/obj/item/natural/bundle/cloth,
+			/obj/item/natural/cloth,
+			/obj/item/reagent_containers/syringe,
+			/obj/item/reagent_containers/pill,
+			/obj/item/storage/fancy/pilltin,
+			/obj/item/candle/yellow
+			)
+		)
+	)

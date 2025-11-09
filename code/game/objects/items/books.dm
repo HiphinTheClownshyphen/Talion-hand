@@ -683,7 +683,7 @@
 
 					<!-- Search box -->
 					<input type="text" class="search-box" id="searchInput"
-						placeholder="Search items..." value="[search_query]">
+						placeholder="Search items..." value="[html_encode(search_query)]">
 
 					<!-- Categories -->
 					<div class="categories">
@@ -870,8 +870,8 @@
 				});
 
 				// Initialize search based on any current query
-				if ("[search_query]" !== "") {
-					filterItems("[search_query]".toLowerCase());
+				if ("[html_encode(search_query)]" !== "") {
+					filterItems("[html_encode(search_query)]".toLowerCase());
 				}
 			</script>
 		</body>
@@ -1188,13 +1188,13 @@
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/blessed)
+		C.add_stress(/datum/stress_event/blessed)
 
 /datum/status_effect/buff/blessed/on_remove()
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stressevent/blessed)
+		C.remove_stress(/datum/stress_event/blessed)
 
 /obj/item/book/law
 	name = "Tome of Justice"
@@ -1363,8 +1363,8 @@
 
 /obj/item/book/playerbook/proc/get_player_input(mob/living/in_round_player_mob, text)
 	player_book_author_ckey = in_round_player_mob.ckey
-	player_book_title = dd_limittext(capitalize(sanitize_hear_message(input(in_round_player_mob, "What title do you want to give the book? (max 42 characters)", "Title", "Unknown"))), MAX_NAME_LEN)
-	player_book_author = "[dd_limittext(sanitize_hear_message(input(in_round_player_mob, "Do you want to preface your author name with an author title? (max 42 characters)", "Author Title", "")), MAX_NAME_LEN)] [in_round_player_mob.real_name]"
+	player_book_title = dd_limittext(capitalize(SANITIZE_HEAR_MESSAGE(input(in_round_player_mob, "What title do you want to give the book? (max 42 characters)", "Title", "Unknown"))), MAX_NAME_LEN)
+	player_book_author = "[dd_limittext(SANITIZE_HEAR_MESSAGE(input(in_round_player_mob, "Do you want to preface your author name with an author title? (max 42 characters)", "Author Title", "")), MAX_NAME_LEN)] [in_round_player_mob.real_name]"
 	player_book_icon = book_icons[input(in_round_player_mob, "Choose a book style", "Book Style") as anything in book_icons]
 	player_book_text = text
 	message_admins("[player_book_author_ckey]([in_round_player_mob.real_name]) has generated the player book: [player_book_title]")
@@ -1507,7 +1507,7 @@
 	if(!user.hud_used.reads)
 		return
 	if(!user.can_read(src))
-		to_chat(span_warning("I study [src], but this verba still eludes me..."))
+		to_chat(user, span_warning("I study [src], but this verba still eludes me..."))
 		user.adjust_experience(/datum/skill/misc/reading, 4, FALSE) //?
 		return
 	if(!in_range(user, src) && !isobserver(user))
@@ -1545,8 +1545,8 @@
 			to_chat(user, "<span class='notice'>The manuscript has already been authored and titled.</span>")
 			return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 		// Prompt user to populate manuscript fields
-		var/newtitle = dd_limittext(sanitize_hear_message(input(user, "Enter the title of the manuscript:") as text|null), MAX_CHARTER_LEN)
-		var/newauthor = dd_limittext(sanitize_hear_message(input(user, "Enter the author's name:") as text|null), MAX_CHARTER_LEN)
+		var/newtitle = dd_limittext(SANITIZE_HEAR_MESSAGE(input(user, "Enter the title of the manuscript:") as text|null), MAX_CHARTER_LEN)
+		var/newauthor = dd_limittext(SANITIZE_HEAR_MESSAGE(input(user, "Enter the author's name:") as text|null), MAX_CHARTER_LEN)
 		var/newcategory = input(user, "Select the category of the manuscript:") in list("Apocrypha & Grimoires", "Myths & Tales", "Legends & Accounts", "Thesis", "Eoratica")
 		var/newicon = book_icons[input(user, "Choose a book style", "Book Style") as anything in book_icons]
 
@@ -1632,7 +1632,7 @@
 ____________End of Example*/
 
 /obj/item/book/magicaltheory
-	name = "Arcane Foundations - A historie of Magicks"
+	name = "Arcyne Foundations - A historie of the Arcyne"
 	desc = "Written by the rector of the Valerian College of Magick"
 	icon_state ="knowledge_0"
 	base_icon_state = "knowledge"
@@ -1691,10 +1691,10 @@ ____________End of Example*/
 	bookfile = "Neu_cooking.json"
 
 /obj/item/book/bibble/psy
-	name = "The Book"
-	icon_state = "psybibble_0"
-	base_icon_state = "psybibble"
-	title = "bible"
+	name = "The PSY Book"
+	icon_state = "bibble_0" // change when sprites avaliable
+	base_icon_state = "bibble"
+	title = "psydon bible"
 	dat = "gott.json"
 	verses_file = "strings/psybibble.txt"
 
@@ -1722,13 +1722,13 @@ ____________End of Example*/
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/blessed)
+		C.add_stress(/datum/stress_event/blessed)
 
 /datum/status_effect/buff/blessed/on_remove()
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stressevent/blessed)
+		C.remove_stress(/datum/stress_event/blessed)
 
 /obj/item/book/rogue/howtogaffer
 	name = "Dont be a gaff, the guild masters manual"

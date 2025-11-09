@@ -1,8 +1,5 @@
 /obj/item/weapon
-	name = ""
-	desc = ""
-	icon_state = "sabre"
-	icon = 'icons/roguetown/weapons/32.dmi'
+	name = "weapon"
 	lefthand_file = 'icons/mob/inhands/weapons/rogue_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/weapons/rogue_righthand.dmi'
 	force = 15
@@ -39,11 +36,13 @@
 	var/uniquestyle = TRUE // for weapon (and armor) customizers, prevents them from being icon changed or applied overlays
 	var/madeof = null
 
-/obj/item/weapon/Initialize()
+/obj/item/weapon/Initialize(mapload)
 	. = ..()
 	if(!destroy_message)
 		var/yea = pick("[src] is broken!", "[src] is useless!", "[src] is destroyed!")
 		destroy_message = "<span class='warning'>[yea]</span>"
+
+	update_integrity(max_integrity + rand(-(max_integrity * 0.2), 0))
 
 /obj/item/weapon/attack_hand(mob/user)
 	if(istype(user, /mob/living/carbon/human/species/werewolf)) //slop fix
@@ -52,11 +51,11 @@
 
 /obj/item/weapon/pickup(mob/user)
 	. = ..()
-	if(HAS_TRAIT(user, TRAIT_RAVOX_CURSE))
+	if(HAS_TRAIT(user, TRAIT_RAVOX_CURSE) && prob(33))
 		var/mob/living/carbon/human/H = user
 		to_chat(H, span_warning("The idea repulses me!"))
 		H.cursed_freak_out()
-		H.Paralyze(20)
+		H.Paralyze(4 SECONDS)
 		return
 
 /obj/item/weapon/get_examine_string(mob/user, thats = FALSE)

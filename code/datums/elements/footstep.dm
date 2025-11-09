@@ -77,9 +77,6 @@
 	if(steps % 2)
 		return
 
-	if(steps != 0 && !source.has_gravity()) // don't need to step as often when you hop around
-		return
-
 	. = list(FOOTSTEP_MOB_SHOE = turf.footstep, FOOTSTEP_MOB_BAREFOOT = turf.barefootstep, FOOTSTEP_MOB_HEAVY = turf.heavyfootstep, FOOTSTEP_MOB_CLAW = turf.clawfootstep, STEP_SOUND_PRIORITY = STEP_SOUND_NO_PRIORITY)
 	SEND_SIGNAL(source, COMSIG_MOB_PREPARE_STEP_SOUND, .) // Used to override shoe material before turf
 	SEND_SIGNAL(turf, COMSIG_TURF_PREPARE_STEP_SOUND, .)
@@ -90,6 +87,9 @@
 	var/turf/source_loc = get_turf(source)
 
 	if (forced || HAS_TRAIT(source, TRAIT_SILENT_FOOTSTEPS))
+		return
+
+	if(source.moving_diagonally == 1)
 		return
 
 	var/list/prepared_steps = prepare_step(source)
@@ -108,6 +108,9 @@
 /datum/element/footstep/proc/play_humanstep(mob/living/carbon/human/source, atom/oldloc, direction, forced)
 	SIGNAL_HANDLER
 	if (forced || HAS_TRAIT(source, TRAIT_SILENT_FOOTSTEPS))
+		return
+
+	if(source.moving_diagonally == 1)
 		return
 
 	var/volume_multiplier = 1

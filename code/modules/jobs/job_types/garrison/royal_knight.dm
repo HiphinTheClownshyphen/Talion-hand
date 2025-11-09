@@ -4,7 +4,6 @@
 	Sworn to protect the royal family, you stand as their shield, upholding their rule with steel and sacrifice. \
 	Yet service is not without its trials, and your loyalty will be tested in ways both seen and unseen. \
 	In the end, duty is a path you must walk carefully."
-	flag = GUARDSMAN
 	department_flag = GARRISON
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_ROYALKNIGHT
@@ -17,24 +16,28 @@
 
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_IMMORTAL)
 	allowed_races = RACES_PLAYER_NONDISCRIMINATED
+	blacklisted_species = list(SPEC_ID_HALFLING)
 
 	advclass_cat_rolls = list(CTAG_ROYALKNIGHT = 20)
 	give_bank_account = 60
 	cmode_music = 'sound/music/cmode/nobility/CombatKnight.ogg'
+	job_bitflag = BITFLAG_GARRISON
 
-/datum/advclass/royalknight/knight
-	name = "Royal Knight"
+/datum/job/advclass/royalknight
+	inherit_parent_title = TRUE
+
+/datum/job/advclass/royalknight/knight
+	title = "Royal Knight"
 	tutorial = "The classic Knight in shining armor. Slightly more skilled then their Steam counterpart but has worse armor."
 
-	outfit = /datum/outfit/job/royalknight/knight
+	outfit = /datum/outfit/royalknight/knight
 
 	category_tags = list(CTAG_ROYALKNIGHT)
 
-/datum/outfit/job/royalknight
-	job_bitflag = BITFLAG_GARRISON
+/datum/outfit/royalknight
 	var/reduced_skill = FALSE
 
-/datum/outfit/job/royalknight/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/royalknight/pre_equip(mob/living/carbon/human/H)
 	..()
 	neck = /obj/item/clothing/neck/chaincoif
 	pants = /obj/item/clothing/pants/platelegs
@@ -43,7 +46,7 @@
 	belt = /obj/item/storage/belt/leather
 	beltr = /obj/item/weapon/sword/arming
 	backl = /obj/item/storage/backpack/satchel
-	scabbards = list(/obj/item/weapon/scabbard/sword)
+	scabbards = list(/obj/item/weapon/scabbard/sword/noble)
 	backpack_contents = list(/obj/item/storage/keyring/manorguard = 1)
 
 	H.adjust_skillrank(/datum/skill/combat/swords, 4, TRUE)
@@ -78,7 +81,7 @@
 	if(H.dna?.species?.id == SPEC_ID_HUMEN)
 		H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
 
-/datum/outfit/job/royalknight/post_equip(mob/living/carbon/human/H, visualsOnly)
+/datum/outfit/royalknight/post_equip(mob/living/carbon/human/H, visuals_only)
 	. = ..()
 	if(H.cloak)
 		if(!findtext(H.cloak.name,"([H.real_name])"))
@@ -97,31 +100,34 @@
 		"Halberd" = /obj/item/weapon/polearm/halberd, \
 		"Longsword" = /obj/item/weapon/sword/long, \
 		"Sabre" = /obj/item/weapon/sword/sabre/dec, \
-		"Unarmed" = /obj/item/weapon/knife/dagger/steel \
+		"Unarmed" = /obj/item/weapon/knife/dagger/steel, \
+		"Knuckles" = /obj/item/weapon/knuckles, \
+		"Katar" = /obj/item/weapon/katar \
 		)
 	var/choice = H.select_equippable(H, selectable, message = "Choose Your Specialisation", title = "KNIGHT")
 	if(!choice)
 		return
 	var/grant_shield = TRUE
-	var/modifier = reduced_skill
 	switch(choice)
 		if("Flail")
-			H.adjust_skillrank(/datum/skill/combat/whipsflails, 2 - modifier, TRUE)
+			H.clamped_adjust_skillrank(/datum/skill/combat/whipsflails, 2, 4, TRUE)
 		if("Halberd")
-			H.adjust_skillrank(/datum/skill/combat/polearms, 2 - modifier, TRUE)
+			H.clamped_adjust_skillrank(/datum/skill/combat/polearms, 2, 4, TRUE)
 			grant_shield = FALSE
 		if("Longsword")
-			if(!reduced_skill)
-				H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
 			grant_shield = FALSE
+			H.clamped_adjust_skillrank(/datum/skill/combat/swords, 2, 4, TRUE)
 		if("Sabre")
-			if(!reduced_skill)
-				H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
+			H.clamped_adjust_skillrank(/datum/skill/combat/swords, 2, 4, TRUE)
 		if("Unarmed")
-			if(!reduced_skill)
-				H.adjust_skillrank(/datum/skill/combat/wrestling, 1, TRUE)
-			H.adjust_skillrank(/datum/skill/combat/unarmed, 2, TRUE)
-			H.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
+			H.clamped_adjust_skillrank(/datum/skill/combat/unarmed, 3, 5, TRUE)
+			H.clamped_adjust_skillrank(/datum/skill/combat/knives, 2, 4, TRUE)
+			grant_shield = FALSE
+		if("Knuckles")
+			H.clamped_adjust_skillrank(/datum/skill/combat/unarmed, 1, 4, TRUE)
+			grant_shield = FALSE
+		if("Katar")
+			H.clamped_adjust_skillrank(/datum/skill/combat/unarmed, 1, 4, TRUE)
 			grant_shield = FALSE
 	if(grant_shield)
 		H.adjust_skillrank(/datum/skill/combat/shields, 1, TRUE)
@@ -129,28 +135,28 @@
 		if(!H.equip_to_appropriate_slot(shield))
 			qdel(shield)
 
-/datum/outfit/job/royalknight/knight/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/royalknight/knight/pre_equip(mob/living/carbon/human/H)
 	. = ..()
 	armor = /obj/item/clothing/armor/plate/full
 	head = /obj/item/clothing/head/helmet/visored/royalknight
 	gloves = /obj/item/clothing/gloves/plate
 	shoes = /obj/item/clothing/shoes/boots/armor
 
-/datum/advclass/royalknight/steam
-	name = "Steam Knight"
+/datum/job/advclass/royalknight/steam
+	title = "Steam Knight"
 	tutorial = "The pinnacle of Vanderlin's steam technology. \
 	Start with a set of Steam Armor that requires steam to function. \
 	The suit is powerful when powered but will slow you down when not \
-	and has the cost of reducing your space for arms."
+	learning how to use it has cost you precious time \
+	you could have spent learning to use other weapons."
 
-	outfit = /datum/outfit/job/royalknight/steam
+	outfit = /datum/outfit/royalknight/steam
 
 	category_tags = list(CTAG_ROYALKNIGHT)
 
-/datum/outfit/job/royalknight/steam
-	reduced_skill = TRUE
+/datum/outfit/royalknight/steam
 
-/datum/outfit/job/royalknight/steam/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/royalknight/steam/pre_equip(mob/living/carbon/human/H)
 	. = ..()
 	backr = /obj/item/clothing/cloak/boiler
 	armor = /obj/item/clothing/armor/steam
@@ -158,19 +164,19 @@
 	gloves = /obj/item/clothing/gloves/plate/steam
 	head = /obj/item/clothing/head/helmet/heavy/steam
 
-	// Steam armour is complex
-	H.change_stat(STATKEY_INT, 2)
-	// Stronger armour than base RK
-	// Stat punishment for not having the armour active
-	H.change_stat(STATKEY_STR, -1)
-	H.change_stat(STATKEY_CON, -1)
-	H.change_stat(STATKEY_END, -1)
-	// Way heavier
-	H.change_stat(STATKEY_SPD, -1)
+	H.adjust_skillrank(/datum/skill/combat/swords, -1, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/unarmed, -1, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/shields, -1, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/wrestling, -1, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/polearms, -1, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/whipsflails, -1, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/axesmaces, -1, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/bows, -1, TRUE)
+	H.adjust_skillrank(/datum/skill/combat/crossbows, -1, TRUE)
+	H.adjust_skillrank(/datum/skill/craft/engineering, 3, TRUE)//replaces the int buff
 
-/datum/outfit/job/royalknight/steam/post_equip(mob/living/carbon/human/H, visualsOnly)
+/datum/outfit/royalknight/steam/post_equip(mob/living/carbon/human/H, visuals_only)
 	. = ..()
 	if(H.backr && istype(H.backr, /obj/item/clothing/cloak/boiler))
 		var/obj/item/clothing/cloak/boiler/B = H.backr
 		SEND_SIGNAL(B, COMSIG_ATOM_STEAM_INCREASE, 1000)
-		B.update_armor()

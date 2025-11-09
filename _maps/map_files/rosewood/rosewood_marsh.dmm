@@ -20,7 +20,7 @@
 /turf/open/floor/ruinedwood/darker,
 /area/rogue/outdoors/bog)
 "ad" = (
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 4
 	},
 /turf/closed/wall/mineral/tent,
@@ -37,7 +37,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave)
 "ag" = (
-/obj/structure/fluff/railing/fence,
+/obj/structure/fluff/railing/tall/palisade,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/lich)
 "ai" = (
@@ -363,7 +363,7 @@
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog)
 "cv" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/twig,
 /area/rogue/indoors/mountains)
 "cw" = (
@@ -424,7 +424,7 @@
 /turf/open/floor/church/purple,
 /area/rogue/indoors/lich)
 "cM" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog)
 "cQ" = (
@@ -582,7 +582,7 @@
 /area/rogue/indoors/cave)
 "dI" = (
 /obj/structure/table/wood/plain,
-/obj/item/kitchen/platter{
+/obj/item/plate{
 	pixel_x = 6;
 	pixel_y = 6
 	},
@@ -694,11 +694,11 @@
 /area/rogue/indoors/lich)
 "ek" = (
 /obj/structure/table/wood/plain,
-/obj/item/kitchen/platter/copper{
+/obj/item/plate/copper{
 	pixel_x = 7;
 	pixel_y = -1
 	},
-/obj/item/kitchen/platter/copper{
+/obj/item/plate/copper{
 	pixel_x = -5;
 	pixel_y = 8
 	},
@@ -729,7 +729,7 @@
 /turf/open/floor/ruinedwood/darker,
 /area/rogue/indoors/lich)
 "er" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /obj/machinery/light/fueled/wallfire/candle,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/mountains)
@@ -978,7 +978,7 @@
 /turf/open/floor/grass/cold,
 /area/rogue/outdoors/bog)
 "fQ" = (
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 8
 	},
 /turf/open/floor/grass/cold,
@@ -1430,7 +1430,7 @@
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/lich)
 "ih" = (
-/obj/structure/fluff/railing/fence,
+/obj/structure/fluff/railing/tall/palisade,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog)
 "ii" = (
@@ -1468,7 +1468,7 @@
 /turf/open/floor/ruinedwood/darker,
 /area/rogue/indoors/mountains)
 "ip" = (
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 8
 	},
 /turf/open/floor/naturalstone,
@@ -1610,15 +1610,15 @@
 /area/rogue/outdoors/bog)
 "jh" = (
 /obj/structure/table/wood/crafted,
-/obj/item/fishing/bait/deluxe{
+/obj/item/fishing/lure/deluxe{
 	pixel_x = -7;
 	pixel_y = 0
 	},
-/obj/item/fishing/bait/deluxe{
+/obj/item/fishing/lure/deluxe{
 	pixel_x = 7;
 	pixel_y = 9
 	},
-/obj/item/fishing/bait/deluxe{
+/obj/item/fishing/lure/deluxe{
 	pixel_x = -4;
 	pixel_y = 14
 	},
@@ -1707,7 +1707,7 @@
 /turf/open/water/swamp,
 /area/rogue/outdoors/bog)
 "jJ" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/ruinedwood/darker,
 /area/rogue/indoors/mountains)
 "jK" = (
@@ -2672,10 +2672,10 @@
 /area/rogue/outdoors/bog)
 "pP" = (
 /obj/structure/rack/shelf/biggest,
-/obj/item/clothing/shoes/boots/rare/zybanplate,
-/obj/item/clothing/gloves/rare/zybanplate,
-/obj/item/clothing/armor/rare/zybanplate,
-/obj/item/clothing/head/rare/zybanplate,
+/obj/item/clothing/shoes/boots/rare/zaladplate,
+/obj/item/clothing/gloves/rare/zaladplate,
+/obj/item/clothing/armor/rare/zaladplate,
+/obj/item/clothing/head/rare/zaladplate,
 /turf/open/floor/twig,
 /area/rogue/indoors/mountains)
 "pT" = (
@@ -2702,7 +2702,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/mountains)
 "qc" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /mob/living/carbon/human/species/goblin/npc/ambush,
 /turf/open/floor/grass/cold,
 /area/rogue/outdoors/bog)
@@ -2889,7 +2889,7 @@
 /area/rogue/indoors/lich)
 "rs" = (
 /obj/structure/closet/crate/chest/neu_fancy,
-/obj/item/clothing/neck/mercmedal/zybatine,
+/obj/item/clothing/neck/mercmedal/zaladin,
 /obj/effect/spawner/map_spawner/loot/common,
 /obj/effect/spawner/map_spawner/loot/common,
 /turf/open/floor/twig,
@@ -2899,7 +2899,7 @@
 /turf/open/floor/carpet/red,
 /area/rogue/indoors/lich)
 "ru" = (
-/obj/structure/fluff/railing/fence,
+/obj/structure/fluff/railing/tall/palisade,
 /turf/open/floor/grass/cold,
 /area/rogue/outdoors/bog)
 "rw" = (
@@ -2940,7 +2940,7 @@
 	},
 /area/rogue/outdoors/bog)
 "rI" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/lich)
 "rJ" = (
@@ -3536,7 +3536,7 @@
 /turf/open/floor/church,
 /area/rogue/indoors/cave)
 "uN" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /obj/structure/spider/stickyweb{
 	dir = 8
 	},
@@ -3690,7 +3690,7 @@
 /turf/open/floor/ruinedwood/turned/darker,
 /area/rogue/indoors/lich)
 "vG" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/mountains)
 "vH" = (
@@ -3714,7 +3714,7 @@
 /turf/open/floor/churchmarble,
 /area/rogue/outdoors/bog)
 "vM" = (
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 1
 	},
 /turf/open/floor/dirt,
@@ -3997,10 +3997,10 @@
 /turf/open/floor/churchrough/purple,
 /area/rogue/indoors/lich)
 "xg" = (
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 4
 	},
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 8
 	},
 /turf/closed/wall/mineral/wood,
@@ -4174,7 +4174,7 @@
 /turf/open/floor/grass/cold,
 /area/rogue/outdoors/bog)
 "yj" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/grass/cold,
 /area/rogue/outdoors/bog)
 "yn" = (
@@ -4289,7 +4289,7 @@
 /turf/open/floor/cobble,
 /area/rogue/outdoors/bog)
 "yW" = (
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 1
 	},
 /turf/open/floor/grass/cold,
@@ -4354,7 +4354,7 @@
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/lich)
 "zr" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/ruinedwood/darker,
 /area/rogue/indoors/lich)
 "zs" = (
@@ -4593,7 +4593,7 @@
 /turf/open/floor/twig,
 /area/rogue/indoors/mountains)
 "Ax" = (
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 4
 	},
 /turf/open/floor/dirt,
@@ -4740,7 +4740,7 @@
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog)
 "Bm" = (
-/obj/structure/fluff/railing/fence,
+/obj/structure/fluff/railing/tall/palisade,
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/bog)
 "Bp" = (
@@ -4835,7 +4835,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/lich)
 "BR" = (
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 4
 	},
 /turf/open/floor/grass/cold,
@@ -4845,10 +4845,10 @@
 /turf/open/floor/churchbrick,
 /area/rogue/indoors/lich)
 "BU" = (
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 8
 	},
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 4
 	},
 /turf/closed/wall/mineral/wood,
@@ -4872,7 +4872,7 @@
 /turf/open/floor/cobble/snow,
 /area/rogue/outdoors/bog)
 "Ca" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /obj/effect/decal/cleanable/dirt/cobweb{
 	pixel_y = -2;
 	pixel_x = 1;
@@ -4959,7 +4959,7 @@
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog)
 "Cx" = (
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 4
 	},
 /turf/closed/wall/mineral/wood,
@@ -5052,7 +5052,7 @@
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/lich)
 "CZ" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/mountains)
 "Da" = (
@@ -5240,7 +5240,7 @@
 /turf/open/floor/ruinedwood/darker,
 /area/rogue/indoors/lich)
 "DZ" = (
-/obj/structure/fluff/railing/fence,
+/obj/structure/fluff/railing/tall/palisade,
 /turf/open/floor/grass/cold,
 /area/rogue/indoors/lich)
 "Eb" = (
@@ -5289,7 +5289,7 @@
 /area/rogue/indoors/cave)
 "Er" = (
 /obj/structure/table/wood/plain,
-/obj/item/kitchen/platter{
+/obj/item/plate{
 	pixel_x = 5;
 	pixel_y = 9
 	},
@@ -5468,7 +5468,7 @@
 /turf/open/floor/tile/masonic/single,
 /area/rogue/indoors/lich)
 "Fv" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/dirt,
 /area/rogue/indoors/mountains)
 "Fx" = (
@@ -6494,7 +6494,7 @@
 /turf/open/floor/ruinedwood/darker,
 /area/rogue/indoors/lich)
 "Lq" = (
-/obj/structure/fluff/railing/fence,
+/obj/structure/fluff/railing/tall/palisade,
 /turf/open/floor/cobble,
 /area/rogue/indoors/lich)
 "Ls" = (
@@ -6601,7 +6601,7 @@
 	dir = 4;
 	icon_state = "border"
 	},
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/ruinedwood,
 /area/rogue/outdoors/bog)
 "Mc" = (
@@ -6695,7 +6695,7 @@
 	pixel_y = 6
 	},
 /obj/item/clothing/neck/psycross/silver/ravox,
-/obj/item/clothing/neck/psycross/noc{
+/obj/item/clothing/neck/psycross/silver/noc{
 	pixel_x = 15;
 	pixel_y = -2
 	},
@@ -6711,7 +6711,7 @@
 	pixel_x = 0;
 	pixel_y = -31
 	},
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/lich)
 "MI" = (
@@ -7526,7 +7526,7 @@
 /area/rogue/indoors/lich)
 "Sd" = (
 /obj/structure/table/wood/plain,
-/obj/item/kitchen/platter/copper{
+/obj/item/plate/copper{
 	pixel_x = -4;
 	pixel_y = 5
 	},
@@ -7835,7 +7835,7 @@
 /turf/open/floor/ruinedwood/turned/darker,
 /area/rogue/indoors/lich)
 "TV" = (
-/obj/structure/fluff/railing/fence,
+/obj/structure/fluff/railing/tall/palisade,
 /turf/open/floor/dirt,
 /area/rogue/indoors/lich)
 "TW" = (
@@ -7973,7 +7973,7 @@
 /turf/open/floor/ruinedwood/darker,
 /area/rogue/outdoors/bog)
 "UI" = (
-/obj/structure/fluff/railing/fence{
+/obj/structure/fluff/railing/tall/palisade{
 	dir = 8
 	},
 /turf/open/floor/dirt,
@@ -8315,7 +8315,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/lich)
 "WS" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/bog)
 "WT" = (
@@ -8352,7 +8352,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/bog)
 "Xf" = (
-/obj/item/chair/stool/bar,
+/obj/item/chair/stool,
 /mob/living/carbon/human/species/goblin/npc/ambush,
 /turf/open/floor/twig,
 /area/rogue/indoors/mountains)
@@ -8495,7 +8495,7 @@
 /turf/open/floor/ruinedwood/turned/darker,
 /area/rogue/indoors/lich)
 "XZ" = (
-/obj/structure/fluff/railing/fence,
+/obj/structure/fluff/railing/tall/palisade,
 /turf/closed/wall/mineral/wood,
 /area/rogue/indoors/lich)
 "Ya" = (
@@ -8508,7 +8508,7 @@
 	dir = 1
 	},
 /obj/structure/bars/bent,
-/obj/item/kitchen/platter,
+/obj/item/plate,
 /turf/open/floor/tile/kitchen,
 /area/rogue/indoors/mountains)
 "Yd" = (

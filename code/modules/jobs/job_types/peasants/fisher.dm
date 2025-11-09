@@ -3,7 +3,6 @@
 	tutorial = "Abyssor is angry. Neglected and shunned, his boons yet shy from your hook. \
 	Alone, in the stillness of nature, your bag is empty, and yet you fish. Pluck the children of god from their trance, \
 	and stare into the water to see the reflection of a drowned body in the making."
-	flag = FISHER
 	department_flag = PEASANTS
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_FISHER
@@ -14,19 +13,19 @@
 
 	allowed_races = RACES_PLAYER_ALL
 
-	outfit = /datum/outfit/job/fisher
+	outfit = /datum/outfit/fisher
 	give_bank_account = 8
 	cmode_music = 'sound/music/cmode/towner/CombatTowner2.ogg'
 
-/datum/outfit/job/fisher
 	job_bitflag = BITFLAG_CONSTRUCTOR
 
-/datum/outfit/job/fisher/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/fisher/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/swimming, 3, TRUE)
 	H.adjust_skillrank(/datum/skill/craft/cooking, 2, TRUE)
-	H.adjust_skillrank(/datum/skill/craft/crafting, pick(1,2), TRUE)
+	H.adjust_skillrank(/datum/skill/craft/crafting, 2, TRUE)
+	H.adjust_skillrank(/datum/skill/misc/sewing, pick(1,2), TRUE)
 	H.adjust_skillrank(/datum/skill/labor/fishing, 4, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/medicine, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/athletics, pick(2,2,3), TRUE)

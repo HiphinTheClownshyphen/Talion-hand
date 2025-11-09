@@ -115,14 +115,21 @@ GLOBAL_LIST_EMPTY(redstone_objs)
 /obj/structure/lever/hidden
 	icon = null
 
-/obj/structure/lever/hidden/proc/feel_button(mob/living/user)
-	if(isliving(user))
-		var/mob/living/L = user
+	//the perception DC to use this
+	var/hidden_dc = 10
+
+/obj/structure/lever/hidden/proc/feel_button(mob/living/user, ignore_dc = FALSE)
+	if(!isliving(user))
+		return
+	var/mob/living/L = user
+	// they're trained at this
+	var/bonuses = (HAS_TRAIT(user, TRAIT_THIEVESGUILD) || HAS_TRAIT(user, TRAIT_ASSASSIN)) ? 2 : 0
+	if(L.STAPER + bonuses >= hidden_dc || ignore_dc)
 		L.changeNext_move(CLICK_CD_MELEE)
-		user.visible_message("<span class='warning'>[user] presses a hidden button.</span>")
+		user.visible_message(span_danger("[user] presses a hidden button."), span_notice("I push a hidden button."))
 		user.log_message("pulled the lever with redstone id \"[redstone_id]\"", LOG_GAME)
 		for(var/obj/structure/O in redstone_attached)
-			spawn(0) O.redstone_triggered(user)
+			INVOKE_ASYNC(O, PROC_REF(redstone_triggered), user)
 		trigger_wire_network(user)
 		toggled = !toggled
 		playsound(src, 'sound/foley/lever.ogg', 100, extrarange = 3)
@@ -366,15 +373,19 @@ GLOBAL_LIST_EMPTY(redstone_objs)
 	redstone_structure = TRUE
 	var/togg = FALSE
 	var/base_state = "floorhatch"
-	max_integrity = 0
+	resistance_flags = INDESTRUCTIBLE
 /*
 /obj/structure/floordoor/Initialize()
 	AddComponent(/datum/component/squeak, list('sound/foley/footsteps/FTMET_A1.ogg','sound/foley/footsteps/FTMET_A2.ogg','sound/foley/footsteps/FTMET_A3.ogg','sound/foley/footsteps/FTMET_A4.ogg'), 40)
 	return ..()
 */
-/obj/structure/floordoor/obj_break(damage_flag, silent)
+/obj/structure/floordoor/atom_break(damage_flag)
+	. = ..()
 	obj_flags = null
-	..()
+
+/obj/structure/floordoor/atom_fix()
+	. = ..()
+	obj_flags = initial(obj_flags)
 
 /obj/structure/floordoor/redstone_triggered(mob/user)
 	if(obj_broken)
@@ -401,8 +412,8 @@ GLOBAL_LIST_EMPTY(redstone_objs)
 	var/changing_state = FALSE
 	var/delay2open = 0
 	var/delay2close = 0
-	max_integrity = 0
-	nomouseover = TRUE
+	resistance_flags = INDESTRUCTIBLE
+	no_over_text = TRUE
 	mouse_opacity = 0
 	redstone_structure = TRUE
 
@@ -444,16 +455,16 @@ GLOBAL_LIST_EMPTY(redstone_objs)
 
 /obj/structure/kybraxor
 	name = "Kybraxor the Devourer"
-	desc = "The old mad duke's hungriest pet."
+	desc = "Two massive slabs of metal flooring which threaten to swallow you whole. Watch out!"
 	density = FALSE
-	nomouseover = TRUE
+	no_over_text = TRUE
 	icon = 'icons/roguetown/misc/96x96.dmi'
 	icon_state = "kybraxor1"
 	redstone_id = "gatelava"
 	var/openn = FALSE
 	var/changing_state = FALSE
 	layer = ABOVE_OPEN_TURF_LAYER
-	max_integrity = 0
+	resistance_flags = INDESTRUCTIBLE
 
 /obj/structure/kybraxor/redstone_triggered(mob/user)
 	if(changing_state)

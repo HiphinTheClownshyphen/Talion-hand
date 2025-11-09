@@ -6,7 +6,7 @@
 /mob/living/carbon/spirit/Life()
 	set invisibility = 0
 
-	if (notransform)
+	if (HAS_TRAIT(src, TRAIT_NO_TRANSFORM))
 		return
 
 /mob/living/carbon/spirit/handle_environment()
@@ -85,5 +85,5 @@
 		I.fire_act((fire_stacks * 50)) //damage taken is reduced to 2% of this value by fire_act()
 
 	adjust_bodytemperature(BODYTEMP_HEATING_MAX)
-	SEND_SIGNAL(src, COMSIG_ADD_MOOD_EVENT, "on_fire", /datum/mood_event/on_fire)
+	add_stress(/datum/stress_event/on_fire)
 */

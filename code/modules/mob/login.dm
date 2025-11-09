@@ -68,8 +68,6 @@
 		var/datum/atom_hud/alternate_appearance/AA = v
 		AA.onNewMob(src)
 
-	client.genmouseobj()
-
 	update_client_colour()
 	update_mouse_pointer()
 	update_ambience_area(get_area(src))
@@ -99,6 +97,8 @@
 	if(client.holder)
 		client.hearallasghost()
 	resend_all_uis()
+	if(client)
+		client.preload_music()
 
 /mob/proc/send_pref_messages()
 	if(client?.prefs)

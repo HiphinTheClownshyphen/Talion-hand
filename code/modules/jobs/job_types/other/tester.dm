@@ -1,7 +1,6 @@
 /datum/job/tester
 	title = "Tester"
 	tutorial = "Try not to get obliterated by the Gods while they toy with you."
-	flag = GRAVETENDER
 	department_flag = PEASANTS
 	job_flags = (JOB_EQUIP_RANK)
 	faction = FACTION_TOWN
@@ -13,9 +12,9 @@
 
 	allowed_races = RACES_PLAYER_ALL
 
-	outfit = /datum/outfit/job/tester
+	outfit = /datum/outfit/tester
 
-/datum/outfit/job/tester/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/tester/pre_equip(mob/living/carbon/human/H)
 	..()
 	shoes = /obj/item/clothing/shoes/boots/leather
 	wrists = /obj/item/clothing/wrists/bracers

@@ -9,7 +9,7 @@
 	climbable = FALSE
 	facepull = FALSE
 	drag_slowdown = 6
-	pixel_x = -12
+	SET_BASE_PIXEL(-12, 0)
 
 /obj/structure/plough/Moved(oldLoc, movement_dir)
 	. = ..()
@@ -32,6 +32,10 @@
 		if(soil)
 			soil.user_till_soil(user)
 		else
+			var/obj/structure/irrigation_channel/located = locate(/obj/structure/irrigation_channel) in location
+			if(located)
+				to_chat(user, span_notice("[located] is in the way!"))
+				return
 			new /obj/structure/soil(location)
 			if(user.buckled)
 				apply_farming_fatigue(user, 5)

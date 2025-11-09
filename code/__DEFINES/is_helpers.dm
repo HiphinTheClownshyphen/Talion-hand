@@ -3,6 +3,9 @@
 
 #define in_range(source, user) (get_dist(source, user) <= 1 && (get_step(source, 0)?:z) == (get_step(user, 0)?:z))
 
+#define in_range_loose(source, user) (get_dist(source, user) <= 2 && (get_step(source, 0)?:z) == (get_step(user, 0)?:z))
+
+
 #define ismovableatom(A) ismovable(A)
 
 
@@ -80,6 +83,7 @@ GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(
 #define ishalfdrow(A) (is_species(A, /datum/species/human/halfdrow))
 #define ismedicator(A) (is_species(A, /datum/species/medicator))
 #define istriton(A) (is_species(A, /datum/species/triton))
+#define ishalfling(A) (is_species(A, /datum/species/halfling))
 
 //more carbon mobs
 #define ismonkey(A) (istype(A, /mob/living/carbon/monkey))
@@ -118,6 +122,16 @@ GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(
 
 #define isweapon(A) (istype(A, /obj/item/weapon))
 
+#define isammo(A) (istype(A, /obj/item/ammo_casing))
+
+#define isreagentcontainer(A) (istype(A, /obj/item/reagent_containers))
+
+#define ismobholder(A) (istype(A, /obj/item/clothing/head/mob_holder))
+
+#define isfuse(A) (istype(A, /obj/item/fuse))
+
+#define isscabbard(A) (istype(A, /obj/item/weapon/scabbard))
+
 #define isstructure(A) (istype(A, /obj/structure))
 
 #define ismachinery(A) (istype(A, /obj/machinery))
@@ -141,6 +155,11 @@ GLOBAL_LIST_INIT(pointed_types, typecacheof(list(
 
 #define isgun(A) (istype(A, /obj/item/gun))
 
+#define is_reagent_container(O) (istype(O, /obj/item/reagent_containers))
+
+#define isfood(O) istype(O, /obj/item/reagent_containers/food)
+
+#define issnack(O) istype(O, /obj/item/reagent_containers/food/snacks)
 
 #define iseffect(O) (istype(O, /obj/effect))
 
@@ -171,9 +190,9 @@ GLOBAL_LIST_INIT(RATS_DONT_EAT, typecacheof(list(
 	#define is_innkeep_job(job_type) (istype(job_type, /datum/job/innkeep))
 // Peasantry
 	#define is_jester_job(job_type) (istype(job_type, /datum/job/jester))
-	#define is_adventurer_job(job_type) (istype(job_type, /datum/job/adventurer))
-	#define is_mercenary_job(job_type) (istype(job_type, /datum/job/mercenary))
-	#define is_pilgrim_job(job_type) (istype(job_type, /datum/job/pilgrim))
+	#define is_adventurer_job(job_type) (istype(job_type, /datum/job/advclass/adventurer))
+	#define is_mercenary_job(job_type) (istype(job_type, /datum/job/advclass/mercenary))
+	#define is_pilgrim_job(job_type) (istype(job_type, /datum/job/advclass/pilgrim))
 	#define is_vagrant_job(job_type) (istype(job_type, /datum/job/vagrant))
 //  Apprentices
 	#define is_gaffer_assistant_job(job_type) (istype(job_type, /datum/job/gaffer_assistant))
@@ -183,8 +202,9 @@ GLOBAL_LIST_INIT(RATS_DONT_EAT, typecacheof(list(
 	#define is_rousman_job(job_type) (istype(job_type, /datum/job/rousman))
 	#define is_goblin_job(job_type) (istype(job_type, /datum/job/goblin))
 
-// Age Check
-	#define is_child(A) (A.age == AGE_CHILD)
+	#define is_zizolackey(mind) (mind.has_antag_datum(/datum/antagonist/zizocultist))
+	#define is_zizocultist(mind) (mind.has_antag_datum(/datum/antagonist/zizocultist/leader))
+
 // seemingly deprecated:
 //"Preacher" //as a job, there is an equivalent class
 
@@ -192,3 +212,5 @@ GLOBAL_VAR_INIT(magic_appearance_detecting_image, new /image) // appearances are
 #define isimage(thing) (istype(thing, /image))
 #define isappearance(thing) (!isimage(thing) && !ispath(thing) && istype(GLOB.magic_appearance_detecting_image, thing))
 #define isappearance_or_image(thing) (isimage(thing) || (!ispath(thing) && istype(GLOB.magic_appearance_detecting_image, thing)))
+
+#define isfish(A) (istype(A, /obj/item/reagent_containers/food/snacks/fish))

@@ -27,10 +27,11 @@
 	speed = 5
 	move_to_delay = 7
 	ranged = TRUE
-	pixel_x = -32
-	pixel_y = -32
+	SET_BASE_PIXEL(-32, -32)
 	deathmessage = "collapses to the floor with a final roar, the impact rocking the ground."
 	footstep_type = FOOTSTEP_MOB_HEAVY
+	void_corruption = FALSE
+	dendor_taming_chance = DENDOR_TAME_PROB_LOW
 
 /mob/living/simple_animal/hostile/retaliate/voiddragon/red/tsere
 	name = "Tsere the Insurmountable"

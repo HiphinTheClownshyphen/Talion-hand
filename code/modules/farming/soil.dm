@@ -3,10 +3,10 @@
 #define SOIL_DECAY_TIME 20 MINUTES
 
 #define QUALITY_REGULAR 1
-#define QUALITY_BRONZE 2
-#define QUALITY_SILVER 3
-#define QUALITY_GOLD 4
-#define QUALITY_DIAMOND 5
+// #define QUALITY_BRONZE 2
+#define QUALITY_SILVER 2
+#define QUALITY_GOLD 3
+#define QUALITY_DIAMOND 4
 
 #define BLESSING_WEED_DECAY_RATE 10 / (1 MINUTES)
 #define WEED_GROWTH_RATE 3 / (1 MINUTES)
@@ -15,7 +15,7 @@
 
 // These get multiplied by 0.0 to 1.0 depending on amount of weeds
 #define WEED_WATER_CONSUMPTION_RATE 5 / (1 MINUTES)
-#define WEED_NUTRITION_CONSUMPTION_RATE 5 / (1 MINUTES)
+#define WEED_NUTRITION_CONSUMPTION_RATE 2 / (1 MINUTES)
 
 #define PLANT_REGENERATION_RATE 10 / (1 MINUTES)
 #define PLANT_DECAY_RATE 10 / (1 MINUTES)
@@ -32,7 +32,8 @@
 	icon_state = "soil"
 	density = FALSE
 	climbable = FALSE
-	max_integrity = 0
+	resistance_flags = INDESTRUCTIBLE
+	UUID_saving = TRUE
 	/// Amount of water in the soil. It makes the plant and weeds not loose health
 	var/water = 0
 	/// Amount of weeds in the soil. The more of them the more water and nutrition they eat.
@@ -71,6 +72,11 @@
 	///accellerated_growth
 	var/accellerated_growth = 0
 
+	///the overlays we are adding to mobs
+	var/list/vanished
+
+	var/list/marked_turfs
+
 	COOLDOWN_DECLARE(soil_update)
 
 /obj/structure/soil/Crossed(atom/movable/AM)
@@ -93,14 +99,14 @@
 		return
 	var/feedback = "I harvest the produce."
 	var/modifier = 0
-	var/chance_to_ruin_single = 75 - (farming_skill * 25)
-	if(prob(chance_to_ruin_single))
-		feedback = "I harvest the produce, ruining a little."
-		modifier -= 1
 	var/chance_to_get_extra = -75 + (farming_skill * 25)
+	var/chance_to_ruin_single = 75 - (farming_skill * 25)
 	if(prob(chance_to_get_extra))
 		feedback = "I harvest the produce well."
 		modifier += 1
+	else if(prob(chance_to_ruin_single))
+		feedback = "I harvest the produce, ruining a little."
+		modifier -= 1
 
 	if(has_world_trait(/datum/world_trait/dendor_fertility))
 		feedback = "Praise Dendor for our harvest is bountiful."
@@ -310,10 +316,13 @@
 		return
 	if(try_handle_watering(attacking_item, user, params))
 		return
-	if(try_handle_fertilizing(attacking_item, user, params))
-		return
 	if(try_handle_harvest(attacking_item, user, params))
 		return
+	if(try_handle_fertilizing(attacking_item, user, params))
+		return
+	for(var/obj/item/bagged_item in attacking_item.contents)
+		if(try_handle_fertilizing(bagged_item, user, params))
+			return
 	return ..()
 
 /obj/structure/soil/proc/on_stepped(mob/living/stepper)
@@ -410,6 +419,7 @@
 
 /obj/structure/soil/Destroy()
 	STOP_PROCESSING(SSprocessing, src)
+	remove_signals()
 	GLOB.weather_act_upon_list -= src
 	. = ..()
 
@@ -560,8 +570,11 @@
 	// Weeds eat water and NPK nutrients to grow
 	var/weed_factor = weeds / MAX_PLANT_WEEDS
 	adjust_water(-dt * weed_factor * WEED_WATER_CONSUMPTION_RATE)
+	adjust_nitrogen(-dt * weed_factor * WEED_NUTRITION_CONSUMPTION_RATE)
+	adjust_phosphorus(-dt * weed_factor * WEED_NUTRITION_CONSUMPTION_RATE)
+	adjust_potassium(-dt * weed_factor * WEED_NUTRITION_CONSUMPTION_RATE)
 
-	if((get_total_npk() > 0 )&& plant_genetics)
+	if((get_total_npk() > 0) && plant_genetics)
 		var/genetic_value = (100 - plant_genetics.disease_resistance) * 0.03
 		adjust_weeds(dt * WEED_GROWTH_RATE * genetic_value)
 
@@ -573,35 +586,29 @@
 	var/should_update
 	process_plant_nutrition(dt)
 	should_update = process_plant_health(dt)
-	if(matured && !produce_ready)
+	if(!produce_ready)
 		process_crop_quality(dt)
 	return should_update
 
 /obj/structure/soil/proc/process_crop_quality(dt)
-	if(!plant || plant_dead || !matured || produce_ready)
+	if(!plant || plant_dead || produce_ready)
 		return
 
-	var/quality_potential = 0.5  // Start lower
-
+	var/quality_potential = 0.5
 	if(plant_genetics)
 		var/genetics_trait = plant_genetics.quality_trait
-		// Convert trait value to quality potential
-		// Below average (0-40): 0.2-0.5 potential
-		// Average (40-60): 0.5-0.7 potential
-		// Above average (60-100): 0.7-1.2 potential
 		if(genetics_trait <= 40)
-			quality_potential = 0.2 + (genetics_trait / 20) * 0.3
+			quality_potential = 0.2 + (genetics_trait / 40) * 0.3
 		else if(genetics_trait <= 60)
-			quality_potential = 0.5 + ((genetics_trait - 30) / 20) * 0.2
+			quality_potential = 0.5 + ((genetics_trait - 40) / 20) * 0.2
 		else
-			quality_potential = 0.7 + ((genetics_trait - 50) / 40) * 0.5
+			quality_potential = 0.7 + ((genetics_trait - 60) / 40) * 0.5
 
 	var/growth_bonus = clamp((1 - (plant.maturation_time / (12 MINUTES))) * 0.3, -0.2, 0.3)
 	quality_potential += growth_bonus
 	quality_potential = clamp(quality_potential, 0.1, 1.5)
 
-	var/conditions_quality = 0.7  // Start lower, need good care to reach 1.0
-
+	var/conditions_quality = 0.7
 	if(tilled_time > 0)
 		conditions_quality += 0.1
 	if(pollination_time > 0)
@@ -614,6 +621,7 @@
 	var/npk_balance_quality = calculate_npk_quality_modifier()
 	conditions_quality *= npk_balance_quality
 
+	// Water requirements
 	if(water >= MAX_PLANT_WATER * 0.9)
 		conditions_quality += 0.2
 	else if(water >= MAX_PLANT_WATER * 0.7)
@@ -623,34 +631,62 @@
 	else if(water < MAX_PLANT_WATER * 0.3)
 		conditions_quality *= 0.5
 
-	// Weeds more severely affect quality
+	// Weed penalties
 	if(weeds >= MAX_PLANT_WEEDS * 0.6)
 		conditions_quality *= 0.6
 	else if(weeds >= MAX_PLANT_WEEDS * 0.3)
 		conditions_quality *= 0.8
 
-	// Cap conditions quality
 	conditions_quality = clamp(conditions_quality, 0.1, 1.8)
 
 	var/quality_rate = quality_potential * conditions_quality
 
-	var/max_quality_points = 30 * (plant.maturation_time / (6 MINUTES))
+	// Phase-based quality accumulation rates
+	var/phase_multiplier = 1.0
+	if(!matured)
+		phase_multiplier = 1.2
+
+	// Calculate max quality points based on total potential time
+	// Base time + production time + reasonable harvest window
+	var/total_potential_time = plant.maturation_time + plant.produce_time
+	var/max_quality_points = 30 * (total_potential_time / (6 MINUTES))
 
 	var/progress_ratio = quality_points / max_quality_points
-	var/diminishing_returns = 1 - (progress_ratio * 0.9)  // Stronger diminishing returns
-	quality_points += dt * quality_rate * 0.025 * diminishing_returns  // Slower accumulation
+	var/diminishing_returns = 1 - (progress_ratio * 0.8)  // Slightly reduced diminishing returns
+
+	// Accumulate quality points
+	quality_points += dt * quality_rate * 0.26 * phase_multiplier * diminishing_returns
 	quality_points = min(quality_points, max_quality_points)
 
-	if(quality_points >= max_quality_points * 0.95)
+	// Quality tier thresholds
+	if(quality_points >= max_quality_points * 0.9)
 		crop_quality = QUALITY_DIAMOND
-	else if(quality_points >= max_quality_points * 0.85)
-		crop_quality = QUALITY_GOLD
 	else if(quality_points >= max_quality_points * 0.7)
-		crop_quality = QUALITY_SILVER
+		crop_quality = QUALITY_GOLD
 	else if(quality_points >= max_quality_points * 0.5)
-		crop_quality = QUALITY_BRONZE
+		crop_quality = QUALITY_SILVER
 	else
 		crop_quality = QUALITY_REGULAR
+
+// Optional: Add a proc to show current quality progress to players
+/obj/structure/soil/proc/get_quality_info()
+	if(!matured || !plant)
+		return "Plant not mature enough to assess quality."
+
+	var/total_potential_time = plant.maturation_time + plant.produce_time + (20 MINUTES)
+	var/max_quality_points = 30 * (total_potential_time / (6 MINUTES))
+	var/progress_percent = round((quality_points / max_quality_points) * 100, 1)
+
+	var/quality_name = "Regular"
+	switch(crop_quality)
+		if(QUALITY_SILVER)
+			quality_name = "Silver"
+		if(QUALITY_GOLD)
+			quality_name = "Gold"
+		if(QUALITY_DIAMOND)
+			quality_name = "Diamond"
+
+	return "Current Quality: [quality_name] ([progress_percent]% of maximum potential)"
 
 // Calculate quality modifier based on NPK balance
 /obj/structure/soil/proc/calculate_npk_quality_modifier()
@@ -792,13 +828,12 @@
 		improvement_chance += 10
 	if(pollination_time > 0)
 		improvement_chance += 10
-	if(crop_quality >= QUALITY_GOLD)
+	if(crop_quality >= QUALITY_SILVER) // the rich get richer
 		improvement_chance += 20
 
-	// Try to improve each trait
+	// Improve two random traits
 	if(prob(improvement_chance))
-		improved.mutate_trait()
-		improved.mutate_trait()
+		improved.mutate_traits(amount = 2)
 
 	improved.generation += 1
 	return improved
@@ -874,14 +909,14 @@
 			if(plant.potassium_requirement > 0)
 				potassium_needed = (plant.potassium_requirement / total_growth_time) * target_growth_time
 		else
-			// Production phase
+			// Production phase, perennials use nutrients more "effectively" and need less
 			total_growth_time = plant.produce_time
 			if(plant.nitrogen_requirement > 0)
-				nitrogen_needed = (plant.nitrogen_requirement / total_growth_time) * target_growth_time
+				nitrogen_needed = ((plant.nitrogen_requirement * 0.6) / total_growth_time) * target_growth_time
 			if(plant.phosphorus_requirement > 0)
-				phosphorus_needed = (plant.phosphorus_requirement / total_growth_time) * target_growth_time
+				phosphorus_needed = ((plant.phosphorus_requirement * 0.6) / total_growth_time) * target_growth_time
 			if(plant.potassium_requirement > 0)
-				potassium_needed = (plant.potassium_requirement / total_growth_time) * target_growth_time
+				potassium_needed = ((plant.potassium_requirement * 0.6)/ total_growth_time) * target_growth_time
 	else
 		total_growth_time = plant.maturation_time + plant.produce_time
 		if(plant.nitrogen_requirement > 0)
@@ -972,9 +1007,9 @@
 		for(var/obj/structure/soil/soil in cardinal_turf)
 			if(soil == src)
 				continue
-			soil.adjust_nitrogen(FLOOR(plant.nitrogen_production, 1))
-			soil.adjust_phosphorus(FLOOR(plant.phosphorus_production, 1))
-			soil.adjust_potassium(FLOOR(plant.potassium_production, 1))
+			soil.adjust_nitrogen(FLOOR(plant.nitrogen_production, 1) / 2)
+			soil.adjust_phosphorus(FLOOR(plant.phosphorus_production, 1) / 2)
+			soil.adjust_potassium(FLOOR(plant.potassium_production, 1) / 2)
 
 /obj/structure/soil/proc/add_growth(added_growth)
 	if(!plant)
@@ -1032,6 +1067,7 @@
 	if(produce_ready)
 		ruin_produce()
 	plant = null
+	remove_signals()
 	plant_genetics = null
 	update_appearance(UPDATE_OVERLAYS)
 
@@ -1057,40 +1093,20 @@
 	var/base_amount = rand(plant.produce_amount_min, plant.produce_amount_max)
 
 	// Genetics yield bonus - more significant impact
-	var/genetics_yield_bonus = round((plant_genetics.yield_trait - TRAIT_GRADE_AVERAGE) / 5) // Every 5 points = +1 produce
-
-	// Quality modifiers
-	var/quality_modifier = 0
-	if(!istype(plant, /datum/plant_def/alchemical))
-		switch(crop_quality)
-			if(QUALITY_BRONZE)
-				quality_modifier = 1
-			if(QUALITY_SILVER)
-				quality_modifier = 2
-			if(QUALITY_GOLD)
-				quality_modifier = 3
-			if(QUALITY_DIAMOND)
-				quality_modifier = 4
+	var/genetics_yield_bonus = max(round((plant_genetics.yield_trait - TRAIT_GRADE_AVERAGE) / 25), 0) // Every 25 points = +1 produce
 
 	// Calculate final yield amount
-	var/spawn_amount = max(base_amount + modifier + quality_modifier + genetics_yield_bonus, 1)
+	var/spawn_amount = max(base_amount + modifier + genetics_yield_bonus, 1)
+
+	var/datum/plant_genetics/new_genetics = improve_genetics_naturally()
 
 	for(var/i in 1 to spawn_amount)
 		var/obj/item/produce = new plant.produce_type(loc)
+		produce.set_quality(crop_quality)
 		if(produce && istype(produce, /obj/item/reagent_containers/food/snacks/produce))
 			var/obj/item/reagent_containers/food/snacks/produce/P = produce
-			P.set_quality(crop_quality)
 			// Pass genetics to the produce for seed extraction
-			P.source_genetics = plant_genetics.copy()
-
-	if(plant_genetics && plant_genetics.yield_trait > TRAIT_GRADE_GOOD)
-		var/seed_chance = (plant_genetics.yield_trait - TRAIT_GRADE_GOOD) * 2 // Up to 50% chance at max yield
-		if(prob(seed_chance))
-			// Create improved genetics for the seed
-			var/datum/plant_genetics/new_genetics = improve_genetics_naturally()
-			var/obj/item/neuFarm/seed/bonus_seed = new(loc, new_genetics)
-			bonus_seed.plant_def_type = plant.type
-			bonus_seed.forceMove(loc)
+			P.source_genetics = new_genetics.copy()
 
 	// Reset produce state
 	produce_ready = FALSE
@@ -1109,6 +1125,8 @@
 	if(plant)
 		return
 	plant = new_plant
+	if(initial(new_plant.see_through))
+		add_signals()
 	plant_health = MAX_PLANT_HEALTH
 	growth_time = 0
 	produce_time = 0
@@ -1121,6 +1139,72 @@
 	quality_points = 0
 	update_appearance(UPDATE_OVERLAYS)
 
+/obj/structure/soil/proc/add_signals()
+	var/turf/above = get_step(src, NORTH)
+	RegisterSignal(above, COMSIG_ATOM_ENTERED, PROC_REF(on_entered))
+	RegisterSignal(above, COMSIG_TURF_EXITED, PROC_REF(on_exited))
+	LAZYADD(marked_turfs, above)
+	RegisterSignal(get_step(above, WEST), COMSIG_ATOM_ENTERED, PROC_REF(on_entered))
+	RegisterSignal(get_step(above, WEST), COMSIG_TURF_EXITED, PROC_REF(on_exited))
+	LAZYADD(marked_turfs, get_step(above, WEST))
+	RegisterSignal(get_step(above, EAST), COMSIG_ATOM_ENTERED, PROC_REF(on_entered))
+	RegisterSignal(get_step(above, EAST), COMSIG_TURF_EXITED, PROC_REF(on_exited))
+	LAZYADD(marked_turfs, get_step(above, EAST))
+
+/obj/structure/soil/proc/remove_signals()
+	var/turf/above = get_step(src, NORTH)
+	UnregisterSignal(above, COMSIG_ATOM_ENTERED)
+	UnregisterSignal(above, COMSIG_TURF_EXITED)
+	UnregisterSignal(get_step(above, WEST), COMSIG_ATOM_ENTERED)
+	UnregisterSignal(get_step(above, WEST), COMSIG_TURF_EXITED)
+	UnregisterSignal(get_step(above, EAST), COMSIG_ATOM_ENTERED)
+	UnregisterSignal(get_step(above, EAST), COMSIG_TURF_EXITED)
+	LAZYCLEARLIST(marked_turfs)
+	for(var/mob/mob as anything in vanished)
+		var/image/overlay = LAZYACCESS(vanished, mob)
+		LAZYREMOVE(vanished, mob)
+		if(!overlay)
+			continue
+		mob.client?.images -= overlay
+
+/obj/structure/soil/proc/on_entered(datum/source, mob/crossed)
+	if(!isliving(crossed))
+		return
+	if(!crossed.client)
+		return
+	if(LAZYACCESS(vanished, crossed))
+		return
+
+	var/image/overlay = image(src)
+	overlay.appearance = appearance
+	overlay.loc = src
+	overlay.override = TRUE
+	overlay.plane = SEETHROUGH_PLANE
+	overlay.appearance_flags = KEEP_APART
+
+	var/mutable_appearance/MA = mutable_appearance(icon, icon_state)
+	MA.appearance_flags = KEEP_APART
+	MA.plane = initial(plane)
+	overlay.overlays += MA
+	animate(overlay, alpha = 110, time = 0.3 SECONDS)
+
+	crossed.client.images += overlay
+	LAZYADDASSOC(vanished, crossed, overlay)
+
+
+/obj/structure/soil/proc/on_exited(turf/source, mob/crossed, direction)
+	if(!isliving(crossed))
+		return
+	if(get_step(source, crossed.dir) in marked_turfs)
+		return
+	if(!crossed.client)
+		return
+	var/image/overlay = LAZYACCESS(vanished, crossed)
+	LAZYREMOVE(vanished, crossed)
+	if(!overlay)
+		return
+	crossed.client.images -= overlay
+
 /obj/structure/soil/debug_soil
 	var/obj/item/neuFarm/seed/seed_to_grow
 
@@ -1132,7 +1216,13 @@
 	. = ..()
 	if(!seed_to_grow)
 		return
-	insert_plant(GLOB.plant_defs[initial(seed_to_grow.plant_def_type)])
+	var/debug_seed_genetics = initial(seed_to_grow.seed_genetics)
+	if(!debug_seed_genetics)
+		var/datum/plant_def/plant_def_instance = GLOB.plant_defs[initial(seed_to_grow.plant_def_type)]
+		debug_seed_genetics = new /datum/plant_genetics(plant_def_instance)
+	else
+		debug_seed_genetics = new debug_seed_genetics()
+	insert_plant(GLOB.plant_defs[initial(seed_to_grow.plant_def_type)], debug_seed_genetics)
 	add_growth(plant.maturation_time)
 	add_growth(plant.produce_time)
 
@@ -1142,7 +1232,7 @@
 #undef SOIL_DECAY_TIME
 
 #undef QUALITY_REGULAR
-#undef QUALITY_BRONZE
+// #undef QUALITY_BRONZE
 #undef QUALITY_SILVER
 #undef QUALITY_GOLD
 #undef QUALITY_DIAMOND

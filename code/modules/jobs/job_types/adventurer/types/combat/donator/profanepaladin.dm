@@ -1,15 +1,15 @@
-/datum/advclass/combat/profanepaladin
-	name = "Profane Paladin"
+/datum/job/advclass/combat/profanepaladin
+	title = "Profane Paladin"
 	tutorial = "There are those who are so dedicated to the worship and service of their inhumen god, that they have become famous amongst their followers, and infamous amongst the common men and women. These Profane Paladins bear the armour and marks of their respective god, travelling across the lands to preach and slay in their name. Naturally, they are branded a heretic by the Ten. Expect no quarter."
 	allowed_races = RACES_PLAYER_ALL
-	outfit = /datum/outfit/job/adventurer/profanepaladin
-	maximum_possible_slots = 1
+	outfit = /datum/outfit/adventurer/profanepaladin
+	total_positions = 1
 	min_pq = 2
-	pickprob = 15
+	roll_chance = 15
 	category_tags = list(CTAG_ADVENTURER)
 	allowed_patrons = ALL_PROFANE_PATRONS
 
-/datum/outfit/job/adventurer/profanepaladin/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/profanepaladin/pre_equip(mob/living/carbon/human/H)
 	..()
 	switch(H.patron?.type)
 		if(/datum/patron/inhumen/graggar)
@@ -35,6 +35,7 @@
 			pants = /obj/item/clothing/pants/platelegs/zizo
 			shoes = /obj/item/clothing/shoes/boots/armor/zizo
 			H.cmode_music = 'sound/music/cmode/antag/combat_cult.ogg'
+			H.grant_language(/datum/language/undead)
 		if(/datum/patron/inhumen/matthios)
 			head = /obj/item/clothing/head/helmet/heavy/matthios
 			armor = /obj/item/clothing/armor/plate/full/matthios
@@ -85,9 +86,11 @@
 	if(H.dna?.species)
 		if(H.dna.species.id == SPEC_ID_HUMEN)
 			H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
-	var/datum/devotion/cleric_holder/C = new /datum/devotion/cleric_holder(H, H.patron)
-	C.grant_spells_templar(H)
-	H.verbs += list(/mob/living/carbon/human/proc/devotionreport, /mob/living/carbon/human/proc/clericpray)
+	var/holder = H.patron?.devotion_holder
+	if(holder)
+		var/datum/devotion/devotion = new holder()
+		devotion.make_templar()
+		devotion.grant_to(H)
 	GLOB.heretical_players += H.real_name
 
 	ADD_TRAIT(H, TRAIT_HEAVYARMOR, TRAIT_GENERIC)

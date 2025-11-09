@@ -85,7 +85,7 @@
 	ASSERT(momentum_mod >= 1)
 	if(!smacked.apply_damage(damage_mod * momentum, BRUTE, BODY_ZONE_CHEST))
 		return
-	if(obj_integrity <= max_integrity * 0.05)
+	if(atom_integrity <= max_integrity * 0.05)
 		smacked.visible_message(
 			span_danger("[src] smashes into [smacked], breaking into pieces!"),
 			span_userdanger("You are smacked by [src] as it breaks into pieces!"),
@@ -280,7 +280,7 @@
 		momentum = 0
 		return MOVELOOP_SKIP_STEP
 	// Forced to not move
-	if(anchored || !has_gravity())
+	if(anchored)
 		return MOVELOOP_SKIP_STEP
 
 	// Going through open space

@@ -16,6 +16,7 @@
 			user.visible_message(span_notice("[user] shucks [src]."), \
 								span_notice("I shuck [src]."))
 			var/obj/item/G = new foodextracted(get_turf(src))
+			G.set_quality(recipe_quality)
 			user.put_in_active_hand(G)
 			new /obj/item/natural/fibers(get_turf(src))
 			qdel(src)
@@ -23,7 +24,8 @@
 
 /obj/item/natural/chaff/proc/thresh()
 	if(foodextracted && canthresh)
-		new foodextracted(loc)
+		var/obj/item/extracted = new foodextracted(loc)
+		extracted.set_quality(recipe_quality)
 		new /obj/item/natural/fibers(loc)
 		qdel(src)
 
@@ -41,7 +43,7 @@
 							stuff++
 					if(stuff)
 						to_chat(user, span_notice("I pick up the stalks with the pitchfork."))
-						W.icon_state = "pitchforkstuff"
+						W.icon_state = "[initial(W.icon_state)]stuff"
 					else
 						to_chat(user, span_warning("I'm carrying enough with the pitchfork."))
 					return

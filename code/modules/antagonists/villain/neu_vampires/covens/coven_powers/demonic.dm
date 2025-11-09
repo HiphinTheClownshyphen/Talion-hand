@@ -101,19 +101,7 @@
 
 /datum/coven_power/demonic/conflagration/post_gain()
 	. = ..()
-	var/datum/action/cooldown/spell/projectile/fireball/baali/balefire = new(owner)
-	balefire.Grant(owner)
-
-/datum/action/cooldown/spell/projectile/fireball/baali
-	name = "Infernal Fireball"
-	desc = "This spell fires an explosive fireball at a target."
-	school = "evocation"
-	charge_time = 4 SECONDS
-	invocation = "FR BRTH"
-	invocation_type = "whisper"
-	cooldown_time = 20 //10 deciseconds reduction per rank
-	projectile_type = /obj/projectile/magic/aoe/fireball/rogue
-	sound = 'sound/magic/fireball.ogg'
+	owner.add_spell(/datum/action/cooldown/spell/projectile/fireball/baali, source = src)
 
 //PSYCHOMACHIA
 /datum/coven_power/demonic/psychomachia
@@ -181,7 +169,7 @@
 			var/blood_cost = C.severity * 50 // Scale cost with severity
 			owner.maxbloodpool -= blood_cost
 			if(owner.bloodpool > owner.maxbloodpool)
-				owner.bloodpool = owner.maxbloodpool
+				owner.set_bloodpool(owner.maxbloodpool)
 
 			to_chat(owner, span_userdanger("You have condemned [target]'s entire bloodline with [C.name]!"))
 			to_chat(target, span_userdanger("A terrible curse settles upon your family line! You feel the weight of [C.name]!"))
@@ -197,6 +185,6 @@
 		return target.family_datum
 
 	// Create new heritage if none exists
-	var/datum/heritage/new_heritage = new /datum/heritage(src, "Cursed Bloodline")
+	var/datum/heritage/new_heritage = new /datum/heritage(target, "Cursed Bloodline")
 	target.family_datum = new_heritage
 	return new_heritage

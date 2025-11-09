@@ -3,7 +3,6 @@
 	tutorial = "Some say Dendor brings bountiful harvests - this much is true, but rot brings forth life. \
 	From life brings decay, and from decay brings life. Like your father before you, you let milk rot into cheese. \
 	This is your duty, this is your call."
-	flag = CHEESEMAKER
 	department_flag = PEASANTS
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_CHEESEMAKER
@@ -12,13 +11,12 @@
 	spawn_positions = 0
 
 	allowed_races = RACES_PLAYER_ALL
-	outfit = /datum/outfit/job/cheesemaker
+	outfit = /datum/outfit/cheesemaker
 	cmode_music = 'sound/music/cmode/towner/CombatTowner2.ogg'
 
-/datum/outfit/job/cheesemaker
 	job_bitflag = BITFLAG_CONSTRUCTOR
 
-/datum/outfit/job/cheesemaker/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/cheesemaker/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/athletics, 2, TRUE)

@@ -5,7 +5,7 @@
 	icon_state = "troll"
 	icon_living = "troll"
 	icon_dead = "troll_dead"
-	pixel_x = -16
+	SET_BASE_PIXEL(-16, 0)
 
 	faction = list(FACTION_ORCS)
 	footstep_type = FOOTSTEP_MOB_HEAVY
@@ -21,15 +21,17 @@
 	vision_range = 6
 	aggro_vision_range = 6
 
+	animal_type = /datum/blood_type/troll
+
 	botched_butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/strange = 1, \
-						/obj/item/alch/horn = 1)
+						/obj/item/natural/hide = 1)
 	butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/strange = 1,
 						/obj/item/natural/hide = 2, \
-						/obj/item/alch/horn = 2)
+						/obj/item/alch/horn = 1)
 	perfect_butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/strange= 2, \
 						/obj/item/natural/hide = 3, \
-						/obj/item/alch/horn = 2, \
-						/obj/item/natural/head/troll = 1)
+						/obj/item/alch/horn = 2)
+	head_butcher = /obj/item/natural/head/troll
 
 	health = TROLL_HEALTH
 	maxHealth = TROLL_HEALTH
@@ -56,7 +58,7 @@
 	del_on_deaggro = 99 SECONDS
 	retreat_health = 0
 	food_max = 250
-	food = 0
+
 	dodgetime = 50
 	aggressive = TRUE
 	dendor_taming_chance = DENDOR_TAME_PROB_HIGH
@@ -67,6 +69,22 @@
 
 
 	var/range = 9
+
+/mob/living/simple_animal/hostile/retaliate/troll/slaved
+	ai_controller = /datum/ai_controller/summon
+
+/mob/living/simple_animal/hostile/retaliate/troll/slaved/Initialize()
+	. = ..()
+	var/static/list/pet_commands = list(
+				/datum/pet_command/idle,
+				/datum/pet_command/free,
+				/datum/pet_command/follow,
+				/datum/pet_command/attack,
+				/datum/pet_command/protect_owner,
+				/datum/pet_command/aggressive,
+				/datum/pet_command/calm,
+			)
+	AddComponent(/datum/component/obeys_commands, pet_commands)
 
 /mob/living/simple_animal/hostile/retaliate/troll/Initialize()
 	. = ..()
@@ -188,30 +206,30 @@
 
 /mob/living/simple_animal/hostile/retaliate/troll/cave
 	name = "cave troll"
-	desc = "Dwarven tales of giants and trolls often contain these creatures, horrifying amalgamations of flesh and crystal who have long since abandoned Malum's ways."
+	desc = "Dwarven tales of giants and trolls often contain these creatures, for the fear of mining into one runs deep."
 	icon = 'icons/mob/creacher/trolls/troll_cave.dmi'
 	health = CAVETROLL_HEALTH
 	maxHealth = CAVETROLL_HEALTH
 	ai_controller = /datum/ai_controller/troll/cave
 
 	botched_butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/strange = 1, \
-						/obj/item/alch/horn = 1, \
+						/obj/item/natural/hide = 1, \
 						/obj/item/natural/rock/mana_crystal = 1)
 	butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/strange = 1, \
 						/obj/item/natural/hide = 2, \
-						/obj/item/alch/horn = 2, \
+						/obj/item/alch/horn = 1, \
 						/obj/item/natural/rock/mana_crystal = 2)
 	perfect_butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/strange= 2, \
 						/obj/item/natural/hide = 3, \
 						/obj/item/alch/horn = 2, \
-						/obj/item/natural/head/troll/cave = 1, \
 						/obj/item/natural/rock/mana_crystal = 3)
+	head_butcher = /obj/item/natural/head/troll/cave
 
 	dendor_taming_chance = DENDOR_TAME_PROB_LOW
 	defprob = 15
 
 	//stone chucking ability
-	var/datum/action/cooldown/mob_cooldown/stone_throw/throwing_stone
+	var/datum/action/cooldown/spell/stone_throw/throwing_stone
 
 /mob/living/simple_animal/hostile/retaliate/troll/cave/Initialize()
 	. = ..()
@@ -229,8 +247,8 @@
 	icon = 'icons/mob/creacher/trolls/troll_axe.dmi'
 	perfect_butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/strange = 2, \
 					/obj/item/natural/hide = 3, \
-					/obj/item/alch/horn = 2, \
-					/obj/item/natural/head/troll/axe = 1)
+					/obj/item/alch/horn = 2)
+	head_butcher = /obj/item/natural/head/troll/axe
 	dendor_taming_chance = DENDOR_TAME_PROB_LOW
 	base_intents = list(/datum/intent/simple/troll_axe)
 	attack_sound = list('sound/combat/wooshes/blunt/wooshhuge (1).ogg','sound/combat/wooshes/blunt/wooshhuge (2).ogg','sound/combat/wooshes/blunt/wooshhuge (3).ogg')
@@ -284,6 +302,7 @@
 							/obj/item/alch/sinew = 2, \
 							/obj/item/alch/bone = 1, \
 							/obj/item/natural/fur/cabbit = 1)
+	head_butcher = null
 
 /mob/living/simple_animal/hostile/retaliate/troll/caerbannog/get_sound(input)
 	switch(input)

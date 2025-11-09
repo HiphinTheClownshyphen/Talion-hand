@@ -5,11 +5,12 @@
 	icon_state = "throne"
 	density = FALSE
 	can_buckle = 1
-	pixel_x = -32
+	SET_BASE_PIXEL(-32, 0)
 	max_integrity = 999999
 	buckle_lying = FALSE
 	obj_flags = NONE
 	uses_lord_coloring = LORD_PRIMARY | LORD_SECONDARY
+	var/throat_mode = "None"
 
 /obj/structure/throne/post_buckle_mob(mob/living/M)
 	..()
@@ -23,3 +24,19 @@
 
 /obj/structure/throne/statues	// alt version with more statue but covers side tables less.
 	icon = 'icons/roguetown/misc/throne_alt.dmi'
+
+/obj/structure/throne/vthrone
+	name = "The Blood Throne"
+	desc = "A big ominous throne."
+	icon = 'icons/roguetown/misc/vthrone.dmi'
+
+/obj/structure/throne/examine(mob/user)
+	. = ..()
+	. += span_notice("The current mode is [throat_mode].")
+
+/obj/structure/throne/proc/do_filters_glow()
+	filters = filter(type = "rays", size = 80, color = "#a38c2e")
+
+/obj/structure/throne/proc/remove_filters_glow()
+	filters = null
+

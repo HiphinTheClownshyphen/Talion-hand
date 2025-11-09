@@ -145,7 +145,7 @@
 				screen_y = text2num(copytext(screen_y, 1, findtext(screen_y, ":")))
 				stored_item.screen_loc = "[screen_x]:[screen_pixel_x],[screen_y]:[screen_pixel_y]"
 				stored_item.plane = ABOVE_HUD_PLANE
-				stored_item.maptext = "<font color='white'>[(numbered_display.number > 1)? "[numbered_display.number]" : ""]</font>"
+				stored_item.maptext = MAPTEXT("<font color='white'>[(numbered_display.number > 1)? "[numbered_display.number]" : ""]</font>")
 		else
 			var/atom/real_location = real_location()
 			for(var/obj/item/stored_item in real_location)
@@ -188,7 +188,7 @@
 			var/datum/numbered_display/numbered_display = numerical_display_contents[index]
 			numbered_display.sample_object.mouse_opacity = MOUSE_OPACITY_OPAQUE
 			numbered_display.sample_object.screen_loc = "[cx]:[screen_pixel_x],[cy]:[screen_pixel_y]"
-			numbered_display.sample_object.maptext = "<font color='white'>[(numbered_display.number > 1)? "[numbered_display.number]" : ""]</font>"
+			numbered_display.sample_object.maptext = MAPTEXT("<font color='white'>[(numbered_display.number > 1)? "[numbered_display.number]" : ""]</font>")
 			numbered_display.sample_object.plane = ABOVE_HUD_PLANE
 			cy--
 			if(screen_start_y - cy >= rows)
@@ -362,31 +362,6 @@
 	if(!istype(master))
 		return FALSE
 	return master.remove_from_storage(removed, new_location)
-
-//This proc is called when you want to place an item into the storage item
-/datum/component/storage/attackby(datum/source, obj/item/attacking_item, mob/user, params, storage_click = FALSE)
-	if(isitem(parent))
-		if(istype(attacking_item, /obj/item/weapon/hammer))
-			var/obj/item/storage/this_item = parent
-			//Vrell - since hammering is instant, i gotta find another option than the double click thing that needle has for a bypass.
-			//Thankfully, IIRC, no hammerable containers can hold a hammer, so not an issue ATM. For that same reason, this here is largely semi future-proofing.
-			if(this_item.anvilrepair != null && this_item.max_integrity && !this_item.obj_broken && (this_item.obj_integrity < this_item.max_integrity) && isturf(this_item.loc))
-				return FALSE
-		if(istype(attacking_item, /obj/item/needle))
-			var/obj/item/needle/sewer = attacking_item
-			var/obj/item/storage/this_item = parent
-			if(sewer.can_repair && this_item.sewrepair && this_item.max_integrity && !this_item.obj_broken && this_item.obj_integrity < this_item.max_integrity && this_item.ontable())
-				return FALSE
-		if(user.used_intent.type == /datum/intent/snip) //This makes it so we can salvage
-			return FALSE
-
-	. = TRUE //no afterattack
-	if(!can_be_inserted(attacking_item, FALSE, user, params = params, storage_click = storage_click))
-		var/atom/real_location = real_location()
-		if(LAZYLEN(real_location.contents) >= max_items) //don't use items on the backpack if they don't fit
-			return TRUE
-		return FALSE
-	return handle_item_insertion(attacking_item, FALSE, user, params = params, storage_click = storage_click)
 
 /datum/component/storage/proc/on_equipped(obj/item/source, mob/user, slot)
 	SIGNAL_HANDLER
@@ -794,7 +769,7 @@
 	storing.item_flags |= IN_STORAGE
 	storing.mouse_opacity = MOUSE_OPACITY_OPAQUE //So you can click on the area around the item to equip it, instead of having to pixel hunt
 	if(ismovable(parent))
-		if(ismob(parent:loc))
+		if(isliving(parent:loc))
 			parent:loc:encumbrance_to_speed()
 	update_icon()
 	refresh_mob_views()
@@ -835,13 +810,19 @@
 	return TRUE
 
 /atom/movable/screen/close
+	name = "close"
+	plane = ABOVE_HUD_PLANE
 	icon = 'icons/hud/storage.dmi'
 	icon_state = "close"
 	var/locked = TRUE
 
+/atom/movable/screen/close/Initialize(mapload, datum/hud/hud_owner, obj/item/new_master)
+	. = ..()
+	master_ref = WEAKREF(new_master)
+
 /atom/movable/screen/close/Click(location, control, params)
 	. = ..()
-	var/datum/component/storage/storage_master = master
+	var/datum/component/storage/storage_master = master_ref?.resolve()
 	var/list/modifiers = params2list(params)
 	if(LAZYACCESS(modifiers, SHIFT_CLICKED))
 		if(!istype(storage_master))
@@ -864,7 +845,7 @@
 
 /atom/movable/screen/close/MouseDrop(atom/over, src_location, over_location, src_control, over_control, params)
 	. = ..()
-	var/datum/component/storage/storage_master = master
+	var/datum/component/storage/storage_master = master_ref?.resolve()
 	if(!istype(storage_master))
 		return
 	if(locked)
@@ -910,13 +891,14 @@
 	alpha = 180
 	var/atom/movable/screen/storage_hover/hovering
 
-/atom/movable/screen/storage/Initialize(mapload, new_master)
+/atom/movable/screen/storage/Initialize(mapload, datum/hud/hud_owner, obj/item/new_master)
 	. = ..()
-	hovering = new()
+	master_ref = WEAKREF(new_master)
+	hovering = new(null, hud)
 
 /atom/movable/screen/storage/Destroy()
-	. = ..()
-	qdel(hovering)
+	QDEL_NULL(hovering)
+	return ..()
 
 /atom/movable/screen/storage/MouseEntered(location, control, params)
 	. = ..()
@@ -935,7 +917,7 @@
 	if(!usr.client)
 		return
 	usr.client.screen -= hovering
-	var/datum/component/storage/storage_master = master
+	var/datum/component/storage/storage_master = master_ref?.resolve()
 	if(!istype(storage_master) || !(usr in storage_master.is_using) || !isliving(usr) || usr.incapacitated(IGNORE_GRAB))
 		return
 	var/obj/item/held_item = usr.get_active_held_item()
@@ -977,7 +959,7 @@
 	if(!usr.client)
 		return
 	usr.client.screen -= hovering
-	var/datum/component/storage/storage_master = master
+	var/datum/component/storage/storage_master = master_ref?.resolve()
 	if(!istype(storage_master) || !(usr in storage_master.is_using) || !isliving(usr) || usr.incapacitated(IGNORE_GRAB))
 		return
 	var/obj/item/held_item = usr.get_active_held_item()

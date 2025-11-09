@@ -10,22 +10,21 @@
 	integrity_failure = 0.9
 	break_sound = "glassbreak"
 	attacked_sound = 'sound/combat/hits/onglass/glasshit.ogg'
-	pixel_y = 32
+	SET_BASE_PIXEL(0, 32)
 
 /obj/structure/mirror/fancy
 	icon_state = "fancymirror"
-	pixel_y = 32
 
 /obj/structure/mirror/Initialize(mapload)
 	. = ..()
-	if(icon_state == "mirror_broke" && !broken)
-		obj_break(null, TRUE, mapload)
+	if(icon_state == "mirror_broke" && !obj_broken)
+		atom_break(null, TRUE, mapload)
 
 /obj/structure/mirror/attack_hand(mob/user)
 	. = ..()
 	if(.)
 		return
-	if(broken || !Adjacent(user))
+	if(obj_broken || !Adjacent(user))
 		return
 
 	if(!ishuman(user))
@@ -115,8 +114,9 @@
 				hairs = H.dna.species.get_hairc_list()
 				new_hair = browser_input_list(user, "Choose your character's hair color:", "", hairs)
 			if(new_hair)
-				H.set_hair_color(hairs[new_hair], FALSE)
-				H.set_facial_hair_color(hairs[new_hair], FALSE)
+				new_hair = "#" + hairs[new_hair]
+				H.set_hair_color(new_hair, FALSE)
+				H.set_facial_hair_color(new_hair, FALSE) // This doesn't work for some reason?  Just change facial hair and its fine.
 				should_update = TRUE
 
 		if("skin")
@@ -161,17 +161,20 @@
 		H.update_body_parts()
 
 /obj/structure/mirror/examine_status(mob/user)
-	if(broken)
+	if(obj_broken)
 		return list()// no message spam
 	return ..()
 
-/obj/structure/mirror/obj_break(damage_flag, silent, mapload)
-	if(!broken && !(flags_1 & NODECONSTRUCT_1))
+/obj/structure/mirror/atom_break(damage_flag, silent, mapload)
+	. = ..()
+	if(!(flags_1 & NODECONSTRUCT_1))
 		icon_state = "[icon_state]1"
 		if(!mapload)
 			new /obj/item/natural/glass/shard (get_turf(src))
-		broken = TRUE
-	..()
+
+/obj/structure/mirror/atom_fix()
+	. = ..()
+	icon_state = initial(icon_state)
 
 /obj/structure/mirror/deconstruct(disassembled = TRUE)
 	..()
@@ -181,7 +184,7 @@
 	if(user.used_intent.type == INTENT_HARM)
 		return FALSE
 
-	if(!broken)
+	if(!obj_broken)
 		return TRUE
 
 	if(!I.tool_start_check(user, amount=0))
@@ -190,7 +193,7 @@
 	to_chat(user, "<span class='notice'>I begin repairing [src]...</span>")
 	if(I.use_tool(src, user, 10, volume=50))
 		to_chat(user, "<span class='notice'>I repair [src].</span>")
-		broken = 0
+		atom_fix()
 		icon_state = initial(icon_state)
 		desc = initial(desc)
 

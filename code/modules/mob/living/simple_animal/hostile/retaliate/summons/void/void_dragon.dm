@@ -15,17 +15,18 @@
 /mob/living/simple_animal/hostile/retaliate/voiddragon
 	name = "void dragon"
 	desc = "An ancient creature from a bygone age. Now would be a good time to run."
+	icon = 'icons/mob/96x96/ratwood_dragon.dmi'
+	icon_state = "dragon"
+	icon_living = "dragon"
+	icon_dead = "dragon_dead"
+
 	health = 2500
 	maxHealth = 2500
 	attack_verb_continuous = "gouges"
 	attack_verb_simple = "gouge"
 	attack_sound = 'sound/misc/demon_attack1.ogg'
-	icon = 'icons/mob/96x96/ratwood_dragon.dmi'
 	summon_primer = "You are ancient. A creature long since banished to the void ages past, you were trapped in a seemingly timeless abyss. Now you've been freed, returned to the world- and everything has changed. It seems some of your constructs remain buried beneath the ground. How you react to these events, only time can tell."
 	tier = 5
-	icon_state = "dragon"
-	icon_living = "dragon"
-	icon_dead = "dragon_dead"
 	speak_emote = list("roars")
 	base_intents = list(/datum/intent/unarmed/dragonclaw)
 	faction = list("abberant")
@@ -36,13 +37,14 @@
 	speed = 5
 	move_to_delay = 5
 	ranged = TRUE
-	pixel_x = -32
+	SET_BASE_PIXEL(-32, 0)
 	aggressive = 1
 	deathmessage = "collapses to the floor with a final roar, the impact rocking the ground."
 	footstep_type = FOOTSTEP_MOB_HEAVY
 	dontmakesentient = TRUE
-
-
+	var/void_corruption = TRUE
+	dendor_taming_chance = DENDOR_TAME_PROB_NONE
+	food_max = 0
 
 	ai_controller = /datum/ai_controller/voiddragon
 
@@ -203,7 +205,7 @@
 
 	playsound(loc, 'sound/vo/mobs/vdragon/drgnroar.ogg', 50, TRUE, -1)
 	controller.blackboard[BB_DRAGON_SWOOPING] |= SWOOP_DAMAGEABLE
-	movement_type = FLYING
+	ADD_TRAIT(src, TRAIT_MOVE_FLYING, AI_ATTACK_TRAIT)
 	density = FALSE
 	icon_state = "shadow"
 	visible_message("<span class='boldwarning'>[src] swoops up high!</span>")
@@ -273,7 +275,7 @@
 				visible_message(span_warning("[L] is thrown clear of [src]!</span>"))
 	for(var/mob/M in range(7, src))
 		shake_camera(M, 15, 1)
-	movement_type = GROUND
+	REMOVE_TRAIT(src, TRAIT_MOVE_FLYING, AI_ATTACK_TRAIT)
 	density = TRUE
 	SLEEP_CHECK_DEATH(1)
 	controller.blackboard[BB_DRAGON_SWOOPING] &= ~SWOOP_DAMAGEABLE
@@ -391,7 +393,8 @@
 		var/throw_speed = max(1, 3 - round(throw_dist / 3))
 		L.throw_at(src, throw_dist, throw_speed)
 		L.apply_damage(10, BRUTE)
-		L.apply_status_effect(/datum/status_effect/void_corruption)
+		if(void_corruption)
+			L.apply_status_effect(/datum/status_effect/void_corruption)
 
 	addtimer(CALLBACK(src, PROC_REF(void_pull_aftermath)), 1 SECONDS)
 
@@ -484,7 +487,8 @@
 		var/dist = get_dist(target, L)
 		var/damage = 30 * (1 - (dist / 4)) // 30 damage at epicenter, scaling down with distance
 		L.apply_damage(damage, BRUTE)
-		L.apply_status_effect(/datum/status_effect/void_corruption)
+		if(void_corruption)
+			L.apply_status_effect(/datum/status_effect/void_corruption)
 
 		var/throw_dir = get_dir(target, L)
 		L.throw_at(get_edge_target_turf(L, throw_dir), 3, 2)
@@ -632,8 +636,7 @@
 	icon = 'icons/effects/96x96.dmi'
 	icon_state = "void_blink_in"
 	layer = BELOW_MOB_LAYER
-	pixel_x = -32
-	pixel_y = -32
+	SET_BASE_PIXEL(-32, -32)
 	color = "#FF0000"
 	duration = 10
 
@@ -641,8 +644,7 @@
 	icon = 'icons/mob/96x96/ratwood_dragon.dmi'
 	icon_state = "dragon"
 	layer = ABOVE_ALL_MOB_LAYER
-	pixel_x = -32
-	duration = 10
+	SET_BASE_PIXEL(-32, 10)
 	randomdir = FALSE
 
 /obj/effect/temp_visual/dragon_flight/Initialize(mapload, negative)
@@ -693,17 +695,14 @@
 	var/max_stage = 3
 	var/stage_threshold = 10 SECONDS
 	var/next_stage_time = 0
-	var/mob/living/simple_animal/hostile/retaliate/voiddragon/source_dragon
 
 /atom/movable/screen/alert/status_effect/void_corruption
 	name = "Void Corruption"
 	desc = "Void energy is eating away at your very being!"
-	icon_state = "void_corruption"  // ICON NEEDED
+	icon_state = "poison" // "void_corruption"  // ICON NEEDED
 
-/datum/status_effect/void_corruption/on_creation(mob/living/new_owner, duration_override = 30 SECONDS, source = null)
+/datum/status_effect/void_corruption/on_creation(mob/living/new_owner, duration_override)
 	next_stage_time = world.time + stage_threshold
-	if(istype(source, /mob/living/simple_animal/hostile/retaliate/voiddragon))
-		source_dragon = source
 	return ..()
 
 /datum/status_effect/void_corruption/on_apply()
@@ -711,22 +710,19 @@
 	if(ishuman(owner))
 		var/mob/living/carbon/human/H = owner
 		H.add_overlay(mutable_appearance('icons/effects/effects.dmi', "void_corruption_overlay", -BODY_BEHIND_LAYER))
-		to_chat(H, span_danger("You feel void energy seeping into your body, corrupting your flesh!"))
+		to_chat(H, span_danger("I feel void energy seeping into my body, corrupting my flesh!"))
 		H.playsound_local(get_turf(H), 'sound/effects/ghost.ogg', 50, TRUE)
 
 	next_damage_time = world.time + damage_tick
-	START_PROCESSING(SSfastprocess, src)
-	return TRUE
 
 /datum/status_effect/void_corruption/on_remove()
 	. = ..()
-	STOP_PROCESSING(SSfastprocess, src)
 	if(ishuman(owner))
 		var/mob/living/carbon/human/H = owner
 		H.cut_overlay(mutable_appearance('icons/effects/effects.dmi', "void_corruption_overlay"))
-		to_chat(H, span_notice("The void corruption fades from your body."))
+		to_chat(H, span_notice("The void corruption fades from my body."))
 
-/datum/status_effect/void_corruption/process()
+/datum/status_effect/void_corruption/tick()
 	if(world.time >= next_damage_time)
 		apply_damage()
 		next_damage_time = world.time + damage_tick
@@ -747,24 +743,24 @@
 	new /obj/effect/temp_visual/void_corruption(get_turf(owner))
 
 	if(prob(50))
-		to_chat(owner, span_warning("The void corruption burns your flesh!"))
+		to_chat(owner, span_warning("The void corruption burns my flesh!"))
 
 	if(corruption_stage >= 2 && prob(25))
 		owner.confused += 2
 
 	if(corruption_stage >= 3 && prob(15))
 		owner.Paralyze(0.5 SECONDS)
-		to_chat(owner, span_danger("Your muscles seize as void energy surges through you!"))
+		to_chat(owner, span_danger("My muscles seize as void energy surges through me!"))
 
 /datum/status_effect/void_corruption/proc/advance_corruption_stage()
-	corruption_stage += 1
+	corruption_stage++
 	next_stage_time = world.time + stage_threshold
 
 	if(ishuman(owner))
 		var/mob/living/carbon/human/H = owner
 		H.cut_overlay(mutable_appearance('icons/effects/effects.dmi', "void_corruption_overlay"))
 		H.add_overlay(mutable_appearance('icons/effects/effects.dmi', "void_corruption_overlay[corruption_stage]", -BODY_BEHIND_LAYER))
-		to_chat(H, span_danger("The void corruption is spreading! Stage [corruption_stage]/[max_stage]"))
+		to_chat(H, span_danger("My void corruption is spreading!"))
 		H.playsound_local(get_turf(H), 'sound/effects/ghost2.ogg', 50, TRUE)
 
 	damage_tick = initial(damage_tick) * (1 - (corruption_stage * 0.2))  // Damage occurs more frequently
@@ -781,15 +777,15 @@
 			continue
 
 		if(prob(spread_chance - (get_dist(owner, L) * 10)))
-			to_chat(L, span_danger("Void energy jumps from [owner] to you!"))
-			to_chat(owner, span_warning("Your corruption spreads to [L]!"))
+			to_chat(L, span_userdanger("Void energy jumps from [owner] to you!"))
+			to_chat(owner, span_warning("My corruption spreads to [L]!"))
 			var/spread_duration = max(5 SECONDS, duration * 0.9)
-			L.apply_status_effect(/datum/status_effect/void_corruption, spread_duration, source_dragon)
+			L.apply_status_effect(/datum/status_effect/void_corruption, spread_duration)
 			new /obj/effect/temp_visual/void_corruption_spread(get_turf(L))
 			break
 
 /datum/status_effect/void_corruption/proc/purge_corruption()
-	to_chat(owner, span_notice("The void corruption is purged from your system!"))
+	to_chat(owner, span_notice("The void corruption is purged from my system!"))
 	qdel(src)
 
 // Visual effects

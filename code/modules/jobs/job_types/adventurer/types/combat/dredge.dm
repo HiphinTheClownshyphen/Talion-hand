@@ -1,14 +1,14 @@
-/datum/advclass/combat/dredge
-	name = "Dredge"
+/datum/job/advclass/combat/dredge
+	title = "Dredge"
 	tutorial = "Peasants and nobles. Saints, sinners, madmen and thieves - who you once were is now irrelevant. \
 	Cast from your home for what is undoubtedly a heinous act of violence, your travels have washed you up upon this \
 	shiteheap. All you have are your possessions from your former life. Make some coin for yourself, lest you end up dead and gone."
-	outfit = /datum/outfit/job/adventurer/dredge
+	outfit = /datum/outfit/adventurer/dredge
 	category_tags = list(CTAG_ADVENTURER)
-	maximum_possible_slots = 7
+	total_positions = 7
 	min_pq = 0
 
-/datum/outfit/job/adventurer/dredge/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/dredge/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_skillrank(/datum/skill/combat/wrestling, pick (1,2), TRUE)
 	H.adjust_skillrank(/datum/skill/combat/unarmed, pick (1,2), TRUE)
@@ -171,7 +171,7 @@
 			if(!H.has_language(/datum/language/oldpsydonic))
 				H.grant_language(/datum/language/oldpsydonic)
 				to_chat(H, "<span class='info'>I can speak Old Psydonic with ,m before my speech.</span>")
-			H.set_patron(/datum/patron/psydon)
+			H.set_patron(/datum/patron/psydon, TRUE)
 			to_chat(H,span_info("\
 			The Ten are false gods, and I loathe those that worship the true corpse god, Necra. Psydon lives, my life for Psydon.")
 			)
@@ -206,7 +206,7 @@
 			)
 		if("Destitute") // Fuck you, die. Welcome to Heartcrit. Dark souls challenge run.
 			ADD_TRAIT(H, TRAIT_DODGEEXPERT, TRAIT_GENERIC)
-			ADD_TRAIT(H, TRAIT_NOSTINK, TRAIT_GENERIC)
+			ADD_TRAIT(H, TRAIT_DEADNOSE, TRAIT_GENERIC)
 			H.adjust_skillrank(/datum/skill/craft/cooking, 1, TRUE)
 			H.adjust_skillrank(/datum/skill/craft/crafting, 2, TRUE)
 			H.adjust_skillrank(/datum/skill/misc/medicine, 1, TRUE)
@@ -468,7 +468,7 @@
 		if("Mage")
 			H.mana_pool?.set_intrinsic_recharge(MANA_ALL_LEYLINES)
 			if(!(H.patron == /datum/patron/divine/noc || /datum/patron/inhumen/zizo))	//Magicians must follow Noc or Zizo to have access to magic.
-				H.set_patron(/datum/patron/divine/noc)
+				H.set_patron(/datum/patron/divine/noc, TRUE)
 			r_hand = /obj/item/weapon/polearm/woodstaff
 			head = /obj/item/clothing/head/roguehood/colored/mage
 			armor = /obj/item/clothing/shirt/robe/colored/mage
@@ -484,11 +484,11 @@
 			H.adjust_spell_points(6)
 			H.cmode_music = 'sound/music/cmode/adventurer/CombatSorcerer.ogg'
 			to_chat(H,span_info("\
-			I've studied the arcane, those who step to me shall perish.")
+			I've studied the arcyne, those who step to me shall perish.")
 			)
 		if("Sword2")
-			beltl = /obj/item/weapon/sword/short
-			beltr = /obj/item/weapon/sword/short
+			beltl = /obj/item/weapon/sword/short/iron
+			beltr = /obj/item/weapon/sword/short/iron
 			H.change_stat(STATKEY_END, 1)
 			H.adjust_skillrank(/datum/skill/combat/swords, 3, TRUE)
 			H.adjust_skillrank(/datum/skill/misc/athletics, 1, TRUE)
@@ -590,7 +590,7 @@
 			H.adjust_skillrank(/datum/skill/misc/sewing, 2, TRUE)
 			H.adjust_skillrank(/datum/skill/misc/medicine, 2, TRUE)
 			H.change_stat(STATKEY_INT, 1)
-			ADD_TRAIT(H, TRAIT_NOSTINK, TRAIT_GENERIC)
+			ADD_TRAIT(H, TRAIT_DEADNOSE, TRAIT_GENERIC)
 			to_chat(H,span_info("\
 			I've studied anatomy, and used to practice medicine.")
 			)
@@ -629,6 +629,8 @@
 			H.change_stat(STATKEY_END, 1)
 			l_hand = /obj/item/instrument/guitar
 			ADD_TRAIT(H, TRAIT_BARDIC_TRAINING, TRAIT_GENERIC)
+			var/datum/inspiration/I = new /datum/inspiration(H)
+			I.grant_inspiration(H, bard_tier = BARD_T3)
 			to_chat(H,span_info("\
 			I used to be a bard, the skills never left me. I'm a silver-tongued devil!")
 			)
@@ -726,20 +728,20 @@
 			)
 		if("Zizo")
 			H.change_stat(STATKEY_INT, 1)
-			H.set_patron(/datum/patron/inhumen/zizo)
+			H.set_patron(/datum/patron/inhumen/zizo, TRUE)
 			to_chat(H,span_info("\
 			CHAOS REIGNS! HAIL ZIZO!")
 			)
 		if("Abyssor")
 			H.change_stat(STATKEY_END, 1)
-			H.set_patron(/datum/patron/divine/abyssor)
+			H.set_patron(/datum/patron/divine/abyssor, TRUE)
 			to_chat(H,span_info("\
 			Abyssor swallows my soul, his wrath will never be quenched!")
 			)
 		if("Graggar")
 			H.change_stat(STATKEY_END, 1)
 			H.change_stat(STATKEY_CON, 1)
-			H.set_patron(/datum/patron/inhumen/graggar)
+			H.set_patron(/datum/patron/inhumen/graggar, TRUE)
 			l_hand = /obj/item/clothing/head/helmet/heavy/sinistar
 			to_chat(H,span_info("\
 			FOR ALL WHO DENY THE STRUGGLE, THE TRIUMPHANT OVERCOME! GRAGGAR IS THE BEAST I WORSHIP!")
@@ -763,7 +765,7 @@
 			H.change_stat(STATKEY_INT, 4)
 			H.change_stat(STATKEY_END, -2)
 			H.change_stat(STATKEY_STR, -1)
-			H.set_patron(/datum/faith/godless)
+			H.set_patron(/datum/faith/godless, TRUE)
 			to_chat(H,span_info("\
 			In this moment, I am euphoric. Not because of any phony god's blessing, but because I am englightened by my intelligence. No gods, no masters.")
 			)
@@ -771,7 +773,7 @@
 			H.change_stat(STATKEY_INT, -4)
 			H.change_stat(STATKEY_CON, 4)
 			H.change_stat(STATKEY_SPD, -4)
-			H.set_patron(/datum/faith/godless)
+			H.set_patron(/datum/faith/godless, TRUE)
 			to_chat(H,span_info("\
 			If I'm going to be dumb, I'm going to be tough. I dare a motherfucker try to end my life.")
 			)

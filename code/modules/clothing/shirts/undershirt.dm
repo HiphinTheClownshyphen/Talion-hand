@@ -6,7 +6,6 @@
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	body_parts_covered = CHEST|ARMS|VITALS
-	color = CLOTHING_LINEN
 
 /obj/item/clothing/shirt/undershirt/priest
 	name = "undervestments"
@@ -86,13 +85,12 @@
 	body_parts_covered = CHEST|ARM_LEFT|VITALS
 	torn_sleeve_number = 1
 
-/obj/item/clothing/shirt/undershirt/colored/vagrant/l
-	r_sleeve_status = SLEEVE_NORMAL
-	l_sleeve_status = SLEEVE_TORN
-	body_parts_covered = CHEST|ARM_RIGHT|VITALS
-
 /obj/item/clothing/shirt/undershirt/colored/vagrant/Initialize()
 	color = pick(CLOTHING_MUD_BROWN, CLOTHING_OLD_LEATHER, CLOTHING_SPRING_GREEN, CLOTHING_BARK_BROWN, CLOTHING_CANVAS	)
+	if(prob(50))
+		r_sleeve_status = SLEEVE_NORMAL
+		l_sleeve_status = SLEEVE_TORN
+		body_parts_covered = CHEST|ARM_RIGHT|VITALS
 	return ..()
 
 /obj/item/clothing/shirt/undershirt/webs
@@ -106,3 +104,17 @@
 	color = null
 	salvage_amount = 1
 	salvage_result = /obj/item/natural/silk
+
+/obj/item/clothing/shirt/undershirt/sash
+	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK
+	name = "cloth sash"
+	desc = "A simple cloth sash."
+	icon_state = "sash"
+	color = CLOTHING_LINEN
+
+/obj/item/clothing/shirt/undershirt/sash/colored
+	misc_flags = CRAFTING_TEST_EXCLUDE
+
+/obj/item/clothing/shirt/undershirt/sash/colored/random/Initialize()
+	color = pick(CLOTHING_CHALK_WHITE, CLOTHING_ROYAL_RED, CLOTHING_LINEN, CLOTHING_MAGE_ORANGE, CLOTHING_ROYAL_TEAL, CLOTHING_SWAMPWEED)
+	return ..()

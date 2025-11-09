@@ -53,7 +53,7 @@
 	icon_state = "headeater"
 	density = FALSE
 	blade_dulling = DULLING_BASH
-	pixel_y = 32
+	SET_BASE_PIXEL(0, 32)
 
 /obj/structure/fake_machine/headeater/Initialize()
 	SSroguemachine.headeater = src
@@ -64,12 +64,10 @@
 	. = ..()
 
 /obj/structure/fake_machine/headeater/r
-	pixel_y = 0
-	pixel_x = 32
+	SET_BASE_PIXEL(32, 0)
 
 /obj/structure/fake_machine/headeater/l
-	pixel_y = 0
-	pixel_x = -32
+	SET_BASE_PIXEL(-32, 0)
 
 /obj/structure/fake_machine/headeater/attackby(obj/item/H, mob/user, params)
 	. = ..()
@@ -87,6 +85,7 @@
 			to_chat(user, span_danger("the [src] consumes the [E] spitting out coins in its place!"))
 			budget2change(E.headprice, user)
 			playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
+			record_round_statistic(STATS_HEADEATER_EXPORTS, E.headprice)
 			qdel(E)
 			return
 
@@ -96,6 +95,7 @@
 			to_chat(user, span_danger("the [src] consumes the [A] spitting out coins in its place!"))
 			budget2change(A.headprice, user)
 			playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
+			record_round_statistic(STATS_HEADEATER_EXPORTS, A.headprice)
 			qdel(A)
 			return
 
@@ -103,9 +103,10 @@
 		var/obj/item/painting/lorehead/D = H
 		if(D.headprice > 0)
 			to_chat(user, span_danger("as the [src] consumes [D] without a trace, you are hit with a wistful feeling, your past...gone in an instant."))
-			user.add_stress(/datum/stressevent/destroyed_past)
+			user.add_stress(/datum/stress_event/destroyed_past)
 			playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
 			budget2change(D.headprice, user)
+			record_round_statistic(STATS_HEADEATER_EXPORTS, D.headprice)
 			qdel(D)
 			return
 
@@ -115,6 +116,7 @@
 			to_chat(user, span_danger("the [src] consumes the [Y] spitting out coins in its place!"))
 			playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
 			budget2change(Y.headprice, user)
+			record_round_statistic(STATS_HEADEATER_EXPORTS, Y.headprice)
 			qdel(Y)
 
 	if(istype(H, /obj/item/paper/inn_partnership))

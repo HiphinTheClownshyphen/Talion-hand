@@ -30,7 +30,11 @@
 
 	default_color = "FFFFFF"
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, YOUNGBEARD, STUBBLE, OLDGREY)
-	inherent_traits = list(TRAIT_NOMOBSWAP)
+	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_POISON_RESILIENCE)
+	inherent_skills = list(
+		/datum/skill/labor/mining = 1,
+	)
+
 	possible_ages = NORMAL_AGES_LIST
 	use_skintones = TRUE
 
@@ -159,9 +163,6 @@
 /datum/species/dwarf/mountain/get_possible_surnames(gender = MALE)
 	var/static/list/last_names = world.file2list('strings/rt/names/dwarf/dwarmlast.txt')
 	return last_names
-
-/datum/species/dwarf/mountain/get_accent_list()
-	return strings("accents/dwarf_replacement.json", "dwarf")
 
 /*------------------\
 | Poison Resistance |

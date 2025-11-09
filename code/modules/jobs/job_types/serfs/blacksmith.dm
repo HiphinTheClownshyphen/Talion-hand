@@ -3,7 +3,6 @@
 	tutorial = "You studied for many decades under your master with a few other apprentices to become an Armorer, \
 	a trade that certainly has seen a boom in revenue in recent times with many a bannerlord\
 	seeing the importance in maintaining a well-equipped army."
-	flag = BLACKSMITH
 	department_flag = SERFS
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
@@ -14,15 +13,14 @@
 
 	allowed_races = RACES_PLAYER_ALL
 
-	outfit = /datum/outfit/job/armorsmith
+	outfit = /datum/outfit/armorsmith
 	display_order = JDO_ARMORER
 	give_bank_account = 30
 	cmode_music = 'sound/music/cmode/towner/CombatTowner2.ogg'
 
-/datum/outfit/job/armorsmith
 	job_bitflag = BITFLAG_CONSTRUCTOR
 
-/datum/outfit/job/armorsmith/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/armorsmith/pre_equip(mob/living/carbon/human/H)
 	..()
 	ring = /obj/item/clothing/ring/silver/makers_guild
 	head = /obj/item/clothing/head/hatfur
@@ -76,25 +74,24 @@
 	tutorial = "You studied for many decades under your master with a few other apprentices to become a Weaponsmith, \
 	a trade that is as ancient as the secrets of steel itself! \
 	You've repaired the blades of cooks, the cracked hoes of peasants and greased the spears of many soldiers into war."
-	flag = BLACKSMITH
 	department_flag = SERFS
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
 	total_positions = 1
 	spawn_positions = 1
+	bypass_lastclass = TRUE
 
 	allowed_races = RACES_PLAYER_ALL
 
-	outfit = /datum/outfit/job/weaponsmith
+	outfit = /datum/outfit/weaponsmith
 	display_order = JDO_WSMITH
 	give_bank_account = 30
 	min_pq = 0
 	cmode_music = 'sound/music/cmode/towner/CombatTowner2.ogg'
 
-/datum/outfit/job/weaponsmith
 	job_bitflag = BITFLAG_CONSTRUCTOR
 
-/datum/outfit/job/weaponsmith/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/weaponsmith/pre_equip(mob/living/carbon/human/H)
 	..()
 	ring = /obj/item/clothing/ring/silver/makers_guild
 	head = /obj/item/clothing/head/hatfur

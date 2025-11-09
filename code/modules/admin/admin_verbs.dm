@@ -33,6 +33,8 @@ GLOBAL_PROTECT(admin_verbs_default)
 	/client/proc/check_antagonists,
 	/client/proc/admin_force_next_migrant_wave,
 	/client/proc/cmd_admin_say,
+	/client/proc/cmd_view_job_boosts,
+	/client/proc/cmd_give_job_boost,
 	/client/proc/deadmin,				/*destroys our own admin datum so we can play as a regular player*/
 	/client/proc/toggle_context_menu,
 	/client/proc/manage_books,
@@ -59,8 +61,11 @@ GLOBAL_PROTECT(admin_verbs_admin)
 	/client/proc/cmd_admin_pm_panel,		/*admin-pm list*/
 	/client/proc/stop_sounds,
 	/client/proc/mark_datum_mapview,
+	/client/proc/toggle_migrations, // toggles migrations.
 
 	/client/proc/invisimin,				/*allows our mob to go invisible/visible*/
+	/client/proc/toggle_specific_triumph_buy, /*toggle whether specific triumphs can be bought*/
+	/client/proc/toggle_jobs_for_persistent, /*toggles jobs for the persistent server*/
 //	/datum/admins/proc/show_traitor_panel,	/*interface which shows a mob's mind*/ -Removed due to rare practical use. Moved to debug verbs ~Errorage
 //	/datum/admins/proc/show_player_panel,	/*shows an interface for individual players, with various links (links require additional flags*/
 //	/datum/verbs/menu/Admin/verb/playerpanel,
@@ -75,6 +80,7 @@ GLOBAL_PROTECT(admin_verbs_admin)
 	/datum/admins/proc/toggleguests,	/*toggles whether guests can join the current game*/
 	/datum/admins/proc/announce,		/*priority announce something to all clients.*/
 	/datum/admins/proc/set_admin_notice, /*announcement all clients see when joining the server.*/
+	/datum/admins/proc/change_skill_exp_modifier, /*Tweaks experience gain*/
 	/client/proc/toggle_aghost_invis, /* lets us choose whether our in-game mob goes visible when we aghost (off by default) */
 	/client/proc/admin_ghost,			/*allows us to ghost/reenter body at will*/
 	/client/proc/hearallasghost,
@@ -119,8 +125,9 @@ GLOBAL_PROTECT(admin_verbs_admin)
 	/client/proc/respawn_character,
 	/client/proc/discord_id_manipulation,
 	/client/proc/ShowAllFamilies,
+	/client/proc/send_bird_letter,
 	)
-GLOBAL_LIST_INIT(admin_verbs_ban, list(/client/proc/unban_panel, /client/proc/ban_panel, /client/proc/stickybanpanel, /client/proc/role_ban_panel, /client/proc/check_pq, /client/proc/adjust_pq, /client/proc/getcurrentlogs, /client/proc/getserverlogs))
+GLOBAL_LIST_INIT(admin_verbs_ban, list(/client/proc/unban_panel, /client/proc/ban_panel, /client/proc/role_ban_panel, /client/proc/check_pq, /client/proc/adjust_pq, /client/proc/getcurrentlogs, /client/proc/getserverlogs))
 GLOBAL_PROTECT(admin_verbs_ban)
 GLOBAL_LIST_INIT(admin_verbs_sounds, list(/client/proc/play_local_sound, /client/proc/play_sound, /client/proc/set_round_end_sound))
 GLOBAL_PROTECT(admin_verbs_sounds)
@@ -141,6 +148,7 @@ GLOBAL_LIST_INIT(admin_verbs_fun, list(
 	/client/proc/run_particle_weather,
 	/client/proc/show_tip,
 	/client/proc/smite,
+	/client/proc/heart_attack,
 	))
 GLOBAL_PROTECT(admin_verbs_fun)
 GLOBAL_LIST_INIT(admin_verbs_spawn, list(/datum/admins/proc/spawn_atom, /datum/admins/proc/podspawn_atom, /client/proc/respawn_character, /datum/admins/proc/beaker_panel))
@@ -153,6 +161,7 @@ GLOBAL_PROTECT(admin_verbs_server)
 	/datum/admins/proc/restart,
 	/datum/admins/proc/end_round,
 	/datum/admins/proc/delay,
+	/datum/admins/proc/accelerate_or_delay_round_end,
 	/datum/admins/proc/toggleaban,
 	/client/proc/everyone_random,
 	/datum/admins/proc/toggleAI,
@@ -212,6 +221,7 @@ GLOBAL_PROTECT(admin_verbs_debug)
 	/client/proc/debug_spell_requirements,
 	/client/proc/cmd_regenerate_asset_cache,
 	/client/proc/cmd_clear_smart_asset_cache,
+	/client/proc/select_job_pack_debug,
 )
 GLOBAL_LIST_INIT(admin_verbs_possess, list(/proc/possess, GLOBAL_PROC_REF(release)))
 GLOBAL_PROTECT(admin_verbs_possess)

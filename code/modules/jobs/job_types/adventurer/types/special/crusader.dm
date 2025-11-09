@@ -1,21 +1,21 @@
-/datum/advclass/pilgrim/rare/crusader
-	name = "Totod Order Emissary"
+/datum/job/advclass/pilgrim/rare/crusader
+	title = "Totod Order Emissary"
 	tutorial = "The Crusaders are knights who have pledged their wealth and lands to the Church, \
 	taking up the banner of the Totod Order dedicated to retaking Valoria. \
-	Three cults provide knights for the Order: Astrata, Necra and Psydon. \
+	Three cults provide knights for the Order: Astrata, Necra and Ravox. \
 	You were sent to Vanderlin by the Order to get any and all assistance from the faithful for the Crusade."
 	allowed_races = RACES_PLAYER_NONHERETICAL
-	allowed_patrons = list(/datum/patron/divine/astrata, /datum/patron/divine/necra, /datum/patron/psydon)
-	outfit = /datum/outfit/job/adventurer/crusader
+	allowed_patrons = list(/datum/patron/divine/astrata, /datum/patron/divine/necra, /datum/patron/divine/ravox)
+	outfit = /datum/outfit/adventurer/crusader
 	category_tags = list(CTAG_ADVENTURER)
-	maximum_possible_slots = 1
-	pickprob = 30
+	total_positions = 1
+	roll_chance = 30
 	min_pq = 0
+	is_recognized = TRUE
 
-/datum/outfit/job/adventurer/crusader
-	allowed_patrons = list(/datum/patron/divine/astrata, /datum/patron/divine/necra, /datum/patron/psydon)
+	allowed_patrons = list(/datum/patron/divine/astrata, /datum/patron/divine/necra, /datum/patron/divine/ravox)
 
-/datum/outfit/job/adventurer/crusader/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/crusader/pre_equip(mob/living/carbon/human/H)
 	..()
 
 	head = /obj/item/clothing/head/helmet/heavy/crusader
@@ -33,23 +33,16 @@
 	switch(H.patron?.name)
 		if("Astrata")
 			H.cmode_music = 'sound/music/cmode/church/CombatAstrata.ogg'
-			cloak = /obj/item/clothing/cloak/stabard/crusader // Gold for Astrata regardless of gender
+			cloak = /obj/item/clothing/cloak/stabard/templar/astrata // Gold for Astrata regardless of gender
 			wrists = /obj/item/clothing/neck/psycross/silver/astrata
 		if("Necra")
 			H.cmode_music = 'sound/music/cmode/church/CombatGravekeeper.ogg'
 			cloak = /obj/item/clothing/cloak/stabard/templar/necra
 			wrists = /obj/item/clothing/neck/psycross/silver/necra
-		if("Psydon")
-			H.cmode_music = 'sound/music/cmode/church/CombatInquisitor.ogg'
-			wrists = /obj/item/clothing/neck/psycross/silver
-			if(H.gender == FEMALE) // Silver for female, gold for male
-				cloak = /obj/item/clothing/cloak/stabard/crusader/t
-			else
-				cloak = /obj/item/clothing/cloak/stabard/crusader
 		else // Failsafe
 			H.cmode_music = 'sound/music/cmode/adventurer/CombatIntense.ogg'
-			cloak = /obj/item/clothing/cloak/stabard/crusader // Gold version regardless of gender or patron
-			wrists = /obj/item/clothing/neck/psycross/silver
+			cloak = /obj/item/clothing/cloak/stabard/templar/ravox // Gold version regardless of gender or patron
+			wrists = /obj/item/clothing/neck/psycross/silver/ravox
 
 	H.adjust_skillrank(/datum/skill/combat/crossbows, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/wrestling, 3, TRUE)
@@ -94,10 +87,10 @@
 		H.grant_language(/datum/language/oldpsydonic)
 		to_chat(H, "<span class='info'>I can speak Old Psydonic with ,m before my speech.</span>")
 
-/datum/outfit/job/adventurer/crusader // Reminder message
+/datum/outfit/adventurer/crusader // Reminder message
 	var/tutorial = "<br><br><font color='#bdc34a'><span class='bold'>You have been sent from the Totod Order on a mission to aid your struggle against the Blood Barons somehow. The details of your mission may vary, perhaps to find allies, funding, or a agent of the enemy...</span></font><br><br>"
 
-/datum/outfit/job/adventurer/crusader/post_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/crusader/post_equip(mob/living/carbon/human/H)
 	..()
 	to_chat(H, tutorial)
 

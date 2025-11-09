@@ -26,7 +26,6 @@
 	burn_reduction = 0
 	max_damage = 0
 	w_class = WEIGHT_CLASS_TINY
-	max_integrity = 0
 	sellprice = 0
 	fingers = FALSE
 
@@ -41,7 +40,6 @@
 	burn_reduction = 0
 	max_damage = 0
 	w_class = WEIGHT_CLASS_TINY
-	max_integrity = 0
 	sellprice = 0
 	fingers = FALSE
 
@@ -56,7 +54,6 @@
 	burn_reduction = 0
 	max_damage = 0
 	w_class = WEIGHT_CLASS_TINY
-	max_integrity = 0
 	sellprice = 0
 
 /obj/item/bodypart/r_leg/prosthetic
@@ -70,7 +67,6 @@
 	burn_reduction = 0
 	max_damage = 0
 	w_class = WEIGHT_CLASS_TINY
-	max_integrity = 0
 	sellprice = 0
 
 // --------- WOOD PROSTHETICS -----------
@@ -198,7 +194,8 @@
 	burn_reduction = 10
 	sellprice = 40
 	anvilrepair = /datum/skill/craft/engineering
-	smeltresult = /obj/item/ingot/steel
+	melt_amount = 75
+	melting_material = /datum/material/steel
 	punch_modifier = 1.4
 
 /obj/item/bodypart/r_arm/prosthetic/steel
@@ -212,7 +209,8 @@
 	burn_reduction = 10
 	sellprice = 40
 	anvilrepair = /datum/skill/craft/engineering
-	smeltresult = /obj/item/ingot/steel
+	melt_amount = 75
+	melting_material = /datum/material/steel
 	punch_modifier = 1.4
 
 /obj/item/bodypart/l_leg/prosthetic/steel
@@ -227,7 +225,8 @@
 	burn_reduction = 10
 	sellprice = 40
 	anvilrepair = /datum/skill/craft/engineering
-	smeltresult = /obj/item/ingot/steel
+	melt_amount = 75
+	melting_material = /datum/material/steel
 
 /obj/item/bodypart/r_leg/prosthetic/steel
 	name = "steel right leg"
@@ -241,7 +240,8 @@
 	burn_reduction = 10
 	sellprice = 40
 	anvilrepair = /datum/skill/craft/engineering
-	smeltresult = /obj/item/ingot/steel
+	melt_amount = 75
+	melting_material = /datum/material/steel
 
 // --------- GOLD PROSTHETICS -----------
 

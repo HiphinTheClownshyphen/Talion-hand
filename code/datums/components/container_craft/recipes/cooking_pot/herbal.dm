@@ -2,8 +2,9 @@
 	abstract_type = /datum/container_craft/cooking/herbal_tea
 	category = "Herbal Remedies"
 	crafting_time = 8 SECONDS
+	water_conversion = 1
 	reagent_requirements = list(
-		/datum/reagent/water = 25
+		/datum/reagent/water = 20
 	)
 	craft_verb = "brewing "
 	required_chem_temp = 350 // Lower temp for gentle herbal brewing
@@ -17,9 +18,8 @@
 /datum/container_craft/cooking/herbal_tea/symphitum_tea
 	name = "Symphitum Tea"
 	created_reagent = /datum/reagent/medicine/herbal/symphitum_tea
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/symphitum = 2
+		/obj/item/alch/herb/symphitum = 2
 	)
 	finished_smell = /datum/pollutant/food/teas
 
@@ -27,9 +27,8 @@
 /datum/container_craft/cooking/herbal_tea/taraxacum_extract
 	name = "Taraxacum Extract"
 	created_reagent = /datum/reagent/medicine/herbal/taraxacum_extract
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/taraxacum = 3
+		/obj/item/alch/herb/taraxacum = 3
 	)
 	crafting_time = 12 SECONDS
 	wording_choice = "roots of"
@@ -39,9 +38,8 @@
 /datum/container_craft/cooking/herbal_tea/urtica_brew
 	name = "Urtica Brew"
 	created_reagent = /datum/reagent/medicine/herbal/urtica_brew
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/urtica = 2
+		/obj/item/alch/herb/urtica = 2
 	)
 	optional_requirements = list(
 		/obj/item/alch/irondust = 1 // Iron dust enhances blood restoration
@@ -54,6 +52,7 @@
 	abstract_type = /datum/container_craft/cooking/herbal_salve
 	category = "Herbal Remedies"
 	crafting_time = 15 SECONDS
+	water_conversion = 1
 	reagent_requirements = list(
 		/datum/reagent/consumable/ethanol = 20
 	)
@@ -69,9 +68,8 @@
 /datum/container_craft/cooking/herbal_salve/calendula_salve
 	name = "Calendula Salve"
 	created_reagent = /datum/reagent/medicine/herbal/calendula_salve
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/calendula = 3
+		/obj/item/alch/herb/calendula = 3
 	)
 	finished_smell = /datum/pollutant/food/flower
 
@@ -79,9 +77,8 @@
 /datum/container_craft/cooking/herbal_tea/hypericum_tonic
 	name = "Hypericum Tonic"
 	created_reagent = /datum/reagent/medicine/herbal/hypericum_tonic
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/hypericum = 2
+		/obj/item/alch/herb/hypericum = 2
 	)
 	optional_requirements = list(
 		/obj/item/alch/golddust = 1 // Gold dust enhances mana restoration
@@ -93,9 +90,8 @@
 /datum/container_craft/cooking/herbal_tea/mentha_tea
 	name = "Mentha Tea"
 	created_reagent = /datum/reagent/medicine/herbal/mentha_tea
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/mentha = 2
+		/obj/item/alch/herb/mentha = 2
 	)
 	crafting_time = 6 SECONDS
 	finished_smell = /datum/pollutant/food/mint
@@ -104,9 +100,8 @@
 /datum/container_craft/cooking/herbal_tea/salvia_wisdom
 	name = "Salvia Wisdom Tea"
 	created_reagent = /datum/reagent/buff/herbal/salvia_wisdom
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/salvia = 2
+		/obj/item/alch/herb/salvia = 2
 	)
 	optional_requirements = list(
 		/obj/item/fertilizer/bone_meal = 1 // Bone meal enhances wisdom
@@ -117,9 +112,8 @@
 /datum/container_craft/cooking/herbal_tea/artemisia_luck
 	name = "Artemisia Fortune Tea"
 	created_reagent = /datum/reagent/buff/herbal/artemisia_luck
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/artemisia = 2
+		/obj/item/alch/herb/artemisia = 2
 	)
 	optional_requirements = list(
 		/obj/item/alch/silverdust = 1 // Silver dust enhances luck
@@ -130,9 +124,8 @@
 /datum/container_craft/cooking/herbal_tea/euphorbia_strength
 	name = "Euphorbia Strength Tea"
 	created_reagent = /datum/reagent/buff/herbal/euphorbia_strength
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/euphorbia = 2
+		/obj/item/alch/herb/euphorbia = 2
 	)
 	optional_requirements = list(
 		/obj/item/alch/irondust = 1 // irondust enhances strength
@@ -142,11 +135,10 @@
 
 // Mild Poison Recipes
 /datum/container_craft/cooking/herbal_tea/weak_atropa
-	name = "Dilute Atropa Extract"
+	name = "Diluted Atropa Extract"
 	created_reagent = /datum/reagent/poison/herbal/weak_atropa
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/atropa = 1
+		/obj/item/alch/herb/atropa = 1
 	)
 	crafting_time = 5 SECONDS
 	finished_smell = /datum/pollutant/food/bitter
@@ -155,18 +147,16 @@
 /datum/container_craft/cooking/herbal_tea/matricaria_irritant
 	name = "Matricaria Irritant"
 	created_reagent = /datum/reagent/poison/herbal/matricaria_irritant
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/matricaria = 2
+		/obj/item/alch/herb/matricaria = 2
 	)
 	finished_smell = /datum/pollutant/food/flower
 
 /datum/container_craft/cooking/herbal_tea/rosa_water
 	name = "Rosa Water"
 	created_reagent = /datum/reagent/medicine/herbal/simple_rosa
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/rosa = 1
+		/obj/item/alch/herb/rosa = 1
 	)
 	crafting_time = 4 SECONDS
 	finished_smell = /datum/pollutant/food/flower
@@ -174,9 +164,8 @@
 /datum/container_craft/cooking/herbal_tea/euphrasia_wash
 	name = "Euphrasia Eye Wash"
 	created_reagent = /datum/reagent/medicine/herbal/euphrasia_eye_wash
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/euphrasia = 2
+		/obj/item/alch/herb/euphrasia = 2
 	)
 	finished_smell = /datum/pollutant/food/herb
 
@@ -184,10 +173,9 @@
 /datum/container_craft/cooking/herbal_tea/valeriana_draught
 	name = "Valeriana Sleep Draught"
 	created_reagent = /datum/reagent/medicine/herbal/valeriana_draught
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/valeriana = 2,
-		/obj/item/alch/mentha = 1
+		/obj/item/alch/herb/valeriana = 2,
+		/obj/item/alch/herb/mentha = 1
 	)
 	crafting_time = 10 SECONDS
 	finished_smell = /datum/pollutant/food/herb
@@ -197,9 +185,8 @@
 /datum/container_craft/cooking/herbal_tea/benedictus_vigor
 	name = "Benedictus Vigor Tea"
 	created_reagent = /datum/reagent/buff/herbal/benedictus_vigor
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/benedictus = 2
+		/obj/item/alch/herb/benedictus = 2
 	)
 	optional_requirements = list(
 		/obj/item/alch/irondust = 1 // Iron enhances physical vigor
@@ -211,10 +198,9 @@
 /datum/container_craft/cooking/herbal_salve/paris_poultice
 	name = "Paris Numbing Poultice"
 	created_reagent = /datum/reagent/medicine/herbal/paris_poultice
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/paris = 2,
-		/obj/item/alch/calendula = 1
+		/obj/item/alch/herb/paris = 2,
+		/obj/item/alch/herb/calendula = 1
 	)
 	crafting_time = 18 SECONDS
 	finished_smell = /datum/pollutant/food/bitter
@@ -226,14 +212,13 @@
 /datum/container_craft/cooking/herbal_tea/herbalist_panacea
 	name = "Herbalist's Panacea"
 	created_reagent = /datum/reagent/medicine/herbal/herbalist_panacea
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/symphitum = 1,
-		/obj/item/alch/calendula = 1,
-		/obj/item/alch/urtica = 1
+		/obj/item/alch/herb/symphitum = 1,
+		/obj/item/alch/herb/calendula = 1,
+		/obj/item/alch/herb/urtica = 1
 	)
 	optional_requirements = list(
-		/obj/item/alch/rosa = 1 // Rosa enhances the blend
+		/obj/item/alch/herb/rosa = 1 // Rosa enhances the blend
 	)
 	max_optionals = 1
 	crafting_time = 20 SECONDS
@@ -244,10 +229,12 @@
 /datum/container_craft/cooking/herbal_tea/witches_bane
 	name = "Witch's Bane"
 	created_reagent = /datum/reagent/medicine/herbal/witches_bane
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/rosa = 2,
-		/obj/item/alch/hypericum = 1
+		/obj/item/alch/herb/rosa = 1,
+		/obj/item/alch/herb/hypericum = 1
+	)
+	reagent_requirements = list(
+		/datum/reagent/medicine/herbal/simple_rosa = 20,
 	)
 	optional_requirements = list(
 		/obj/item/alch/silverdust = 1 // Silver purifies
@@ -260,11 +247,11 @@
 /datum/container_craft/cooking/herbal_tea/scholar_focus
 	name = "Scholar's Focus Tea"
 	created_reagent = /datum/reagent/buff/herbal/scholar_focus
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/mentha = 1,
-		/obj/item/alch/euphrasia = 1,
-		/obj/item/alch/salvia = 1
+		/obj/item/alch/herb/euphrasia = 1,
+	)
+	reagent_requirements = list(
+		/datum/reagent/buff/herbal/alchemist_insight = 20
 	)
 	crafting_time = 12 SECONDS
 	finished_smell = /datum/pollutant/food/mint
@@ -275,10 +262,9 @@
 /datum/container_craft/cooking/herbal_tea/moonwater_elixir
 	name = "Moonwater Elixir"
 	created_reagent = /datum/reagent/buff/herbal/moonwater_elixir
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/artemisia = 1,
-		/obj/item/alch/hypericum = 1
+		/obj/item/alch/herb/artemisia = 1,
+		/obj/item/alch/herb/hypericum = 1
 	)
 	optional_requirements = list(
 		/obj/item/alch/silverdust = 1,
@@ -294,11 +280,10 @@
 /datum/container_craft/cooking/herbal_tea/battle_stim
 	name = "Warrior's Battle Broth"
 	created_reagent = /datum/reagent/buff/herbal/battle_stim
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/benedictus = 1,
-		/obj/item/alch/valeriana = 1, // Calms nerves
-		/obj/item/alch/urtica = 1    // Energizes
+		/obj/item/alch/herb/benedictus = 1,
+		/obj/item/alch/herb/valeriana = 1, // Calms nerves
+		/obj/item/alch/herb/urtica = 1    // Energizes
 	)
 	optional_requirements = list(
 		/obj/item/alch/irondust = 1  // Strengthens resolve
@@ -313,10 +298,9 @@
 /datum/container_craft/cooking/herbal_tea/alchemist_insight
 	name = "Alchemist's Insight"
 	created_reagent = /datum/reagent/buff/herbal/alchemist_insight
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/salvia = 1,
-		/obj/item/alch/mentha = 1
+		/obj/item/alch/herb/salvia = 1,
+		/obj/item/alch/herb/mentha = 1
 	)
 	optional_requirements = list(
 		/obj/item/alch/golddust = 1 // Gold enhances perception
@@ -330,11 +314,10 @@
 /datum/container_craft/cooking/herbal_tea/purification_draught
 	name = "Purification Draught"
 	created_reagent = /datum/reagent/medicine/herbal/purification_draught
-	water_conversion = 1
 	requirements = list(
-		/obj/item/alch/rosa = 1,
-		/obj/item/alch/calendula = 1,
-		/obj/item/alch/hypericum = 1
+		/obj/item/alch/herb/rosa = 1,
+		/obj/item/alch/herb/calendula = 1,
+		/obj/item/alch/herb/hypericum = 1
 	)
 	optional_requirements = list(
 		/obj/item/alch/silverdust = 1,
@@ -344,3 +327,79 @@
 	crafting_time = 25 SECONDS
 	finished_smell = /datum/pollutant/food/flower
 	complete_message = "The draught radiates purity and cleansing!"
+
+/datum/container_craft/cooking/herbal_tea/purification_draught
+	name = "Transis Potion"
+	created_reagent = /datum/reagent/medicine/gender_potion
+	water_conversion = 0.5
+	requirements = list(
+		/obj/item/alch/transisdust = 1,
+		/obj/item/alch/silverdust = 1,
+		/obj/item/alch/viscera = 1
+	)
+	crafting_time = 30 SECONDS
+	finished_smell = /datum/pollutant/food/strawberry_cake
+	complete_message = "The brew radiates heat and a sweet smell."
+
+/datum/container_craft/cooking/perfume
+	abstract_type = /datum/container_craft/cooking/perfume
+	category = "Fragrances"
+	crafting_time = 30 SECONDS
+	water_conversion = 0.5
+	reagent_requirements = list(
+		/datum/reagent/medicine/herbal/simple_rosa = 25
+	)
+	craft_verb = "brewing "
+	required_chem_temp = 350 // Lower temp for gentle herbal brewing
+	pollute_amount = 200
+	complete_message = "A strong, fragrant scent permeates the area."
+	wording_choice = "leaves of"
+	used_skill = /datum/skill/craft/alchemy
+	quality_modifier = 0.8
+
+/datum/container_craft/cooking/perfume/rosa
+	name = "Rosa Perfume"
+	created_reagent = /obj/item/perfume/rose
+	requirements = list(
+		/datum/reagent/medicine/herbal/simple_rosa = 25,
+		/obj/item/alch/herb/rosa = 1
+	)
+	finished_smell = /datum/pollutant/fragrance/rose
+
+	wording_choice = "petals of"
+	complete_message = "A strong, fragrant scent of rosa permeates the area."
+
+/datum/container_craft/cooking/perfume/mint
+	name = "Mint Perfume"
+	created_reagent = /obj/item/perfume/mint
+	requirements = list(
+		/datum/reagent/medicine/herbal/simple_rosa = 25,
+		/obj/item/alch/herb/mentha = 1
+	)
+	finished_smell = /datum/pollutant/fragrance/mint
+
+	wording_choice = "leaves of"
+	complete_message = "A strong, fragrant scent of mint permeates the area."
+
+/datum/container_craft/cooking/perfume/pear
+	name = "Pear Perfume"
+	created_reagent = /obj/item/perfume/pear
+	requirements = list(
+		/datum/reagent/medicine/herbal/simple_rosa = 25,
+		/obj/item/reagent_containers/food/snacks/produce/fruit/pear = 1
+	)
+	finished_smell = /datum/pollutant/fragrance/pear
+	complete_message = "A strong, fragrant scent of pear permeates the area."
+
+	wording_choice = "pieces of"
+
+/datum/container_craft/cooking/perfume/strawberry
+	name = "Strawberry Perfume"
+	created_reagent = /obj/item/perfume/strawberry
+	requirements = list(
+		/datum/reagent/medicine/herbal/simple_rosa = 25,
+		/obj/item/reagent_containers/food/snacks/produce/fruit/strawberry = 1
+	)
+	finished_smell = /datum/pollutant/fragrance/strawberry
+	complete_message = "A strong, fragrant scent of strawberry permeates the area."
+	wording_choice = "pieces of"

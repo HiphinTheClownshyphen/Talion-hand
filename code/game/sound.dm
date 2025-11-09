@@ -278,6 +278,9 @@
 /proc/get_rand_frequency()
 	return rand(43100, 45100) //Frequency stuff only works with 45kbps oggs.
 
+/proc/get_rand_frequency_higher_range()
+	return rand(40000, 48100)
+
 /proc/get_sfx(soundin)
 	if(islist(soundin))
 		soundin = pick(soundin)
@@ -398,4 +401,48 @@
 							'sound/foley/footsteps/armor/powerarmor (2).ogg',\
 							'sound/foley/footsteps/armor/powerarmor (3).ogg',\
 							)
+			if(SFX_WATCH_BOOT_STEP)
+				soundin = pick('sound/foley/footsteps/armor/heavy-footstep (1).ogg',\
+							'sound/foley/footsteps/armor/heavy-footstep (2).ogg',\
+							'sound/foley/footsteps/armor/heavy-footstep (3).ogg',\
+							'sound/foley/footsteps/armor/heavy-footstep (4).ogg',\
+							'sound/foley/footsteps/armor/heavy-footstep (5).ogg'\
+							)
+			if(SFX_CAT_MEOW)
+				soundin = pickweight(list(
+					'sound/vo/cat/cat_meow1.ogg' = 33,
+					'sound/vo/cat/cat_meow2.ogg' = 33,
+					'sound/vo/cat/cat_meow3.ogg' = 33,
+					'sound/vo/cat/oranges_meow1.ogg' = 1,
+				))
+			if(SFX_CAT_PURR)
+				soundin = pick(
+					'sound/vo/cat/cat_purr1.ogg',
+					'sound/vo/cat/cat_purr2.ogg',
+					'sound/vo/cat/cat_purr3.ogg',
+					'sound/vo/cat/cat_purr4.ogg',
+				)
+			if(SFX_EGG_HATCHING)
+				soundin = pick(
+					'sound/foley/egg_hatching/egghatching1.ogg',
+					'sound/foley/egg_hatching/egghatching2.ogg',
+					'sound/foley/egg_hatching/egghatching3.ogg',
+				)
+			if(SFX_DEFAULT_FISH_SLAP)
+				soundin = pick(
+					'sound/mobs/non-humanoids/fish/fish_slap1.ogg',
+				)
+
+			if(SFX_ALT_FISH_SLAP)
+				soundin = pick(
+					'sound/mobs/non-humanoids/fish/fish_slap2.ogg',
+				)
+			if(SFX_REEL)
+				soundin = pick(
+					'sound/items/reel/reel1.ogg',
+					'sound/items/reel/reel2.ogg',
+					'sound/items/reel/reel3.ogg',
+					'sound/items/reel/reel4.ogg',
+					'sound/items/reel/reel5.ogg',
+				)
 	return soundin

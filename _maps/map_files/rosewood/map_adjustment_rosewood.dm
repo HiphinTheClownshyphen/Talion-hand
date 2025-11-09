@@ -5,8 +5,8 @@
 */
 
 #define POINTY_EARS list(\
-	"Elf",\
-	"Half-Elf"\
+	SPEC_ID_ELF,\
+	SPEC_ID_HALF_ELF\
 )
 
 /datum/map_adjustment/rosewood
@@ -19,3 +19,7 @@
 	)
 
 #undef POINTY_EARS
+
+	ages_adjust = list(
+		/datum/job/forestguard = list(AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
+	)

@@ -5,7 +5,6 @@
 	The divine is all that matters in an immoral world. \
 	The Sun Queen and her pantheon rule over all, and you will preach their wisdom to Vanderlin. \
 	It is up to you to shephard the flock into a Ten-fearing future."
-	flag = PRIEST
 	department_flag = CHURCHMEN
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_PRIEST
@@ -18,15 +17,17 @@
 	cmode_music = 'sound/music/cmode/church/CombatAstrata.ogg'
 
 	allowed_races = RACES_PLAYER_NONDISCRIMINATED
+	blacklisted_species = list(SPEC_ID_HALFLING)
 
-	outfit = /datum/outfit/job/priest
+	outfit = /datum/outfit/priest
 	spells = list(
 		/datum/action/cooldown/spell/undirected/list_target/convert_role/templar,
 		/datum/action/cooldown/spell/undirected/list_target/convert_role/acolyte,
 		/datum/action/cooldown/spell/undirected/list_target/convert_role/churchling,
+		/datum/action/cooldown/spell/undirected/call_bird/priest,
 	)
 
-/datum/outfit/job/priest/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/priest/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.virginity = TRUE
 	H.verbs |= /mob/living/carbon/human/proc/coronate_lord
@@ -71,17 +72,17 @@
 	if(!H.has_language(/datum/language/celestial)) // For discussing church matters with the other Clergy
 		H.grant_language(/datum/language/celestial)
 		to_chat(H, "<span class='info'>I can speak Celestial with ,c before my speech.</span>")
-	var/datum/devotion/cleric_holder/C = new /datum/devotion/cleric_holder(H, H.patron) // This creates the cleric holder used for devotion spells
-	H.verbs += list(/mob/living/carbon/human/proc/devotionreport, /mob/living/carbon/human/proc/clericpray)
-	C.grant_spells_priest(H)
-
+	var/holder = H.patron?.devotion_holder
+	if(holder)
+		var/datum/devotion/devotion = new holder()
+		devotion.make_priest()
+		devotion.grant_to(H)
 	H.update_icons()
 
 /datum/job/priest/demoted //just used to change the priest title
 	title = "Ex-Priest"
 	f_title = "Ex-Priestess"
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_EQUIP_RANK)
-	flag = PRIEST
 	department_flag = CHURCHMEN
 	faction = FACTION_TOWN
 	total_positions = 0
@@ -91,7 +92,6 @@
 	title = "Vice Priest"
 	f_title = "Vice Priestess"
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_EQUIP_RANK)
-	flag = PRIEST
 	department_flag = CHURCHMEN
 	faction = FACTION_TOWN
 	total_positions = 0
@@ -139,7 +139,9 @@
 			HL.job = "Ex-Consort"
 			consort_job?.remove_spells(HL)
 
+	var/new_title = (coronated.gender == MALE) ? SSmapping.config.monarch_title : SSmapping.config.monarch_title_f
 	coronated.mind.set_assigned_role(/datum/job/lord)
+	lord_job?.get_informed_title(coronated, TRUE, new_title)
 	coronated.job = "Monarch" //Monarch is used when checking if the ruler is alive, not "King" or "Queen". Can also pass it on and have the title change properly later.
 	lord_job?.add_spells(coronated)
 	SSticker.rulermob = coronated
@@ -171,7 +173,7 @@
 
 		for(var/mob/living/carbon/human/H in GLOB.human_list)
 			if(H.real_name == inputty)
-				if(H.advjob == "Faceless One")
+				if(H.job == "Faceless One")
 					to_chat(src, span_danger("I wasn't able to do that!"))
 					return FALSE
 				H.cleric?.excommunicate()
@@ -194,17 +196,17 @@
 			priority_announce("[real_name] has forgiven [inputty]. Once more walk in the light!", title = "Hail the Ten!", sound = 'sound/misc/bell.ogg')
 			for(var/mob/living/carbon/H in GLOB.player_list)
 				if(H.real_name == inputty)
-					H.remove_stress(/datum/stressevent/psycurse)
+					H.remove_stress(/datum/stress_event/psycurse)
 			return
 		if(length(GLOB.tennite_schisms))
 			to_chat(src, span_warning("I cannot curse anyone during the schism!"))
 			return FALSE
 		for(var/mob/living/carbon/human/H in GLOB.player_list)
 			if(H.real_name == inputty)
-				if(H.advjob == "Faceless One")
+				if(H.job == "Faceless One")
 					to_chat(src, span_danger("I wasn't able to do that!"))
 					return FALSE
-				H.add_stress(/datum/stressevent/psycurse)
+				H.add_stress(/datum/stress_event/psycurse)
 				GLOB.heretical_players += inputty
 				priority_announce("[real_name] has put Xylix's curse of woe on [inputty] for offending the church!", title = "SHAME", sound = 'sound/misc/excomm.ogg')
 				break

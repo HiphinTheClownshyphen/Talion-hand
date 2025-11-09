@@ -4,7 +4,7 @@
 	name = ""
 	desc = ""
 	icon_state = ""
-	icon = 'icons/roguetown/weapons/32.dmi'
+	icon = 'icons/roguetown/weapons/32/shields.dmi'
 	slot_flags = ITEM_SLOT_BACK
 	flags_1 = null
 	force = 10
@@ -103,8 +103,8 @@
 	desc = "A simple, emblazoned round wooden shield with leather padding. \nCan exceptionally block attacks, but is more brittle than metal ones."
 	icon_state = "woodsh"
 	dropshrink = 0.8
-	coverage = 50
-	max_integrity = 150
+	coverage = 60
+	max_integrity = INTEGRITY_STANDARD - 25
 
 /obj/item/weapon/shield/wood/choose_design(proc_value, mob/user)
 	. = proc_value
@@ -168,15 +168,15 @@
 	wdefense = 6
 	coverage = 65
 	parrysound = list('sound/combat/parry/shield/towershield (1).ogg','sound/combat/parry/shield/towershield (2).ogg','sound/combat/parry/shield/towershield (3).ogg')
-	max_integrity = 300
+	max_integrity = INTEGRITY_STRONG
 	melting_material = /datum/material/iron
 	melt_amount = 75
 
 /obj/item/weapon/shield/tower/spidershield
 	name = "spider shield"
 	desc = "A bulky shield of spike-like lengths molten together. The motifs evoke anything but safety and protection."
+	icon = 'icons/roguetown/weapons/32/elven.dmi'
 	icon_state = "spidershield"
-	coverage = 55
 
 /obj/item/weapon/shield/tower/getonmobprop(tag)
 	. = ..()
@@ -204,7 +204,7 @@
 	coverage = 75 // Rare shield from unique job, gets a tiny bit of additional coverage
 	attacked_sound = list('sound/combat/parry/shield/metalshield (1).ogg','sound/combat/parry/shield/metalshield (2).ogg','sound/combat/parry/shield/metalshield (3).ogg')
 	parrysound = list('sound/combat/parry/shield/metalshield (1).ogg','sound/combat/parry/shield/metalshield (2).ogg','sound/combat/parry/shield/metalshield (3).ogg')
-	max_integrity = 500
+	max_integrity = INTEGRITY_STRONGEST
 	blade_dulling = DULLING_BASH
 	sellprice = 150 // A noble collector would love to get their hands on one of these
 	melting_material = /datum/material/bronze
@@ -235,7 +235,7 @@
 	coverage = 70
 	attacked_sound = list('sound/combat/parry/shield/metalshield (1).ogg','sound/combat/parry/shield/metalshield (2).ogg','sound/combat/parry/shield/metalshield (3).ogg')
 	parrysound = list('sound/combat/parry/shield/metalshield (1).ogg','sound/combat/parry/shield/metalshield (2).ogg','sound/combat/parry/shield/metalshield (3).ogg')
-	max_integrity = 500
+	max_integrity = INTEGRITY_STRONGEST
 	blade_dulling = DULLING_BASH
 	sellprice = 30
 	melting_material = /datum/material/steel
@@ -280,6 +280,28 @@
 
 #undef SHIELD_BANG_COOLDOWN
 
+/obj/item/weapon/shield/tower/metal/psy
+	name = "Covenant"
+	desc = "The Ordo Benetarus holds a mantra: A Psydonian endures. A Psydonian preserves themselves. A Psydonian preserves His flock. Protect them."
+	icon = 'icons/roguetown/weapons/32/psydonite.dmi'
+	icon_state = "psyshield"
+	force = 20
+	throwforce = 10
+	throw_speed = 1
+	throw_range = 3
+	wlength = WLENGTH_NORMAL
+	resistance_flags = null
+	flags_1 = CONDUCT_1
+	wdefense = 8
+	coverage = 50
+	attacked_sound = list('sound/combat/parry/shield/metalshield (1).ogg','sound/combat/parry/shield/metalshield (2).ogg','sound/combat/parry/shield/metalshield (3).ogg')
+	parrysound = list('sound/combat/parry/shield/metalshield (1).ogg','sound/combat/parry/shield/metalshield (2).ogg','sound/combat/parry/shield/metalshield (3).ogg')
+	max_integrity = 300
+
+/obj/item/weapon/shield/tower/metal/psy/Initialize(mapload)
+	. = ..()							//+0 force, +100 int, +1 def, make silver
+	AddComponent(/datum/component/psyblessed, TRUE, 0, FALSE, 100, 1, TRUE)
+
 /obj/item/weapon/shield/tower/buckleriron
 	name = "iron buckler"
 	desc = "A small sized iron shield, popular among mercenaries due to it's light weight and ease of mobility."
@@ -297,7 +319,7 @@
 	coverage = 45
 	attacked_sound = list('sound/combat/parry/shield/metalshield (1).ogg','sound/combat/parry/shield/metalshield (2).ogg','sound/combat/parry/shield/metalshield (3).ogg')
 	parrysound = list('sound/combat/parry/shield/metalshield (1).ogg','sound/combat/parry/shield/metalshield (2).ogg','sound/combat/parry/shield/metalshield (3).ogg')
-	max_integrity = 250
+	max_integrity = INTEGRITY_STRONG - 50
 	melting_material = /datum/material/iron
 	melt_amount = 75
 
@@ -322,7 +344,7 @@
 	coverage = 60
 	attacked_sound = list('sound/combat/parry/shield/towershield (1).ogg','sound/combat/parry/shield/towershield (2).ogg','sound/combat/parry/shield/towershield (3).ogg')
 	parrysound = list('sound/combat/parry/shield/towershield (1).ogg','sound/combat/parry/shield/towershield (2).ogg','sound/combat/parry/shield/towershield (3).ogg')
-	max_integrity = 200
+	max_integrity = INTEGRITY_STANDARD
 
 /obj/item/weapon/shield/heater/choose_design(proc_value, mob/user)
 	. = proc_value

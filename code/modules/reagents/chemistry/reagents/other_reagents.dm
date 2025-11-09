@@ -27,9 +27,12 @@
 	if((method == INGEST) && L.clan)
 		L.adjust_bloodpool(reac_volume)
 		L.clan.handle_bloodsuck(BLOOD_PREFERENCE_FANCY)
+	if(method == INJECT)
+		SEND_SIGNAL(L, COMSIG_HANDLE_INFUSION, data["blood_type"], reac_volume)
 
 
 /datum/reagent/blood/on_merge(list/mix_data)
+	. = ..()
 	if(data && mix_data)
 		if(data["blood_DNA"] != mix_data["blood_DNA"])
 			data["cloneable"] = 0 //On mix, consider the genetic sampling unviable for pod cloning if the DNA sample doesn't match.
@@ -83,6 +86,9 @@
 /datum/reagent/water/gross
 	taste_description = "lead"
 	color = "#98934bc6"
+
+/datum/reagent/water/gross/on_aeration(volume, turf/turf)
+	turf.pollute_turf(/datum/pollutant/rot/sewage, volume * 3)
 
 /datum/reagent/water/gross/reaction_mob(mob/living/L, method=TOUCH, reac_volume)
 	if(method == INGEST) // Make sure you DRANK the toxic water before giving damage
@@ -291,7 +297,7 @@
 /datum/reagent/soap/on_mob_life(mob/living/carbon/M)
 	..()
 	if(ishuman(M))
-		M.add_stress(/datum/stressevent/mouthsoap)
+		M.add_stress(/datum/stress_event/mouthsoap)
 
 /datum/reagent/soap/add_to_member(obj/effect/abstract/liquid_turf/adder)
 	. = ..()
@@ -302,3 +308,29 @@
 	. = ..()
 	var/datum/component/slipComp = remover.GetComponent(/datum/component/slippery)
 	slipComp?.Destroy()
+
+/datum/reagent/sate
+	name = "SATE"
+	color = "#e46363"
+	glows = TRUE
+
+/datum/reagent/sate/on_mob_add(mob/living/L)
+	. = ..()
+	ADD_TRAIT(L, TRAIT_SATE, type)
+
+/datum/reagent/sate/on_mob_delete(mob/living/L)
+	. = ..()
+	REMOVE_TRAIT(L, TRAIT_SATE, type)
+
+/datum/reagent/devour
+	name = "DEVOUR"
+	color = "#61e639"
+	glows = TRUE
+	overdose_threshold = 11
+
+/datum/reagent/devour/on_mob_life(mob/living/carbon/M)
+	. = ..()
+	SEND_SIGNAL(M, COMSIG_DEVOUR_OVERDRIVE)
+
+/datum/reagent/devour/overdose_process(mob/living/M)
+	. = ..()

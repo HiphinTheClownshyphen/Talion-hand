@@ -9,7 +9,7 @@
 	speak_chance = 0
 	response_help_continuous = "passes through"
 	response_help_simple = "pass through"
-	base_intents = list()
+	base_intents = list(INTENT_HELP)
 	a_intent = INTENT_HARM
 	healable = 0
 	speed = 0
@@ -27,9 +27,10 @@
 	deathmessage = "wails, disintegrating into a pile of ectoplasm!"
 	minbodytemp = 0
 	maxbodytemp = 1500
-	movement_type = FLYING
+	is_flying_animal = TRUE
 	gold_core_spawnable = NO_SPAWN //too spooky for science
 	var/random = TRUE //if you want random names for ghosts or not
+	dendor_taming_chance = DENDOR_TAME_PROB_NONE
 
 /mob/living/simple_animal/hostile/retaliate/gaseousform/Initialize()
 	. = ..()

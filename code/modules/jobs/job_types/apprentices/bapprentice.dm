@@ -3,7 +3,6 @@
 	tutorial = "Long hours and back-breaking work wouldnt even describe a quarter of what you do in a day for your Master. \
 	Its exhausting, filthy and you dont get much freetime: \
 	but someday youll get your own smithy, and youll have TWICE as many apprentices as your master does."
-	flag = APPRENTICE
 	department_flag = APPRENTICES
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
@@ -14,7 +13,7 @@
 	allowed_ages = list(AGE_CHILD, AGE_ADULT)
 
 
-	outfit = /datum/outfit/job/bapprentice
+	outfit = /datum/outfit/bapprentice
 	display_order = JDO_BAPP
 	give_bank_account = TRUE
 	min_pq = -10
@@ -22,10 +21,9 @@
 
 	can_have_apprentices = FALSE
 
-/datum/outfit/job/bapprentice
 	job_bitflag = BITFLAG_CONSTRUCTOR
 
-/datum/outfit/job/bapprentice/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/bapprentice/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_skillrank(/datum/skill/combat/axesmaces, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/athletics, 2, TRUE)

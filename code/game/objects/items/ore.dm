@@ -7,6 +7,25 @@
 	grid_width = 32
 	grid_height = 32
 	melt_amount = 120
+	var/atom/mill_result // What this ore becomes when milled
+	var/mill_yield_bonus = 0 // Extra yield from milling
+
+/obj/item/ore/set_quality(quality)
+	. = ..()
+	// Quality affects melt amount
+	var/quality_multiplier = 1.0
+	switch(recipe_quality)
+		if(2)
+			quality_multiplier = 1.15
+		if(3)
+			quality_multiplier = 1.3
+		if(4)
+			quality_multiplier = 1.5
+
+	melt_amount = round(initial(melt_amount) * quality_multiplier)
+
+	// Update mill yield bonus
+	mill_yield_bonus = (recipe_quality - 1) * 0.2
 
 /obj/item/ore/gold
 	name = "raw gold"
@@ -15,6 +34,7 @@
 	sellprice = 10
 	melting_material = /datum/material/gold
 	item_weight = 6.2 * GOLD_MULITPLIER
+	mill_result = /obj/item/ore/dust/gold
 
 /obj/item/ore/gold/Initialize(mapload)
 	. = ..()
@@ -27,10 +47,12 @@
 	sellprice = 8
 	melting_material = /datum/material/silver
 	item_weight = 6.2 * SILVER_MULTIPLIER
+	mill_result = /obj/item/ore/dust/silver
 
 /obj/item/ore/silver/Initialize(mapload)
 	. = ..()
 	icon_state = "oresilv[rand(1,3)]"
+	enchant(/datum/enchantment/silver)
 
 /obj/item/ore/iron
 	name = "raw iron"
@@ -39,6 +61,7 @@
 	sellprice = 5
 	melting_material = /datum/material/iron
 	item_weight = 6.2 * IRON_MULTIPLIER
+	mill_result = /obj/item/ore/dust/iron
 
 /obj/item/ore/iron/Initialize(mapload)
 	. = ..()
@@ -51,6 +74,7 @@
 	sellprice = 2
 	melting_material = /datum/material/copper
 	item_weight = 6.2 * COPPER_MULTIPLIER
+	mill_result = /obj/item/ore/dust/copper
 
 /obj/item/ore/copper/Initialize(mapload)
 	. = ..()
@@ -64,6 +88,7 @@
 	sellprice = 4
 	melting_material = /datum/material/tin
 	item_weight = 6.2 * TIN_MULTIPLIER
+	mill_result = /obj/item/ore/dust/tin
 
 /obj/item/ore/tin/Initialize(mapload)
 	. = ..()
@@ -72,7 +97,7 @@
 /obj/item/ore/coal
 	name = "coal"
 	icon_state = "orecoal1"
-	firefuel = 5 MINUTES
+	firefuel = 10 MINUTES
 	smeltresult = /obj/item/ore/coal
 	sellprice = 1
 	item_weight = 7
@@ -95,7 +120,7 @@
 	desc = "Burnt lumps of wood."
 	dropshrink = 0.8
 	color = "#929292"
-	firefuel = 15 MINUTES
+	firefuel = 30 MINUTES
 	smeltresult = /obj/item/ore/coal/charcoal
 	sellprice = 1
 
@@ -112,7 +137,6 @@
 	grid_height = 32
 	melt_amount = 100
 	var/datum/anvil_recipe/currecipe
-	var/quality = SMELTERY_LEVEL_NORMAL
 
 /obj/item/ingot/examine()
 	. += ..()
@@ -122,18 +146,11 @@
 /obj/item/ingot/Initialize(mapload, smelt_quality)
 	. = ..()
 	if(smelt_quality)
-		quality = smelt_quality
+		recipe_quality = smelt_quality
 		smelted = TRUE
-		switch(quality)
-			if(SMELTERY_LEVEL_SPOIL)
-				name = "spoilt [name]"
-				desc += " It is practically scrap."
-			if(SMELTERY_LEVEL_POOR)
-				name = "poor-quality [name]"
-				desc += " It is of dubious quality." // EA NASSIR, WHEN I GET YOU...
-			if(SMELTERY_LEVEL_GOOD)
-				name = "good-quality [name]"
-				desc += " It is of exquisite quality."
+	var/datum/quality_calculator/metallurgy/metal_calc = new()
+	metal_calc.apply_smelt_to_ingot(src, recipe_quality, TRUE)
+	qdel(metal_calc)
 
 /obj/item/ingot/attackby(obj/item/I, mob/user, params)
 	if(!istype(I, /obj/item/weapon/tongs))
@@ -221,6 +238,10 @@
 	melting_material = /datum/material/silver
 	item_weight = 7.5 * SILVER_MULTIPLIER
 
+/obj/item/ingot/silver/Initialize(mapload)
+	. = ..()
+	enchant(/datum/enchantment/silver)
+
 /obj/item/ingot/steel
 	name = "steel bar"
 	desc = "A bar of alloyed steel."
@@ -230,6 +251,28 @@
 	melting_material = /datum/material/steel
 	item_weight = 7.5 * STEEL_MULTIPLIER
 
+/obj/item/ingot/steelholy/
+	name = "holy steel bar"
+	desc = "This ingot of steel has been touched by Malum. It radiates heat, even when outside a forge."
+	icon_state = "ingotsteelholy"
+	melting_material = /datum/material/steel //Smelting it removes the blessing
+	sellprice = 20
+
+/obj/item/ingot/silverblessed/
+	name = "blessed silver bar"
+	desc = "This bar radiates a divine purity. Treasured by the realms and commonly found in Psydonic weaponry."
+	icon_state = "ingotsilvblessed"
+	melting_material = /datum/material/silver
+	sellprice = 100
+
+/obj/item/ingot/silverblessed/bullion
+	name = "blessed silver bullion"
+	desc = "This bar radiates a divine purity. The Psycross and the words casted into the surface denotes the Oratorium Throni Vacui as the point of it's origin."
+	icon_state = "ingotsilvblessed_psy"
+	melting_material = /datum/material/silver
+	sellprice = 100
+
+
 /obj/item/ingot/blacksteel
 	name = "blacksteel bar"
 	desc = "Sacrificing the holy elements of silver for raw strength, this strange and powerful ingot's origin carries dark rumors.."
@@ -238,3 +281,12 @@
 	sellprice = 90
 	melting_material = /datum/material/blacksteel
 	item_weight = 7.5 * BLACKSTEEL_MULTIPLIER
+
+/obj/item/ingot/steel_slag
+	name = "steel slag"
+	desc = "Slag containing steel, the result of blooming iron and coal."
+	icon_state = "steel_slag"
+	smeltresult = /obj/item/ingot/steel_slag
+	sellprice = 90
+	melting_material = /datum/material/steel
+	item_weight = 7.5 * STEEL_MULTIPLIER

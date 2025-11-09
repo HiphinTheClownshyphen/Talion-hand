@@ -103,6 +103,7 @@
 #define CLOTHING_OLD_LEATHER "#473f39"
 #define CLOTHING_SPRING_GREEN "#41493a"
 #define CLOTHING_BERRY_BLUE "#39404d"
+#define CLOTHING_TARAXACUM_YELLOW "#63673c"
 
 #define CLOTHING_ASH_GREY "#676262"
 #define CLOTHING_CANVAS "#858564"
@@ -116,9 +117,6 @@
 /proc/clothing_color2hex(input)
 	var/static/list/all_colors = GLOB.peasant_dyes + GLOB.noble_dyes + GLOB.royal_dyes
 	return all_colors[input]
-
-
-#define hex2num(X) text2num(X, 16)
 
 #define CM_COLOR_SAT_MIN 0.6
 #define CM_COLOR_SAT_MAX 0.7

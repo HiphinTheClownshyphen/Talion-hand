@@ -1,23 +1,23 @@
-/datum/advclass/pilgrim/cheesemaker
-	name = "Cheesemaker"
+/datum/job/advclass/pilgrim/cheesemaker
+	title = "Cheesemaker"
 	tutorial = "Some say Dendor brings bountiful harvests - this much is true, but rot brings forth life. \
 	From life brings decay, and from decay brings life. Like your parents before you, you let milk rot into cheese. \
 	This is your duty, this is your call."
 	allowed_sexes = list(MALE, FEMALE)
 
-	outfit = /datum/outfit/job/adventurer/cheesemaker
+	outfit = /datum/outfit/adventurer/cheesemaker
 
 	category_tags = list(CTAG_PILGRIM)
 	apprentice_name = "Cheesemaker Apprentice"
-	cmode_music = 'sound/music/cmode/towner/CombatTowner.ogg'
+	cmode_music = 'sound/music/cmode/towner/CombatBeggar.ogg' // pilgrims aren't towners, this fits them more for a combat on the woods
 
-/datum/advclass/pilgrim/cheesemaker/post_equip(mob/living/carbon/human/H)
+/datum/job/advclass/pilgrim/cheesemaker/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
 	var/animal_path = pick(/mob/living/simple_animal/hostile/retaliate/goat, /mob/living/simple_animal/hostile/retaliate/cow)
-	var/mob/living/simple_animal/animal = new animal_path(get_turf(H))
-	animal.tamed(H)
+	var/mob/living/simple_animal/animal = new animal_path(get_turf(spawned))
+	animal.tamed(spawned)
 
-/datum/outfit/job/adventurer/cheesemaker/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/cheesemaker/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/athletics, 2, TRUE)
@@ -28,11 +28,12 @@
 	H.adjust_skillrank(/datum/skill/labor/taming, 3, TRUE)
 	H.adjust_skillrank(/datum/skill/craft/cooking, 4, TRUE)
 	H.adjust_skillrank(/datum/skill/labor/farming, 2, TRUE)
+	H.adjust_skillrank(/datum/skill/misc/climbing, 1, TRUE)
 	belt = /obj/item/storage/belt/leather
 	pants = /obj/item/clothing/pants/tights/colored/random
 	shirt = /obj/item/clothing/shirt/shortshirt/colored/random
 	cloak = /obj/item/clothing/cloak/apron
-	shoes = /obj/item/clothing/shoes/simpleshoes
+	shoes = pick(/obj/item/clothing/shoes/simpleshoes, /obj/item/clothing/shoes/boots/leather)
 	backl = /obj/item/storage/backpack/backpack
 	neck = /obj/item/storage/belt/pouch/coins/poor
 	wrists = /obj/item/clothing/wrists/bracers/leather

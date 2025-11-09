@@ -4,7 +4,6 @@
 	They scolded you with a studded belt and prayed like sinners \
 	every waking hour of the day they weren’t toiling in the fields. \
 	You escaped them by becoming a churchling-- and a guaranteed education isn't so bad."
-	flag = CHURCHLING
 	department_flag = YOUNGFOLK
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_CHURCHLING
@@ -18,18 +17,16 @@
 	allowed_races = RACES_PLAYER_ALL
 	allowed_patrons = ALL_TEMPLE_PATRONS
 
-	outfit = /datum/outfit/job/churchling
+	outfit = /datum/outfit/churchling
 	give_bank_account = TRUE
 	can_have_apprentices = FALSE
 	cmode_music = 'sound/music/cmode/towner/CombatTowner.ogg'
-
-/datum/outfit/job/churchling
-	name = "Churchling"
-	jobtype = /datum/job/churchling
-	allowed_patrons = ALL_TEMPLE_PATRONS
 	job_bitflag = BITFLAG_CHURCH
 
-/datum/outfit/job/churchling/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/churchling
+	name = "Churchling"
+
+/datum/outfit/churchling/pre_equip(mob/living/carbon/human/H)
 	..()
 	if(H.mind)
 		H.adjust_skillrank(/datum/skill/misc/climbing, 4, TRUE)
@@ -50,7 +47,7 @@
 	pants = /obj/item/clothing/pants/tights
 	belt = /obj/item/storage/belt/leather/rope
 	shoes = /obj/item/clothing/shoes/simpleshoes
-	beltl = /obj/item/storage/keyring/priest
+	beltl = /obj/item/key/church
 	neck = /obj/item/clothing/neck/psycross/silver
 	switch(H.patron?.type)
 		if(/datum/patron/divine/astrata)
@@ -60,7 +57,7 @@
 		if(/datum/patron/divine/eora)
 			neck = /obj/item/clothing/neck/psycross/silver/eora
 		if(/datum/patron/divine/noc)
-			neck = /obj/item/clothing/neck/psycross/noc
+			neck = /obj/item/clothing/neck/psycross/silver/noc
 		if(/datum/patron/divine/pestra)
 			neck = /obj/item/clothing/neck/psycross/silver/pestra
 		if(/datum/patron/divine/dendor)
@@ -80,6 +77,8 @@
 		H.grant_language(/datum/language/celestial)
 		to_chat(H, "<span class='info'>I can speak Celestial with ,c before my speech.</span>")
 
-	var/datum/devotion/cleric_holder/C = new /datum/devotion/cleric_holder(H, H.patron)
-	C.grant_spells_churchling(H)
-	H.verbs += list(/mob/living/carbon/human/proc/devotionreport, /mob/living/carbon/human/proc/clericpray)
+	var/holder = H.patron?.devotion_holder
+	if(holder)
+		var/datum/devotion/devotion = new holder()
+		devotion.make_churching()
+		devotion.grant_to(H)

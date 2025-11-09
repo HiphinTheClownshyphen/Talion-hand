@@ -7,7 +7,6 @@
 	destroy_sound = 'sound/combat/hits/onwood/destroyfurniture.ogg'
 	attacked_sound = "woodimpact"
 	sleepy = 0.55
-//	pixel_y = 10
 	layer = OBJ_LAYER
 	metalizer_result = /obj/item/statue/iron/deformed
 	anchored = TRUE
@@ -214,24 +213,19 @@
 	icon_state = "chair1"
 	origin_type = /obj/structure/chair/wood/alt/fancy
 
-/obj/structure/chair/wood/alt
-//	pixel_y = 5
-
 /obj/structure/chair/wood/alt/post_buckle_mob(mob/living/M)
 	..()
 	density = TRUE
-//	M.set_mob_offsets("bed_buckle", _x = 0, _y = 5)
 
 /obj/structure/chair/wood/alt/post_unbuckle_mob(mob/living/M)
 	..()
 	density = FALSE
-//	M.reset_offsets("bed_buckle")
 
 /obj/item/chair/stool/bar
-	name = "stool"
-	icon_state = "baritem"
+	name = "barstool"
+	icon_state = "barstoolover"
 	icon = 'icons/roguetown/misc/structure.dmi'
-	origin_type = /obj/structure/chair/stool
+	origin_type = /obj/structure/chair/stool/bar
 	blade_dulling = DULLING_BASHCHOP
 	can_parry = TRUE
 	gripped_intents = list(/datum/intent/hit)
@@ -413,9 +407,9 @@
 	sellprice = 12
 
 /obj/structure/chair/stool/crafted
-	item_chair = /obj/item/chair/stool/bar/crafted
+	item_chair = /obj/item/chair/stool/crafted
 	sellprice = 6
 
-/obj/item/chair/stool/bar/crafted
+/obj/item/chair/stool/crafted
 	origin_type = /obj/structure/chair/stool/crafted
 	sellprice = 6

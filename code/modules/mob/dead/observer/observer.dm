@@ -116,6 +116,10 @@ GLOBAL_LIST_INIT(ghost_verbs, list(
 	invisibility = INVISIBILITY_GHOST
 	see_invisible = SEE_INVISIBLE_GHOST
 
+/mob/dead/observer/screye/blackmirror
+	sight = SEE_TURFS | SEE_MOBS | SEE_OBJS
+	see_in_dark = 100
+
 /mob/dead/observer/screye/Move(n, direct)
 	return
 
@@ -181,8 +185,8 @@ GLOBAL_LIST_INIT(ghost_verbs, list(
 				MA.transform = null //so we are standing
 				appearance = MA
 				plane = GHOST_PLANE
-				pixel_x = 0
-				pixel_y = 0
+				pixel_x = base_pixel_x
+				pixel_y = base_pixel_y
 				invisibility = INVISIBILITY_OBSERVER
 				alpha = 100
 	update_appearance()
@@ -210,8 +214,10 @@ GLOBAL_LIST_INIT(ghost_verbs, list(
 
 	. = ..()
 
-	if(!(istype(src, /mob/dead/observer/rogue/arcaneeye)))
-		verbs += GLOB.ghost_verbs
+	if(!istype(src, /mob/dead/observer/rogue/arcaneeye))
+		if(!istype(src, /mob/dead/observer/screye))
+			client?.verbs += GLOB.ghost_verbs
+			to_chat(src, span_danger("Click the <b>SKULL</b> on the left of your HUD to respawn."))
 
 	grant_all_languages()
 
@@ -317,9 +323,11 @@ Works together with spawning an observer, noted above.
 			if(force_respawn)
 				mind.remove_antag_datum(/datum/antagonist/zombie)
 				return ..()
+			#ifdef USES_PQ
 			var/datum/antagonist/zombie/Z = mind.has_antag_datum(/datum/antagonist/zombie)
 			if(Z && get_playerquality(ckey) < 15)
 				can_reenter_corpse = FALSE
+			#endif
 			// if(!Z.revived)
 			// 	if(!(world.time % 5))
 			// 		to_chat(src, "<span class='warning'>I'm preparing to walk again.</span>")
@@ -625,8 +633,8 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 /mob/dead/observer/stop_orbit(datum/component/orbiter/orbits)
 	. = ..()
 	//restart our floating animation after orbit is done.
-	pixel_y = 0
-	pixel_x = 0
+	pixel_x = base_pixel_x
+	pixel_y = base_pixel_y
 //	animate(src, pixel_y = 2, time = 10, loop = -1)
 
 /mob/dead/observer/verb/jumptomob() //Moves the ghost instead of just changing the ghosts's eye -Nodrak
@@ -1016,10 +1024,6 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		set_light(1, 1, 2)
 	else
 		set_light(0, 0, 0)
-
-// Ghosts have no momentum, being massless ectoplasm
-/mob/dead/observer/Process_Spacemove(movement_dir)
-	return 1
 
 /mob/dead/observer/vv_edit_var(var_name, var_value)
 	. = ..()

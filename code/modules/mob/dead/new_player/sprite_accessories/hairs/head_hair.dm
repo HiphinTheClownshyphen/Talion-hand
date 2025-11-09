@@ -54,10 +54,48 @@
 			extensions[s] = TRUE
 		qdel(hair_extensions)
 
-	// if(extensions[icon_state+dynamic_hair_suffix])
-	// 	return "[icon_state][dynamic_hair_suffix]"
+	if(extensions[icon_state+dynamic_hair_suffix])
+		return "[icon_state][dynamic_hair_suffix]"
 
 	return icon_state
+
+
+/datum/sprite_accessory/hair/head/get_icon(obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)
+	var/dynamic_hair_suffix = ""
+
+	var/mob/living/carbon/H = bodypart.owner
+	if(!H)
+		H = bodypart.original_owner
+
+	if(H.head)
+		var/obj/item/I = H.head
+		if(isclothing(I))
+			var/obj/item/clothing/C = I
+			dynamic_hair_suffix = C.dynamic_hair_suffix
+
+	if(H.wear_mask)
+		var/obj/item/I = H.wear_mask
+		if(!dynamic_hair_suffix && isclothing(I)) //head > mask in terms of head hair
+			var/obj/item/clothing/C = I
+			dynamic_hair_suffix = C.dynamic_hair_suffix
+
+	if(H.wear_neck)
+		var/obj/item/I = H.wear_neck
+		if(!dynamic_hair_suffix && isclothing(I)) //head > mask in terms of head hair
+			var/obj/item/clothing/C = I
+			dynamic_hair_suffix = C.dynamic_hair_suffix
+
+	if(!extensions)
+		var/icon/hair_extensions = icon('icons/roguetown/mob/hair_extensions.dmi') //hehe
+		extensions = list()
+		for(var/s in hair_extensions.IconStates(1))
+			extensions[s] = TRUE
+		qdel(hair_extensions)
+
+	if(extensions[icon_state+dynamic_hair_suffix])
+		return dynamic_file
+
+	return icon
 
 /datum/sprite_accessory/hair/head/is_visible(obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)
 	return is_human_part_visible(owner, HIDEHAIR)
@@ -144,6 +182,13 @@
 	gender = MALE
 	specuse = list(SPEC_ID_HUMEN, SPEC_ID_DWARF, SPEC_ID_ELF, SPEC_ID_AASIMAR, SPEC_ID_TIEFLING, SPEC_ID_HALF_ORC)
 	under_layer = TRUE
+
+/datum/sprite_accessory/hair/head/dunes
+	name = "Dunes"
+	icon_state = "dunes"
+	gender = MALE
+	specuse = list(SPEC_ID_HUMEN, SPEC_ID_DWARF, SPEC_ID_ELF, SPEC_ID_AASIMAR, SPEC_ID_TIEFLING, SPEC_ID_HALF_ORC)
+
 
 /datum/sprite_accessory/hair/head/druid
 	name = "Druid"
@@ -380,6 +425,12 @@
 /datum/sprite_accessory/hair/head/vagabond
 	name = "Vagabond"
 	icon_state = "vagabond"
+	gender = MALE
+	specuse = list(SPEC_ID_HUMEN, SPEC_ID_DWARF, SPEC_ID_ELF, SPEC_ID_AASIMAR, SPEC_ID_TIEFLING, SPEC_ID_HALF_ORC)
+
+/datum/sprite_accessory/hair/head/sandcrop
+	name = "Sand Crop"
+	icon_state = "sandcrop"
 	gender = MALE
 	specuse = list(SPEC_ID_HUMEN, SPEC_ID_DWARF, SPEC_ID_ELF, SPEC_ID_AASIMAR, SPEC_ID_TIEFLING, SPEC_ID_HALF_ORC)
 
@@ -722,6 +773,18 @@
 /datum/sprite_accessory/hair/head/mediumbraid
 	name = "Medium Braid"
 	icon_state = "mediumbraid"
+	gender = FEMALE
+	specuse = list(SPEC_ID_HUMEN, SPEC_ID_DWARF, SPEC_ID_ELF, SPEC_ID_AASIMAR, SPEC_ID_TIEFLING, SPEC_ID_HALF_ORC)
+
+/datum/sprite_accessory/hair/head/lakkaricut
+	name = "Lakkari Cut"
+	icon_state = "lakkaricut"
+	gender = FEMALE
+	specuse = list(SPEC_ID_HUMEN, SPEC_ID_DWARF, SPEC_ID_ELF, SPEC_ID_AASIMAR, SPEC_ID_TIEFLING, SPEC_ID_HALF_ORC)
+
+/datum/sprite_accessory/hair/head/lakkaribun
+	name = "Lakkari Bun"
+	icon_state = "lakkaribun"
 	gender = FEMALE
 	specuse = list(SPEC_ID_HUMEN, SPEC_ID_DWARF, SPEC_ID_ELF, SPEC_ID_AASIMAR, SPEC_ID_TIEFLING, SPEC_ID_HALF_ORC)
 

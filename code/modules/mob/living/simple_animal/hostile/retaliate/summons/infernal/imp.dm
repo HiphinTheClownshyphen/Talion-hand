@@ -38,7 +38,7 @@
 	defdrain = 10
 	del_on_deaggro = 44 SECONDS
 	retreat_health = 0.3
-	food = 0
+
 	attack_sound = list('sound/combat/hits/bladed/smallslash (1).ogg')
 	attack_verb_continuous = "claws"
 	attack_verb_simple = "claw"
@@ -58,15 +58,6 @@
 	armor_penetration = 0
 	flag = "magic"
 	hitsound = 'sound/blank.ogg'
-
-/obj/projectile/magic/firebolt/on_hit(target)
-	if(ismob(target))
-		var/mob/M = target
-		if(M.can_block_magic(MAGIC_RESISTANCE))
-			M.visible_message(span_warning("[src] vanishes on contact with [target]!"))
-			qdel(src)
-			return BULLET_ACT_BLOCK
-	. = ..()
 
 /mob/living/simple_animal/hostile/retaliate/infernal/imp/Initialize()
 	. = ..()

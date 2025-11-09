@@ -105,6 +105,13 @@ SUBSYSTEM_DEF(job)
 			JobDebug("GRJ isbanned failed, Player: [player], Job: [job.title]")
 			continue
 
+		if(is_race_banned(player.ckey, player.client.prefs.pref_species.id)|| QDELETED(player))
+			if(QDELETED(player))
+				JobDebug("GRJ is_race_banned failed, Player deleted")
+				break
+			JobDebug("GRJ is_race_banned failed, Player: [player], Race: [player.client.prefs.pref_species.id]")
+			continue
+
 		if(!job.can_random)
 			JobDebug("GRJ can't random into this job, Job: [job.title], Player: [player]")
 			continue
@@ -121,7 +128,8 @@ SUBSYSTEM_DEF(job)
 			JobDebug("GRJ incompatible with antagonist role, Player: [player], Job: [job.title]")
 			continue
 
-		if(length(job.allowed_races) && !(player.client.prefs.pref_species.id in job.allowed_races))
+		if((length(job.allowed_races) && !(player.client.prefs.pref_species.id in job.allowed_races)) || \
+			(length(job.blacklisted_species) && (player.client.prefs.pref_species.id in job.blacklisted_species)))
 			JobDebug("GRJ incompatible with species, Player: [player], Job: [job.title], Race: [player.client.prefs.pref_species.name]")
 			continue
 
@@ -129,8 +137,10 @@ SUBSYSTEM_DEF(job)
 			JobDebug("GRJ incompatible with patron, Player: [player], Job: [job.title], Race: [player.client.prefs.pref_species.name]")
 			continue
 
+		#ifdef USES_PQ
 		if(get_playerquality(player.ckey) < job.min_pq)
 			continue
+		#endif
 
 		if(length(job.allowed_ages) && !(player.client.prefs.age in job.allowed_ages))
 			JobDebug("GRJ incompatible with age, Player: [player], Job: [job.title], Race: [player.client.prefs.pref_species.name]")
@@ -139,10 +149,11 @@ SUBSYSTEM_DEF(job)
 		if(length(job.allowed_sexes) && !(player.client.prefs.gender in job.allowed_sexes))
 			JobDebug("GRJ incompatible with sex, Player: [player], Job: [job.title]")
 			continue
-
+		#ifdef USES_PQ
 		if(get_playerquality(player.ckey) < job.min_pq)
 			JobDebug("GRJ incompatible with minPQ, Player: [player], Job: [job.title]")
 			continue
+		#endif
 
 		if(job.banned_leprosy && is_misc_banned(player.client.ckey, BAN_MISC_LEPROSY))
 			JobDebug("GRJ incompatible with leprosy, Player: [player], Job: [job.title]")
@@ -154,6 +165,10 @@ SUBSYSTEM_DEF(job)
 
 		if(!job.special_job_check(player))
 			JobDebug("GRJ player did not pass special check, Player: [player], Job:[job.title]")
+			continue
+
+		if(!job.enabled)
+			JobDebug("GRJ player tried to play a disabled job, Player: [player], Job:[job.title]")
 			continue
 
 		if(CONFIG_GET(flag/usewhitelist))
@@ -215,19 +230,46 @@ SUBSYSTEM_DEF(job)
 	// Loop through all levels from high to low
 	var/list/shuffledoccupations = shuffle(joinable_occupations)
 	for(var/level in level_order)
+		// Create a weighted list of players based on their boosts
+		var/list/weighted_players = list()
 
-		// Loop through all unassigned players
 		for(var/mob/dead/new_player/player in unassigned)
 			if(PopcapReached())
 				RejectPlayer(player)
+				continue
 
+			// Calculate player's boost weight
+			var/player_weight = 1 // Base weight
+			var/list/player_boosts = get_player_boosts(player)
+
+			for(var/datum/job_priority_boost/boost in player_boosts)
+				if(boost.is_valid())
+					player_weight += boost.boost_amount
+
+			// Add player multiple times based on weight
+			weighted_players[player] = player_weight
+
+		// Shuffle the weighted player list
+		weighted_players = shuffle(weighted_players)
+
+		// Loop through weighted players (players with boosts appear more often)
+		for(var/i = 1 to length(weighted_players))
+			var/mob/dead/new_player/player = pickweight(weighted_players)
+			weighted_players -= player
+			if(!player)
+				continue
 			// Loop through all jobs
-			for(var/datum/job/job in shuffledoccupations) // SHUFFLE ME BABY
+			for(var/datum/job/job in shuffledoccupations)
 				if(!job)
 					continue
 
+				// Standard job checks...
 				if(is_role_banned(player.ckey, job.title))
 					JobDebug("DO isbanned failed, Player: [player], Job:[job.title]")
+					continue
+
+				if(is_race_banned(player.ckey, player.client.prefs.pref_species.id))
+					JobDebug("DO is_race_banned, Player: [player], Race: [player.client.prefs.pref_species.id]")
 					continue
 
 				if(QDELETED(player))
@@ -246,7 +288,10 @@ SUBSYSTEM_DEF(job)
 					JobDebug("DO incompatible with antagonist role, Player: [player], Job:[job.title]")
 					continue
 
-				if(length(job.allowed_races) && !(player.client.prefs.pref_species.id in job.allowed_races))
+				var/list/player_boosts = get_player_boosts(player)
+
+				if((length(job.allowed_races) && !(player.client.prefs.pref_species.id in job.allowed_races)) || \
+					(length(job.blacklisted_species) && (player.client.prefs.pref_species.id in job.blacklisted_species)))
 					if(!player.client?.has_triumph_buy(TRIUMPH_BUY_RACE_ALL))
 						JobDebug("DO incompatible with species, Player: [player], Job: [job.title], Race: [player.client.prefs.pref_species.name]")
 						continue
@@ -257,9 +302,11 @@ SUBSYSTEM_DEF(job)
 					JobDebug("DO incompatible with patron, Player: [player], Job: [job.title], Race: [player.client.prefs.pref_species.name]")
 					continue
 
+				#ifdef USES_PQ
 				if(get_playerquality(player.ckey) < job.min_pq)
 					JobDebug("DO player lacks Quality. Player: [player], Job: [job.title]")
 					continue
+				#endif
 
 				if((player.client.prefs.lastclass == job.title) && (!job.bypass_lastclass))
 					JobDebug("DO player already played class, Player: [player], Job: [job.title]")
@@ -289,28 +336,151 @@ SUBSYSTEM_DEF(job)
 					JobDebug("DO player did not pass special check, Player: [player], Job:[job.title]")
 					continue
 
+				if(!job.enabled)
+					JobDebug("DO player tried to play a disabled job, Player: [player], Job:[job.title]")
+					continue
+
 				// If the player wants that job on this level, then try give it to him.
 				if(player.client.prefs.job_preferences[job.title] == level)
 					// If the job isn't filled
 					if((job.current_positions < job.spawn_positions) || job.spawn_positions == -1)
+						// Use boost if applicable
+						for(var/datum/job_priority_boost/boost in player_boosts)
+							if(boost.can_boost_job(job))
+								boost.use_boost()
+								JobDebug("DO boost used, Player: [player], Job: [job.title], Boost: [boost.name]")
+
 						AssignRole(player, job)
 						unassigned -= player
+						JobDebug("DO job assigned with boost consideration, Player: [player], Job: [job.title]")
 						break
-
 
 	JobDebug("DO, Handling unassigned.")
 	// Hand out random jobs to the people who didn't get any in the last check
-	// Also makes sure that they got their preference correct
 	for(var/mob/dead/new_player/player in unassigned)
 		HandleUnassigned(player)
 
 	JobDebug("DO, Handling unrejectable unassigned")
 	//Mop up people who can't leave.
-	for(var/mob/dead/new_player/player in unassigned) //Players that wanted to back out but couldn't because they're antags (can you feel the edge case?)
+	for(var/mob/dead/new_player/player in unassigned)
 		RejectPlayer(player)
 
 	return validate_required_jobs(required_jobs)
 
+/datum/controller/subsystem/job/proc/get_player_boosts(mob/dead/new_player/player)
+	var/list/boosts = list()
+	if(player.client && islist(player.client.job_priority_boosts))
+		boosts = player.client.job_priority_boosts
+	return boosts
+
+/datum/controller/subsystem/job/proc/save_player_boosts(ckey)
+	var/datum/save_manager/SM = get_save_manager(ckey)
+	if(!SM)
+		return FALSE
+
+	var/client/C = GLOB.directory[ckey]
+	if(!C || !islist(C.job_priority_boosts))
+		return FALSE
+
+	var/list/boost_data = list()
+	for(var/datum/job_priority_boost/boost in C.job_priority_boosts)
+		if(!boost.is_valid())
+			continue
+
+		var/list/boost_save = list(
+			"type" = boost.type,
+			"name" = boost.name,
+			"desc" = boost.desc,
+			"boost_amount" = boost.boost_amount,
+			"applicable_jobs" = boost.applicable_jobs?.Copy(),
+			"expiry_time" = boost.expiry_time,
+			"uses_remaining" = boost.uses_remaining,
+			"boost_type" = boost.boost_type
+		)
+		boost_data += list(boost_save)
+
+	SM.set_data("job_boosts", "active_boosts", boost_data)
+	return TRUE
+
+/datum/controller/subsystem/job/proc/load_player_boosts(ckey)
+	var/datum/save_manager/SM = get_save_manager(ckey)
+	if(!SM)
+		return FALSE
+
+	var/client/C = GLOB.directory[ckey]
+	if(!C)
+		return FALSE
+
+	var/list/boost_data = SM.get_data("job_boosts", "active_boosts", list())
+	if(!islist(boost_data) || !length(boost_data))
+		return FALSE
+
+	C.job_priority_boosts = list()
+
+	for(var/list/boost_info in boost_data)
+		if(!islist(boost_info))
+			continue
+
+		var/boost_type = boost_info["type"]
+		if(!boost_type)
+			continue
+
+		var/datum/job_priority_boost/boost = new boost_type()
+		if(!boost)
+			continue
+
+		// Restore saved properties
+		if(boost_info["name"])
+			boost.name = boost_info["name"]
+		if(boost_info["desc"])
+			boost.desc = boost_info["desc"]
+		if(boost_info["boost_amount"])
+			boost.boost_amount = boost_info["boost_amount"]
+		if(boost_info["applicable_jobs"])
+			boost.applicable_jobs = boost_info["applicable_jobs"]
+		if(boost_info["expiry_time"])
+			boost.expiry_time = boost_info["expiry_time"]
+		if(boost_info["uses_remaining"])
+			boost.uses_remaining = boost_info["uses_remaining"]
+		if(boost_info["boost_type"])
+			boost.boost_type = boost_info["boost_type"]
+
+		// Only add valid boosts
+		if(boost.is_valid())
+			C.job_priority_boosts += boost
+		else
+			qdel(boost)
+
+	return TRUE
+
+/datum/controller/subsystem/job/proc/give_job_boost(client/target_client, datum/job_priority_boost/boost)
+	if(!target_client || !boost)
+		return FALSE
+
+	if(!islist(target_client.job_priority_boosts))
+		target_client.job_priority_boosts = list()
+
+	target_client.job_priority_boosts += boost
+	to_chat(target_client, "<span class='notice'>You have received a job priority boost: [boost.name] - [boost.desc]</span>")
+
+	save_player_boosts(target_client.ckey)
+
+	return TRUE
+
+/datum/controller/subsystem/job/proc/remove_expired_boosts(client/target_client)
+	if(!target_client || !islist(target_client.job_priority_boosts))
+		return
+
+	var/removed_any = FALSE
+	for(var/datum/job_priority_boost/boost in target_client.job_priority_boosts)
+		if(!boost.is_valid())
+			target_client.job_priority_boosts -= boost
+			qdel(boost)
+			removed_any = TRUE
+
+	// Update save file if we removed any boosts
+	if(removed_any)
+		save_player_boosts(target_client.ckey)
 
 /datum/controller/subsystem/job/proc/do_required_jobs()
 	var/amt_picked = 0
@@ -319,6 +489,9 @@ SUBSYSTEM_DEF(job)
 		var/datum/job/job = GetJobType(job_type)
 		for(var/mob/dead/new_player/player in unassigned)
 			if(is_role_banned(player.ckey, job.title))
+				continue
+
+			if(is_race_banned(player.ckey, player.client.prefs.pref_species.id))
 				continue
 
 			if(QDELETED(player))
@@ -336,11 +509,16 @@ SUBSYSTEM_DEF(job)
 			if(length(job.allowed_races) && !(player.client.prefs.pref_species.id in job.allowed_races))
 				continue
 
+			if(length(job.blacklisted_species) && (player.client.prefs.pref_species.id in job.blacklisted_species))
+				return
+
 			if(length(job.allowed_patrons) && !(player.client.prefs.selected_patron.type in job.allowed_patrons))
 				continue
 
+			#ifdef USES_PQ
 			if(get_playerquality(player.ckey) < job.min_pq)
 				continue
+			#endif
 
 			if((player.client.prefs.lastclass == job.title) && (!job.bypass_lastclass))
 				continue
@@ -362,6 +540,9 @@ SUBSYSTEM_DEF(job)
 				continue
 
 			if(!job.special_job_check(player))
+				continue
+
+			if(!job.enabled)
 				continue
 
 			// If the player wants that job on this level, then try give it to him.
@@ -417,10 +598,11 @@ SUBSYSTEM_DEF(job)
 	SEND_SIGNAL(equipping, COMSIG_JOB_RECEIVED, job)
 
 	equipping.mind?.set_assigned_role(job)
+	job.pre_outfit_equip(equipping, player_client) // sigh
 	equipping.on_job_equipping(job)
 	addtimer(CALLBACK(job, TYPE_PROC_REF(/datum/job, greet), equipping), 5 SECONDS) //TODO: REFACTOR OUT
 
-	if(player_client.holder)
+	if(player_client?.holder)
 		if(CONFIG_GET(flag/auto_deadmin_players) || (player_client.prefs?.toggles & DEADMIN_ALWAYS))
 			player_client.holder.auto_deadmin()
 		else
@@ -473,6 +655,9 @@ SUBSYSTEM_DEF(job)
 			if(is_role_banned(player.ckey, job.title) || QDELETED(player))
 				banned++
 				continue
+			if(is_race_banned(player.ckey, player.client.prefs.pref_species.id))
+				banned++
+				continue
 			if(!job.player_old_enough(player.client))
 				young++
 				continue
@@ -510,7 +695,7 @@ SUBSYSTEM_DEF(job)
 	if(PopcapReached())
 		JobDebug("Popcap overflow Check observer located, Player: [player]")
 	JobDebug("Player rejected :[player]")
-	to_chat(player, "<b>I couldn't find a job to be..</b>")
+	to_chat(player, span_danger("<b>I couldn't find a job to be..</b>"))
 
 	var/list/client_triumphs = SStriumphs.triumph_buy_owners[player.ckey]
 	if(islist(client_triumphs))
@@ -576,6 +761,9 @@ SUBSYSTEM_DEF(job)
 	if(is_role_banned(player.ckey, job.title))
 		return
 
+	if(is_race_banned(player.ckey, player.client.prefs.pref_species.id))
+		return
+
 	if(QDELETED(player))
 		return
 
@@ -591,11 +779,16 @@ SUBSYSTEM_DEF(job)
 	if(length(job.allowed_races) && !(player.client.prefs.pref_species.id in job.allowed_races))
 		return
 
+	if(length(job.blacklisted_species) && (player.client.prefs.pref_species.id in job.blacklisted_species))
+		return
+
 	if(length(job.allowed_patrons) && !(player.client.prefs.selected_patron.type in job.allowed_patrons))
 		return
 
+	#ifdef USES_PQ
 	if(get_playerquality(player.ckey) < job.min_pq)
 		return
+	#endif
 
 	if((player.client.prefs.lastclass == job.title) && (!job.bypass_lastclass))
 		return

@@ -75,6 +75,10 @@
 #define BB_FISHBOSS_DEEP_CALL_COOLDOWN "fishboss_deep_call_cooldown"
 
 
+#define BB_KRAKEN_SUMMON "bb_kraken_summon"
+#define BB_KRAKEN_INK "bb_kraken_ink"
+#define BB_KRAKEN_WHIRLPOOL "bb_kraken_whirlpool"
+
 ///Baby-making blackboard
 ///Types of animal we can make babies with.
 #define BB_BABIES_PARTNER_TYPES "BB_babies_partner"
@@ -182,6 +186,8 @@ F
 #define BB_SHROOM_COOLDOWN "shroom_cd"
 #define BB_DRUG_COOLDOWN "drug_cd"
 
+#define BB_AGRIOPYLON_BLESS_COOLDOWN "agriopylon_bless_cooldown"
+
 #define BB_QUAKE_COOLDOWN "quake_cooldown"
 #define BB_EARTHQUAKE_COOLDOWN "earthquake_cooldown"
 
@@ -217,6 +223,7 @@ F
 #define BB_CAT_HOME "cat_home"
 /// key that holds the human we will beg
 #define BB_HUMAN_BEG_TARGET "human_beg_target"
+#define BB_BEGGING_FOOD_ITEM "item_beg_target"
 
 #define BB_CAT_KITTEN_TARGET "BB_cat_kitten_target"
 #define BB_CAT_HOLDING_FOOD "BB_cat_holding_food"
@@ -258,6 +265,7 @@ F
 #define BB_GNOME_COMPOST_SOURCE "gnome_compost_source"
 #define BB_GNOME_SEED_SOURCE "gnome_seed_source"
 #define BB_GNOME_SEARCH_RANGE "gnome_search_range"
+#define BB_ACTION_STATE_MANAGER "action_state_manager"
 
 #define BB_GNOME_ALCHEMY_MODE "alch_mode"
 #define BB_GNOME_TARGET_CAULDRON "target_cauldron"
@@ -286,3 +294,7 @@ F
 // Used to hold state without making bigass lists
 /// For /datum/ai_behavior/find_potential_targets, what if any field are we using currently
 #define BB_FIND_TARGETS_FIELD(type) "bb_find_targets_field_[type]"
+
+#define ACTION_STATE_CONTINUE 1
+#define ACTION_STATE_COMPLETE 2
+#define ACTION_STATE_FAILED 3

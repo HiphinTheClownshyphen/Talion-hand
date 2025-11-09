@@ -1,14 +1,14 @@
-/datum/advclass/mercenary/grenzelhoft
-	name = "Grenzelhoft"
+/datum/job/advclass/mercenary/grenzelhoft
+	title = "Grenzelhoft Mercenary"
 	tutorial = "A mercenary from the Grenzelhoft Empire's Mercenary Guild. Their only care is coin, and the procurement of coin."
 	allowed_races = RACES_PLAYER_GRENZ
-	outfit = /datum/outfit/job/mercenary/grenzelhoft
+	outfit = /datum/outfit/mercenary/grenzelhoft
 	category_tags = list(CTAG_MERCENARY)
-	maximum_possible_slots = 5
+	total_positions = 5
 
 	cmode_music = 'sound/music/cmode/combat_grenzelhoft.ogg'
 
-/datum/outfit/job/mercenary/grenzelhoft/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/mercenary/grenzelhoft/pre_equip(mob/living/carbon/human/H)
 	..()
 	if(H.mind)
 		H.adjust_skillrank(/datum/skill/misc/swimming, 2, TRUE)
@@ -32,7 +32,7 @@
 	beltr = /obj/item/storage/belt/pouch/coins/poor
 	neck = /obj/item/clothing/neck/chaincoif
 	pants = /obj/item/clothing/pants/grenzelpants
-	shoes = /obj/item/clothing/shoes/grenzelhoft
+	shoes = /obj/item/clothing/shoes/rare/grenzelhoft
 	gloves = /obj/item/clothing/gloves/angle/grenzel
 	belt = /obj/item/storage/belt/leather/mercenary
 	beltl = /obj/item/weapon/mace/cudgel
@@ -50,3 +50,6 @@
 	H.change_stat(STATKEY_STR, 2) // They need this to roll at least min STR for the Zwei.
 	H.change_stat(STATKEY_CON, 2)
 	ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
+	if(H.dna?.species.id == SPEC_ID_HUMEN)
+		H.dna.species.native_language = "Old Psydonic"
+		H.dna.species.accent_language = H.dna.species.get_accent(H.dna.species.native_language)

@@ -29,6 +29,13 @@
 
 
 /mob/living/proc/try_recipes(obj/item/attacked_atom, obj/item/starting_atom)
+	if(has_world_trait(/datum/world_trait/delver))
+		var/area/area = get_area(src)
+		if(area.delver_restrictions)
+			return
+		if(!SShousing.check_access(key))
+			return
+
 	if(isitem(attacked_atom))
 		if(attacked_atom.in_progress_slapcraft)
 			return attacked_atom.in_progress_slapcraft.try_process_item(starting_atom, src)
@@ -41,7 +48,10 @@
 	if(!length(recipes))
 		return FALSE
 	var/datum/recipe
-	recipe = browser_input_list(src, "Choose a recipe to craft", "Recipes", recipes)
+	if(length(recipes) == 1 && (istype(recipes[1], /datum/repeatable_crafting_recipe/cooking)))
+		recipe = recipes[1]
+	else
+		recipe = browser_input_list(src, "Choose a recipe to craft", "Recipes", recipes)
 	if(!recipe)
 		return TRUE
 	if(!Adjacent(attacked_atom)) // sanity check

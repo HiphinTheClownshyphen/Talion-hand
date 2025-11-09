@@ -99,7 +99,6 @@ GLOBAL_LIST_EMPTY(last_words)
 	update_mob_action_buttons()
 	update_damage_hud()
 	update_health_hud()
-	// update_mobility()
 	stop_pulling()
 
 	to_chat(src, span_green("A bleak afterlife awaits... but the Gods may let you walk again in another shape! Spirit, you must descend in a Journey to the Underworld and wait there for judgment..."))
@@ -127,7 +126,7 @@ GLOBAL_LIST_EMPTY(last_words)
 
 //	for(var/datum/death_tracker/D in target.death_trackers)
 
-	if(!gibbed && rot_type)
+	if(!gibbed && !QDELETED(src) && rot_type)
 		LoadComponent(rot_type)
 
 	set_typing_indicator(FALSE)
@@ -139,7 +138,7 @@ GLOBAL_LIST_EMPTY(last_words)
 				if (player.stat == DEAD || isbrain(player))
 					continue
 				if (HAS_TRAIT(player, TRAIT_DEATHSIGHT))
-					if (HAS_TRAIT(player, TRAIT_CABAL))
+					if (HAS_TRAIT(player, TRAIT_CABAL) || istype(player.patron, /datum/patron/inhumen/zizo))
 						to_chat(player, span_warning("I feel the faint passage of disjointed life essence as it flees [locale]."))
 					else
 						to_chat(player, span_warning("Veiled whispers herald the Undermaiden's gaze in my mind's eye as it turns towards [locale] for but a brief, singular moment."))

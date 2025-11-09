@@ -28,8 +28,7 @@
 
 	gripped_intents = list(/datum/intent/mace/smash/heavy, /datum/intent/mace/thrust) //its practically a mace at this size
 	possible_item_intents = list(/datum/intent/mace/strike)
-	pixel_y = -16
-	pixel_x = -16
+	SET_BASE_PIXEL(-16, -16)
 	inhand_x_dimension = 64
 	inhand_y_dimension = 64
 	bigboy = TRUE
@@ -59,7 +58,7 @@
 	update_appearance(UPDATE_ICON_STATE)
 
 /obj/item/harpoon_gun/apply_components()
-	AddComponent(/datum/component/steam_storage, 300, 0)
+	AddComponent(/datum/component/steam_storage, 300, 0, "harpoon_gun")
 	AddComponent(/datum/component/two_handed, require_twohands=TRUE)
 
 /obj/item/harpoon_gun/Destroy()
@@ -98,7 +97,7 @@
 	if(user.CanReach(attacked_atom))
 		return
 
-	if(!SEND_SIGNAL(src, COMSIG_ATOM_STEAM_USE, 50))
+	if(!SEND_SIGNAL(src, COMSIG_ATOM_STEAM_USE, 50, "harpoon_gun"))
 		return
 	. |= TRUE
 

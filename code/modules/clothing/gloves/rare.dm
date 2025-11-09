@@ -12,12 +12,14 @@
 	blade_dulling = DULLING_BASH
 	sewrepair = FALSE
 	anvilrepair = /datum/skill/craft/armorsmithing
-	smeltresult = /obj/item/ingot/steel
+	melt_amount = 75
+	melting_material = /datum/material/steel
 
 	armor_class = AC_HEAVY
 	armor = ARMOR_PLATE_GOOD
 	max_integrity = INTEGRITY_STRONGEST
 	prevent_crits = ALL_CRITICAL_HITS
+	abstract_type = /obj/item/clothing/gloves/rare
 
 /obj/item/clothing/gloves/rare/elfplate
 	name = "dark elf plate gauntlets"
@@ -48,7 +50,7 @@
 	allowed_sex = list(MALE)
 	item_weight = 7 * STEEL_MULTIPLIER
 
-/obj/item/clothing/gloves/rare/zybanplate
+/obj/item/clothing/gloves/rare/zaladplate
 	name = "kataphractoe claw gauntlets"
 	desc = "Interwoven beautifully with layers of silk, chain and plate, these gauntlets grant unmatched coverage while allowing maximum mobility. Both useful to the Zaladin's ever-growing slave-empire."
 	icon_state = "human_spearhand"

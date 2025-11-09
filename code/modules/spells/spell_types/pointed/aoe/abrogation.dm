@@ -57,6 +57,7 @@
 	desc = "The magicks that bind me into being are being disrupted! I should get away from the source as soon as I can!"
 	icon_state = "stressvb"
 
+// This should be stacking
 /datum/status_effect/debuff/abrogation
 	id = "abrogation"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/abrogation
@@ -64,6 +65,7 @@
 	examine_text = "<b>SUBJECTPRONOUN is wreathed in a wild frenzy of ghostly motes!</b>"
 	effectedstats = list(STATKEY_STR = -2, STATKEY_CON = -2, STATKEY_END = -2, STATKEY_SPD = -2)
 	status_type = STATUS_EFFECT_REFRESH
+	tick_interval = 2 DECISECONDS
 	var/datum/weakref/debuffer
 	var/outline_colour = "#33cabc"
 	var/base_tick = 0.2
@@ -86,23 +88,25 @@
 	to_chat(owner, span_notice("I've escaped the cloying mists!"))
 	owner.remove_filter("filter_abrogation")
 
-/datum/status_effect/debuff/abrogation/refresh()
+/datum/status_effect/debuff/abrogation/refresh(mob/living/new_owner, duration_override, ...)
 	. = ..()
 	intensity += 1
 	to_chat(owner, span_boldwarning("The mists intensify, the glowing wisps steadily disrupting my body..."))
 
-/datum/status_effect/debuff/abrogation/process()
-	. = ..()
+/datum/status_effect/debuff/abrogation/tick()
 	if(!owner)
 		return
+
 	if(prob(66))
 		owner.adjustFireLoss(base_tick * intensity)
+
 	if(prob(10))
 		to_chat(owner, span_warning("A frenzy of ghostly motes assail my form!"))
 		owner.emote("scream")
 
+	if(!debuffer)
+		return
+
 	var/mob/living/our_debuffer = debuffer.resolve()
 	if(get_dist(our_debuffer, owner) > range)
 		qdel(src)
-
-

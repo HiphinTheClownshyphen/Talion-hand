@@ -1,17 +1,17 @@
-/datum/advclass/combat/swordmaster
-	name = "Hedge Knight"
+/datum/job/advclass/combat/swordmaster
+	title = "Hedge Knight"
 	tutorial = "You spent years serving the eastern Grenzelhoftian lords, and now you spend your days as a travelling hedge knight. Upon this island, you like to increase the fame of your sword skills, as well as your honor."
 	allowed_sexes = list(MALE)
 	allowed_races = list(SPEC_ID_HUMEN, SPEC_ID_AASIMAR) // not RACES_PLAYER_GRENZ because dwarves don't have a sprite for this armor
-	outfit = /datum/outfit/job/adventurer/swordmaster
-	maximum_possible_slots = 1
+	outfit = /datum/outfit/adventurer/swordmaster
+	total_positions = 1
 	min_pq = 2
-	pickprob = 15
+	roll_chance = 15
 	category_tags = list(CTAG_ADVENTURER)
 	cmode_music = 'sound/music/cmode/combat_grenzelhoft.ogg'
+	is_recognized = TRUE
 
-
-/datum/outfit/job/adventurer/swordmaster/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/swordmaster/pre_equip(mob/living/carbon/human/H)
 	..()
 	if(H.mind)
 		H.adjust_skillrank(/datum/skill/combat/wrestling, 3, TRUE)
@@ -28,7 +28,7 @@
 		var/prev_name = H.name
 		var/honorary = "Ritter"
 		if(H.gender == FEMALE)
-			honorary = "Ritterin"
+			honorary = "Ritter"
 		H.real_name = "[honorary] [prev_real_name]"
 		H.name = "[honorary] [prev_name]"
 
@@ -50,6 +50,7 @@
 
 	ADD_TRAIT(H, TRAIT_HEAVYARMOR, TRAIT_GENERIC)
 
-	if(H.dna?.species)
-		if(H.dna.species.id == SPEC_ID_HUMEN)
-			H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
+	if(H.dna?.species.id == SPEC_ID_HUMEN)
+		H.dna.species.native_language = "Old Psydonic"
+		H.dna.species.accent_language = H.dna.species.get_accent(H.dna.species.native_language)
+		H.dna.species.soundpack_m = new /datum/voicepack/male/knight()

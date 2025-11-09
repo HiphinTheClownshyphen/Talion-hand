@@ -16,7 +16,7 @@
 	desc = "Necra's guides.\
 	\n\n\
 	Elves, created by Necra to guide humenity, are characterized by lengthened age, \
-	low fertility, and a magical aptitude originating from a vast array of tribal cultures and sub-races. \
+	low fertility, and a magical aptitude originating from a vast array of tribal cultures. \
 	With the ascension of Zizo, the entire culture of snow-elves was all but destroyed, \
 	leading the remaining tribes to live in fear and paranoia of suffering the same fate. \
 	Many elves sought safety through mixing culture, \
@@ -109,7 +109,6 @@
 	specstats_m = list(STATKEY_STR = -1, STATKEY_PER = 1, STATKEY_INT = 1, STATKEY_CON = -1, STATKEY_END = 0, STATKEY_SPD = 2, STATKEY_LCK = 0)
 	specstats_f = list(STATKEY_STR = -1, STATKEY_PER = 1, STATKEY_INT = 1, STATKEY_CON = -1, STATKEY_END = 0, STATKEY_SPD = 2, STATKEY_LCK = 0)
 	enflamed_icon = "widefire"
-	patreon_req = 0
 
 	body_markings = list(
 		/datum/body_marking/tonage,
@@ -135,9 +134,14 @@
 		"Wood Elf" = SKIN_COLOR_WOOD_ELF, // - (Mediterranean 1)
 		"Sea Elf" = SKIN_COLOR_SEA_ELF, // - (Mediterranean 2)
 		"Jungle Elf" = SKIN_COLOR_JUNGLE_ELF, // - (Latin)
-		"Savannah Elf" = SKIN_COLOR_SAVANNAH_ELF, // - (Middle-Eastern)
+		"Savannah Elf" = SKIN_COLOR_SAVANNAH_ELF, // - (Middle-Eastern 1)
+		"Desert Elf" = SKIN_COLOR_DESERT_ELF, // - (Middle-Eastern 2)
 		"Sand Elf" = SKIN_COLOR_SAND_ELF, // - (Black 1)
 		"Crimson Elf" = SKIN_COLOR_CRIMSON_ELF, // - (Black2)
+		"Bayou Elf" = SKIN_COLOR_BAYOU_ELF, // - (Native American 1)
+		"Taiga Elf" = SKIN_COLOR_TAIGA_ELF, // - (Native American 2)
+		"Archipelago Elf" = SKIN_COLOR_ARCHIPELAGO_ELF, // - (Polynesian)
+		"Volcano Elf" = SKIN_COLOR_VOLCANO_ELF, // (Melanesian)
 	))
 
 /datum/species/elf/snow/get_hairc_list()
@@ -183,5 +187,5 @@
 	var/static/list/last_names = world.file2list('strings/rt/names/elf/elfwlast.txt')
 	return last_names
 
-/datum/species/elf/snow/get_accent_list()
-	return strings("accents/russian_replacement.json", "russian")
+/datum/species/elf/snow/after_creation(mob/living/carbon/C)
+	C.dna.species.accent_language = C.dna.species.get_accent(C.dna.species.native_language, 1)

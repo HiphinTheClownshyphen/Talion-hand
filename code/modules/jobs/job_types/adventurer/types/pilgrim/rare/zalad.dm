@@ -1,16 +1,16 @@
-/datum/advclass/pilgrim/rare/zybantine
-	name = "Zybantine Emir"
+/datum/job/advclass/pilgrim/rare/zaladin
+	title = "Zaladin Emir"
 	tutorial = "An Emir hailing from Deshret, here on business for the Mercator's Guild."
-	allowed_races = RACES_PLAYER_ZYBANTINE
-	outfit = /datum/outfit/job/adventurer/zalad
+	allowed_races = RACES_PLAYER_ZALADIN
+	outfit = /datum/outfit/adventurer/zalad
 	category_tags = list(CTAG_PILGRIM)
-	maximum_possible_slots = 1
-	pickprob = 30
+	total_positions = 1
 	min_pq = 0
 
 	cmode_music = 'sound/music/cmode/adventurer/CombatOutlander.ogg'
+	is_recognized = TRUE
 
-/datum/outfit/job/adventurer/zalad/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/zalad/pre_equip(mob/living/carbon/human/H)
 	..()
 	shoes = /obj/item/clothing/shoes/shalal
 	gloves = /obj/item/clothing/gloves/leather
@@ -58,3 +58,11 @@
 		ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
 		ADD_TRAIT(H, TRAIT_NOBLE, TRAIT_GENERIC)
 		ADD_TRAIT(H, TRAIT_FOREIGNER, TRAIT_GENERIC)
+	if(H.dna?.species)
+		if(H.dna.species.id == SPEC_ID_HUMEN)
+			H.dna.species.native_language = "Zalad"
+			H.dna.species.accent_language = H.dna.species.get_accent(H.dna.species.native_language)
+		if(H.dna.species.id == SPEC_ID_HALF_ELF)
+			if(H.dna.species.native_language == "Imperial")
+				H.dna.species.native_language = "Zalad"
+				H.dna.species.accent_language = H.dna.species.get_accent(H.dna.species.native_language)

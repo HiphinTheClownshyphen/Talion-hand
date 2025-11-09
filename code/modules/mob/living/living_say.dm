@@ -161,7 +161,7 @@
 			spans |= L.spans
 
 	if(message_mods[MODE_SING])
-		var/randomnote = pick("\u2669", "\u266A", "\u266B")
+		var/randomnote = pick("\u2669", "\u266A", "\u266B", "\u266C")
 		message = "[randomnote] [message] [randomnote]"
 		spans |= SPAN_SINGING
 
@@ -204,7 +204,7 @@
 /mob/proc/can_see_runechat(atom/movable/speaker)
 	if(!client || !client.prefs)
 		return FALSE
-	if(!client.prefs.chat_on_map)
+	if(client.prefs.toggles_maptext & DISABLE_RUNECHAT)
 		return FALSE
 	if(stat >= UNCONSCIOUS)
 		return FALSE
@@ -324,6 +324,10 @@
 		if(isobserver(hearing_movable) || (locate(hearing_movable) in important_recursive_contents?[RECURSIVE_CONTENTS_HEARING_SENSITIVE]))
 			ignore_z = TRUE
 
+		var/keenears_range_bonus = 0
+		if(HAS_TRAIT(hearing_movable, TRAIT_KEENEARS))
+			keenears_range_bonus = 5
+
 		if(!ignore_z && z_message_type == Z_MODE_ONE_CEILING && hearing_movable.z != z)
 			var/listener_has_ceiling = TRUE
 			var/turf/listener_turf = get_turf(hearing_movable)
@@ -337,7 +341,7 @@
 			if(listener_has_ceiling && speaker_has_ceiling)	//Both have a ceiling, on different z-levels -- no hearing at all
 				continue
 
-		if(eavesdrop_range && get_dist(source, hearing_movable) > message_range && !(the_dead[hearing_movable]))
+		if(eavesdrop_range && get_dist(source, hearing_movable) > message_range + keenears_range_bonus && !(the_dead[hearing_movable]))
 			hearing_movable.Hear(eavesrendered, src, message_language, eavesdropping, null, spans, message_mods, original_message)
 		else
 			hearing_movable.Hear(rendered, src, message_language, message, null, spans, message_mods, original_message)
@@ -347,7 +351,7 @@
 	//speech bubble
 	var/list/speech_bubble_recipients = list()
 	for(var/mob/M in listening)
-		if(M.client && !M.client.prefs.chat_on_map)
+		if(M.client && M.client.prefs.toggles_maptext & DISABLE_RUNECHAT)
 			speech_bubble_recipients |= M.client
 
 	if(length(speech_bubble_recipients))
@@ -406,7 +410,7 @@
 	//speech bubble
 	var/list/speech_bubble_recipients = list()
 	for(var/mob/M in understanders)
-		if(M.client && !M.client.prefs.chat_on_map)
+		if(M.client && M.client.prefs.toggles_maptext & DISABLE_RUNECHAT)
 			speech_bubble_recipients |= M.client
 
 	if(length(speech_bubble_recipients))
@@ -433,7 +437,7 @@
 	return TRUE
 
 /mob/living/proc/can_speak_vocal(message) //Check AFTER handling of xeno and ling channels
-	if(HAS_TRAIT(src, TRAIT_MUTE))
+	if(HAS_TRAIT(src, TRAIT_MUTE) || HAS_TRAIT(src, TRAIT_BAGGED))
 		return FALSE
 
 	if(is_muzzled())

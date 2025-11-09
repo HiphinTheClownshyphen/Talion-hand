@@ -67,6 +67,15 @@
 /mob/proc/adjust_experience(skill, amt, silent=FALSE, check_apprentice=TRUE)
 	return ensure_skills().adjust_experience(skill, amt, silent, check_apprentice)
 
+/mob/proc/get_inspirational_bonus()
+	return 0
+
+/mob/living/carbon/get_inspirational_bonus()
+	var/bonus = 0
+	for(var/datum/stress_event/event in stressors)
+		bonus += event.quality_modifier
+	return bonus
+
 /**
  * adjusts the skill level
  * Vars:
@@ -259,6 +268,7 @@
  ** check_apprentice - wether or not to give experience to your apprentice as well
 */
 /datum/skill_holder/proc/adjust_experience(skill, amt, silent = FALSE, check_apprentice = TRUE)
+	amt *= GLOB.adjust_experience_modifier
 	var/datum/skill/skill_ref = GetSkillRef(skill)
 	skill_experience[skill_ref] = max(0, skill_experience[skill_ref] + amt) //Prevent going below 0
 	var/old_level = get_skill_level(skill)
@@ -292,7 +302,7 @@
 				multiplier += 0.25 //this means a base 35% of your xp is also given to nearby apprentices plus skill modifiers.
 			var/apprentice_amt = amt * 0.1 + multiplier
 			if(apprentice.adjust_experience(skill, apprentice_amt, FALSE, FALSE))
-				current.add_stress(/datum/stressevent/apprentice_making_me_proud)
+				current.add_stress(/datum/stress_event/apprentice_making_me_proud)
 
 	var/is_new_skill = !(skill_ref in known_skills)
 	if(isnull(old_level) && !is_new_skill)
@@ -424,7 +434,14 @@
  ** max - maximum amount up to which the skill will be changed
 */
 /datum/skill_holder/proc/clamped_adjust_skillrank(skill, amt, max, silent)
-	adjust_skillrank(skill, clamp(abs(amt - get_skill_level(skill)), 0, max), silent)
+	var/skill_difference =  max - get_skill_level(skill)
+
+	if(skill_difference <= 0)
+		return
+
+	var/amount_to_adjust_by = min(skill_difference, max)
+
+	adjust_skillrank(skill, amount_to_adjust_by, silent)
 
 /**
  * sets the skill level to a specific amount
@@ -476,4 +493,4 @@
 					multiplier += 0.15
 			var/apprentice_amt = amt * 0.1 + multiplier
 			if(apprentice.mind.add_sleep_experience(skill, apprentice_amt, FALSE, FALSE))
-				current.add_stress(/datum/stressevent/apprentice_making_me_proud)
+				current.add_stress(/datum/stress_event/apprentice_making_me_proud)

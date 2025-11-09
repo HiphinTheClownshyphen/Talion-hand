@@ -23,9 +23,9 @@
 		thealert = alerts[category]
 		if(thealert.override_alerts)
 			return 0
-		if(new_master && new_master != thealert.master)
-			WARNING("[src] threw alert [category] with new_master [new_master] while already having that alert with master [thealert.master]")
-
+		var/obj/old_master = thealert.master_ref?.resolve()
+		if(new_master && new_master != old_master)
+			WARNING("[src] threw alert [category] with new_master [new_master] while already having that alert with master [old_master]")
 			clear_alert(category)
 			return .()
 		else if(thealert.type != type)
@@ -52,7 +52,7 @@
 		new_master.layer = old_layer
 		new_master.plane = old_plane
 		thealert.icon_state = "status" // We'll set the icon to the client's ui pref in reorganize_alerts()
-		thealert.master = new_master
+		thealert.master_ref = WEAKREF(new_master)
 	else
 		thealert.icon_state = "[initial(thealert.icon_state)][severity]"
 		thealert.severity = severity
@@ -97,7 +97,7 @@
 	var/override_alerts = FALSE //If it is overriding other alerts of the same type
 	var/mob/mob_viewer //the mob viewing this alert
 	var/alert_group = ALERT_STATUS //decides where on the screen the alert shows up, if it's a debuff, status effect, or buff
-	nomouseover = FALSE
+	no_over_text = FALSE
 
 /atom/movable/screen/alert/MouseEntered(location,control,params)
 	..()
@@ -186,12 +186,12 @@
 /atom/movable/screen/alert/status_effect/debuff/hot
 	name = "Too Hot"
 	desc = ""
-	icon_state = "hot"
+	icon_state = "debuff"
 
 /atom/movable/screen/alert/status_effect/debuff/cold
 	name = "Too Cold"
 	desc = ""
-	icon_state = "cold"
+	icon_state = "debuff"
 
 /atom/movable/screen/alert/lowpressure
 	name = "Low Pressure"
@@ -465,7 +465,6 @@
 
 /atom/movable/screen/alert/Destroy()
 	severity = 0
-	master = null
 	mob_viewer = null
 	screen_loc = ""
 	return ..()

@@ -1,7 +1,11 @@
 /// Standard follower modifier for storytellers, ie. how many points they get for each follower
 #define STANDARD_FOLLOWER_MODIFIER 20
 /// Lower follower modifier for special storytellers such as Astrata, who is a default patron
-#define LOWER_FOLLOWER_MODIFIER STANDARD_FOLLOWER_MODIFIER - 2
+#define LOWER_FOLLOWER_MODIFIER STANDARD_FOLLOWER_MODIFIER - 3
+/// Standard follower modifier for inhumen storytellers, ie. how many points they get for each follower
+#define STANDARD_INHUMEN_MODIFIER 22
+/// Lower follower modifier for special inhumen storytellers such as Zizo, who gets extra undead followers
+#define LOWER_INHUMEN_FOLLOWER_MODIFIER STANDARD_INHUMEN_MODIFIER - 3
 
 ///The storyteller datum. He operates with the SSgamemode data to run events
 /datum/storyteller
@@ -72,7 +76,7 @@
 	var/list/influence_sets = list()
 	/// Chosen influence factors, which are used to calculate storyteller influence. List of lists, which looks like RELEVANT_STATS = list(point gain, max capacity)
 	var/influence_factors = list()
-	/// Modifier to the calcualted value of the chosen influence factors, default is 1 (100%)
+	/// Point modifier to all influence factors including the follower count, default is 1 (100%)
 	var/influence_modifier = 1
 	/// How many influence points storyteller gets for each follower
 	var/follower_modifier = STANDARD_FOLLOWER_MODIFIER
@@ -151,7 +155,7 @@
 		mode.update_crew_infos()
 		var/pop_required = mode.min_pop_thresholds[track]
 		if(mode.active_players < pop_required)
-			message_admins("Storyteller failed to pick an event for track of [track] due to insufficient population. (required: [pop_required] active pop for [track]. Current: [mode.active_players])")
+			message_admins("Storyteller [mode.current_storyteller.name] failed to pick an event for track of [track] due to insufficient population. (required: [pop_required] active pop for [track]. Current: [mode.active_players])")
 			mode.event_track_points[track] *= TRACK_FAIL_POINT_PENALTY_MULTIPLIER
 			return
 		calculate_weights(track)
@@ -159,7 +163,7 @@
 		// Determine which events are valid to pick
 		for(var/datum/round_event_control/event as anything in mode.event_pools[track])
 			var/players_amt = get_active_player_count(alive_check = TRUE, afk_check = TRUE, human_check = TRUE)
-			if(forced)
+			if(forced && SSticker.HasRoundStarted())
 				if(QDELETED(event))
 					message_admins("[event.name] was deleted!")
 					continue
@@ -171,7 +175,7 @@
 				valid_events[event] = round(event.calculated_weight * 10) //multiply weight by 10 to get first decimal value
 		///If we didn't get any events, remove the points inform admins and dont do anything
 		if(!length(valid_events))
-			message_admins("Storyteller failed to pick an event for track of [track].")
+			message_admins("Storyteller [mode.current_storyteller.name] failed to pick an event for track of [track].")
 			mode.event_track_points[track] *= TRACK_FAIL_POINT_PENALTY_MULTIPLIER
 			return
 		picked_event = pickweight(valid_events)
@@ -180,12 +184,12 @@
 				var/added_string = ""
 				for(var/datum/round_event_control/item as anything in valid_events)
 					added_string += "[item.name]:[valid_events[item]]; "
-				stack_trace("WARNING: Storyteller picked a null from event pool, defaulting to option 1, look at weights:[added_string]")
+				stack_trace("WARNING: Storyteller [mode.current_storyteller.name] picked a null from event pool, defaulting to option 1, look at weights:[added_string]")
 				shuffle_inplace(valid_events)
 				picked_event = valid_events[1]
 			else
-				message_admins("WARNING: Storyteller picked a null from event pool. Aborting event roll.")
-				stack_trace("WARNING: Storyteller picked a null from event pool.")
+				message_admins("WARNING: Storyteller [mode.current_storyteller.name] picked a null from event pool. Aborting event roll.")
+				stack_trace("WARNING: Storyteller [mode.current_storyteller.name] picked a null from event pool.")
 				SSgamemode.event_track_points[track] = 0
 				return
 	buy_event(picked_event, track, are_forced)
@@ -217,16 +221,16 @@
 	if(!bought_event.roundstart)
 		total_cost *= (1 + (rand(-cost_variance, cost_variance)/100)) //Apply cost variance if not roundstart event
 	mode.event_track_points[track] = max(mode.event_track_points[track] - total_cost, 0)
-	message_admins("Storyteller purchased and triggered [bought_event] event, on [track] track, for [total_cost] cost.")
+	message_admins("Storyteller [mode.current_storyteller.name] purchased and triggered [bought_event] event, on [track] track, for [total_cost] cost.")
 	if(bought_event.roundstart)
 		SSgamemode.ran_roundstart = TRUE
 		SSgamemode.current_roundstart_event = bought_event
 		mode.TriggerEvent(bought_event, forced)
 	else
 		if(track == EVENT_TRACK_OMENS)
-			mode.schedule_event(bought_event, 3 MINUTES, total_cost, _forced = forced, omen = TRUE)
+			mode.schedule_event(bought_event, 2 MINUTES, total_cost, _forced = forced, omen = TRUE)
 		else
-			mode.schedule_event(bought_event, 3 MINUTES, total_cost, _forced = forced)
+			mode.schedule_event(bought_event, 2 MINUTES, total_cost, _forced = forced)
 	SSgamemode.triggered_round_events |= bought_event.name
 
 /// Calculates the weights of the events from a passed track.

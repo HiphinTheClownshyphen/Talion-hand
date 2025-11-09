@@ -58,7 +58,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	return
 
 /// Aplies after the user mob is fully spawned and has mind
-/datum/charflaw/proc/after_spawn(mob/user)
+/datum/charflaw/proc/after_spawn(mob/user, client/mob_client)
 	return
 
 /// Applies when the flaw is deleted
@@ -89,16 +89,17 @@ GLOBAL_LIST_INIT(character_flaws, list(
 
 /// Replaces humans's flaw with a random one excluding no flaw
 /mob/living/carbon/human/proc/get_random_flaw()
-	var/list/flaws = subtypesof(/datum/charflaw)
-	for(var/datum/charflaw/flaw as anything in flaws)
+	var/list/flaws = list()
+	for(var/datum/charflaw/flaw as anything in subtypesof(/datum/charflaw))
 		if(is_abstract(flaw))
-			flaws -= flaw
-		if(initial(flaw.random_exempt) == TRUE)
-			flaws -= flaw
+			continue
+		if(initial(flaw.random_exempt))
+			continue
+		flaws += flaw
 
 	set_flaw(pick(flaws))
 
-/mob/living/carbon/human/proc/set_flaw(datum/charflaw/flaw)
+/mob/living/carbon/human/proc/set_flaw(datum/charflaw/flaw, after_spawn = TRUE)
 	if(!flaw)
 		return
 
@@ -106,6 +107,9 @@ GLOBAL_LIST_INIT(character_flaws, list(
 		QDEL_NULL(charflaw)
 
 	charflaw = new flaw(src)
+
+	if(after_spawn)
+		charflaw.after_spawn(src)
 
 /datum/charflaw/randflaw
 	name = "Random Flaw"
@@ -132,13 +136,14 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	desc = "I'm a normal person, how rare! (Consumes 3 triumphs or randomizes)"
 	random_exempt = TRUE
 
-/datum/charflaw/randflaw/after_spawn(mob/user)
+/datum/charflaw/noflaw/after_spawn(mob/user, client/mob_client)
 	. = ..()
 	if(!ishuman(user))
 		return
 	var/mob/living/carbon/human/H = user
-	if(H.get_triumphs() >= 3)
-		H.adjust_triumphs(-3)
+	var/triumphs = get_triumph_amount(mob_client.ckey)
+	if(triumphs >= 3)
+		adjust_triumphs(mob_client.ckey, -3)
 		H.set_flaw(/datum/charflaw/eznoflaw)
 		return
 	H.get_random_flaw()
@@ -149,9 +154,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 
 /datum/charflaw/badsight/after_spawn(mob/user)
 	. = ..()
-	var/mob/living/carbon/human/H = user
-	if(H.mind)
-		H.adjust_skillrank(/datum/skill/misc/reading, 1, TRUE)
+	user.adjust_skillrank(/datum/skill/misc/reading, 1, TRUE)
 
 /datum/charflaw/badsight/flaw_on_life(mob/user)
 	if(!ishuman(user))
@@ -185,7 +188,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 
 /datum/charflaw/paranoid
 	name = "Paranoid"
-	desc = "I'm even more anxious than most towners. I'm extra paranoid of other races, the price of higher intelligence."
+	desc = "I'm even more anxious than most towners. I'm extra paranoid of other species, the price of higher intelligence."
 	var/last_check = 0
 
 /datum/charflaw/paranoid/flaw_on_life(mob/user)
@@ -209,14 +212,14 @@ GLOBAL_LIST_INIT(character_flaws, list(
 			break
 	var/mob/living/carbon/P = user
 	if(cnt > 2)
-		P.add_stress(/datum/stressevent/paracrowd)
+		P.add_stress(/datum/stress_event/paracrowd)
 	cnt = 0
 	for(var/obj/effect/decal/cleanable/blood/B in view(7, user))
 		cnt++
 		if(cnt > 3)
 			break
 	if(cnt > 6)
-		P.add_stress(/datum/stressevent/parablood)
+		P.add_stress(/datum/stress_event/parablood)
 
 /datum/charflaw/isolationist
 	name = "Isolationist"
@@ -242,7 +245,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 			break
 	var/mob/living/carbon/P = user
 	if(cnt > 2)
-		P.add_stress(/datum/stressevent/crowd)
+		P.add_stress(/datum/stress_event/crowd)
 
 /datum/charflaw/clingy
 	name = "Clingy"
@@ -268,14 +271,14 @@ GLOBAL_LIST_INIT(character_flaws, list(
 			break
 	var/mob/living/carbon/P = user
 	if(cnt < 2)
-		P.add_stress(/datum/stressevent/nopeople)
+		P.add_stress(/datum/stress_event/nopeople)
 
 /datum/charflaw/noeyer
 	name = "Cyclops (R)"
 	desc = "I lost my right eye long ago. But it made me great at noticing things."
 
 /datum/charflaw/noeyer/after_spawn(mob/user)
-	..()
+	. = ..()
 	if(!ishuman(user))
 		return
 	var/mob/living/carbon/human/H = user
@@ -294,11 +297,10 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	desc = "I lost my left eye long ago. But it made me great at noticing things."
 
 /datum/charflaw/noeyel/after_spawn(mob/user)
-	..()
+	. = ..()
 	if(!ishuman(user))
 		return
 	var/mob/living/carbon/human/H = user
-
 	if(H.wear_mask)
 		var/type = H.wear_mask.type
 		QDEL_NULL(H.wear_mask)
@@ -317,15 +319,15 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	. = ..()
 	if(ishuman(user))
 		var/mob/living/carbon/human/H = user
-		switch(rand(1,2))
-			if(1)
-				H.set_flaw(/datum/charflaw/noeyel)
-			else
-				H.set_flaw(/datum/charflaw/noeyer)
+		if(prob(50))
+			H.set_flaw(/datum/charflaw/noeyel)
+		else
+			H.set_flaw(/datum/charflaw/noeyer)
 
 /datum/charflaw/tongueless
 	name = "Tongueless"
-	desc = "I was too annoying. (Being mute is not an excuse to forego roleplay. Use of custom emotes is recommended.)"
+	desc = "I said one word too many to a noble, they cut out my tongue.\n\
+	(Being mute is not an excuse to forego roleplay. Use of custom emotes is recommended.)"
 
 /datum/charflaw/tongueless/on_mob_creation(mob/user)
 	. = ..()
@@ -403,15 +405,15 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	var/do_update_msg = TRUE
 	if(new_mammon_amount >= required_mammons)
 		// Feel better
-		if(user.has_stress(/datum/stressevent/vice))
+		if(user.has_stress_type(/datum/stress_event/vice))
 			to_chat(user, span_blue("[new_mammon_amount] mammons... That's more like it.."))
-		user.remove_stress(/datum/stressevent/vice)
+		user.remove_stress(/datum/stress_event/vice)
 		user.remove_status_effect(/datum/status_effect/debuff/addiction)
 		last_passed_check = world.time
 		do_update_msg = FALSE
 	else
 		// Feel bad
-		user.add_stress(/datum/stressevent/vice)
+		user.add_stress(/datum/stress_event/vice)
 		user.apply_status_effect(/datum/status_effect/debuff/addiction)
 
 	if(new_mammon_amount == last_checked_mammons)
@@ -501,7 +503,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	if(next_paincrave > world.time)
 		last_pain_threshold = NONE
 		return
-	user.add_stress(/datum/stressevent/vice)
+	user.add_stress(/datum/stress_event/vice)
 	user.apply_status_effect(/datum/status_effect/debuff/addiction)
 	var/current_pain = user.get_complex_pain()
 	// Bloodloss makes the pain count as extra large to allow people to bloodlet themselves with cutting weapons to satisfy vice
@@ -526,7 +528,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	if(new_pain_threshold == MASO_THRESHOLD_FOUR)
 		to_chat(user, span_blue("<b>That's more like it...</b>"))
 		next_paincrave = world.time + rand(35 MINUTES, 45 MINUTES)
-		user.remove_stress(/datum/stressevent/vice)
+		user.remove_stress(/datum/stress_event/vice)
 		user.remove_status_effect(/datum/status_effect/debuff/addiction)
 
 
@@ -585,7 +587,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 			var/affected_parts = min(rand(1, 3), joint_parts.len)
 			for(var/i = 1 to affected_parts)
 				var/obj/item/bodypart/BP = pick_n_take(joint_parts)
-				BP.chronic_pain = rand(30, 60)
+				BP.chronic_pain = rand(10, 20)
 				BP.chronic_pain_type = CHRONIC_ARTHRITIS
 
 		to_chat(user, span_warning("Your joints feel stiff and painful - a reminder of your chronic arthritis."))
@@ -605,7 +607,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 
 		if(arthritic_parts.len)
 			var/obj/item/bodypart/affected = pick(arthritic_parts)
-			affected.lingering_pain += rand(15, 25)
+			affected.lingering_pain += rand(7.5, 12.5)
 			var/pain_msg = pick("Your [affected.name] throbs with arthritic pain!",
 							   "A sharp ache shoots through your [affected.name]!",
 							   "Your [affected.name] feels stiff and painful!")
@@ -635,7 +637,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 
 		if(major_parts.len)
 			var/obj/item/bodypart/wounded = pick(major_parts)
-			wounded.chronic_pain = rand(40, 70)
+			wounded.chronic_pain = rand(10, 17.5)
 			wounded.chronic_pain_type = pick(CHRONIC_OLD_FRACTURE, CHRONIC_SCAR_TISSUE, CHRONIC_NERVE_DAMAGE)
 			wounded.brute_dam += rand(3, 8) // Some permanent damage
 
@@ -654,7 +656,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 		if(prob(3))
 			for(var/obj/item/bodypart/BP in H.bodyparts)
 				if(BP.chronic_pain > 30)
-					BP.lingering_pain += rand(20, 30)
+					BP.lingering_pain += rand(5, 6)
 					to_chat(H, span_warning("Your old war wound flares up from the stress!"))
 					break
 
@@ -662,7 +664,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	if(prob(1.5))
 		for(var/obj/item/bodypart/BP in H.bodyparts)
 			if(BP.chronic_pain > 0)
-				BP.lingering_pain += rand(10, 20)
+				BP.lingering_pain += rand(5, 10)
 				var/pain_type = pick("sharp", "throbbing", "burning", "aching")
 				to_chat(H, span_warning("A [pain_type] pain shoots through your old wound."))
 				break
@@ -677,7 +679,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 		// Apply chronic pain to head
 		for(var/obj/item/bodypart/BP in H.bodyparts)
 			if(BP.body_zone == BODY_ZONE_HEAD)
-				BP.chronic_pain = rand(35, 55)
+				BP.chronic_pain = rand(17.5, 27.5)
 				BP.chronic_pain_type = CHRONIC_NERVE_DAMAGE
 				break
 
@@ -726,7 +728,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 		// Apply chronic pain to chest/torso area
 		for(var/obj/item/bodypart/BP in H.bodyparts)
 			if(BP.body_zone == BODY_ZONE_CHEST)
-				BP.chronic_pain = rand(40, 65)
+				BP.chronic_pain = rand(20, 32.5)
 				BP.chronic_pain_type = pick(CHRONIC_OLD_FRACTURE, CHRONIC_SCAR_TISSUE)
 				break
 
@@ -742,7 +744,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	if(H.m_intent == MOVE_INTENT_RUN && prob(5))
 		for(var/obj/item/bodypart/BP in H.bodyparts)
 			if(BP.body_zone == BODY_ZONE_CHEST)
-				BP.lingering_pain += rand(15, 25)
+				BP.lingering_pain += rand(3, 5)
 				to_chat(H, span_warning("Running aggravates your chronic back pain!"))
 				break
 
@@ -788,7 +790,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 		return
 	var/mob/living/L = user
 
-	L.adjust_stat_modifier("[REF(src)]", STATKEY_INT, rand(-2, -5)) //this would probably make the average manorc a vegetable
+	L.adjust_stat_modifier(STATMOD_FLAW, STATKEY_INT, rand(-2, -5)) //this would probably make the average manorc a vegetable
 
 /datum/charflaw/witless_pixie/after_spawn(mob/user)
 	if(!ishuman(user))
@@ -797,6 +799,7 @@ GLOBAL_LIST_INIT(character_flaws, list(
 	//solves edgecases with inbred princes and eoran hand-holders. Yes, you can be an ugly Eoran templar. You are not safe.
 	REMOVE_TRAIT(user, TRAIT_BEAUTIFUL, TRAIT_GENERIC)
 	REMOVE_TRAIT(user, TRAIT_UGLY, TRAIT_GENERIC)
+	REMOVE_TRAIT(user, TRAIT_FISHFACE, TRAIT_GENERIC)
 
 	if(prob(50))
 		ADD_TRAIT(user, TRAIT_BEAUTIFUL, TRAIT_GENERIC)

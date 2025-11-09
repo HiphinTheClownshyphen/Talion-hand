@@ -28,22 +28,24 @@
 		if(bp && istype(bp , /obj/item/clothing))
 			var/obj/item/clothing/C = bp
 			if(zone2covered(def_zone, C.body_parts_covered))
-				if(C.max_integrity)
-					if(C.obj_integrity <= 0)
+				if(C.uses_integrity)
+					if(C.get_integrity() <= 0)
 						continue
 				var/val = C.armor.getRating(d_type)
 				// The code below finally fixes the targetting order of armor > shirt > flesh. - Foxtrot (#gundamtanaka)
 				var/obj/item/armorworn = src.get_item_by_slot(ITEM_SLOT_ARMOR) // The armor we're wearing
 				var/obj/item/shirtworn = src.get_item_by_slot(ITEM_SLOT_SHIRT) // The shirt we're wearing
-				if(bp == armorworn) // If the targeted bodypart has an armor...
+				var/armor_protection = 0 // We are going to check if the armor protects more than the shirt.
+				if(bp == armorworn && (armorworn.uses_integrity && armorworn.get_integrity() > 0) && zone2covered(def_zone, armorworn.body_parts_covered)) // If the targeted bodypart has an armor...
 					if(val > 0) // ...and it's an actual armor with armor values...
 						if(val > protection)
 							protection = val
+							armor_protection = val
 							used = armorworn // ...force us to use it above all!
 				// If we don't have armor equipped or the one we have is broken...
-				else if(bp == shirtworn && (!armorworn || (armorworn.max_integrity && armorworn.obj_integrity <= 0) || !zone2covered(def_zone, armorworn.body_parts_covered)))
+				else if(bp == shirtworn)
 					if(val > 0) // ...and it's not just a linen shirt...
-						if(val > protection)
+						if(val > protection && val > armor_protection)
 							protection = val
 							if(skin_armor)
 								used = skin_armor
@@ -55,37 +57,58 @@
 						if(val > protection)
 							protection = val
 							used = C
+
+	var/obj/item/clothing/cloak/boiler/steam_boiler = get_item_by_slot(ITEM_SLOT_BACK_R) || get_item_by_slot(ITEM_SLOT_BACK_L)
+	if(!istype(steam_boiler))
+		steam_boiler = null
+
+	var/boiler_damage = damage / 5
+
 	if(used)
-		if(!blade_dulling)
-			blade_dulling = BCLASS_BLUNT
 		if(used.blocksound)
 			playsound(loc, get_armor_sound(used.blocksound, blade_dulling), 100)
 		used.take_damage(damage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
+
+	if(steam_boiler && def_zone == BODY_ZONE_CHEST)
+		steam_boiler.take_damage(boiler_damage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
+
 	if(physiology)
 		protection += physiology.armor.getRating(d_type)
 	return protection
 
-/mob/living/carbon/human/proc/checkcritarmor(def_zone, d_type)
+/// Return the armor that blocks the crit
+/mob/living/carbon/human/proc/check_crit_armor(def_zone, d_type)
 	if(!d_type)
-		return 0
+		return FALSE
+	var/obj/item/clothing/best_armor
 	if(isbodypart(def_zone))
 		var/obj/item/bodypart/CBP = def_zone
 		def_zone = CBP.body_zone
-	var/list/body_parts = list(head, wear_mask, wear_wrists, wear_shirt, wear_neck, cloak, wear_armor, wear_pants, backr, backl, gloves, shoes, belt, wear_ring)
-	for(var/bp in body_parts)
-		if(!bp)
+	var/list/clothing_slots = list(head, wear_mask, wear_wrists, wear_shirt, wear_neck, cloak, wear_armor, wear_pants, backr, backl, gloves, shoes, belt, wear_ring)
+	for(var/clothing in clothing_slots)
+		if(!clothing)
 			continue
-		if(bp && istype(bp , /obj/item/clothing))
-			var/obj/item/clothing/C = bp
-			if(zone2covered(def_zone, C.body_parts_covered))
-				if(C.obj_integrity > 1)
-					if(d_type in C.prevent_crits)
-						return TRUE
+		if(!istype(clothing, /obj/item/clothing))
+			continue
+		var/obj/item/clothing/article = clothing
+		if(!zone2covered(def_zone, article.body_parts_covered))
+			continue
+		if(article.obj_broken)
+			continue
+		// Snowflake
+		if(d_type == BCLASS_PIERCE)
+			d_type = BCLASS_STAB
+
+		if(d_type in article.prevent_crits)
+			if(!best_armor)
+				best_armor = article
+			else if (round(((best_armor.get_integrity() / best_armor.max_integrity) * 100), 1) < round(((article.get_integrity() / article.max_integrity) * 100), 1)) //We want the armor with highest % integrity
+				best_armor = article
+	return best_armor
 
 /mob/living/carbon/human/on_hit(obj/projectile/P)
 	if(dna && dna.species)
 		dna.species.on_hit(P, src)
-
 
 /mob/living/carbon/human/bullet_act(obj/projectile/P, def_zone = BODY_ZONE_CHEST)
 	if(dna && dna.species)
@@ -192,14 +215,14 @@
 		blocked = TRUE
 	else if(I)
 		if(((throwingdatum ? throwingdatum.speed : I.throw_speed) >= EMBED_THROWSPEED_THRESHOLD) || I.embedding.embedded_ignore_throwspeed_threshold)
-			if(can_embed(I) && prob(I.embedding.embed_chance) && !HAS_TRAIT(src, TRAIT_PIERCEIMMUNE))
+			if(I.can_embed() && prob(I.embedding.embed_chance) && !HAS_TRAIT(src, TRAIT_PIERCEIMMUNE))
 				//throw_alert("embeddedobject", /atom/movable/screen/alert/embeddedobject)
 				var/obj/item/bodypart/L = pick(bodyparts)
 				L.add_embedded_object(I, silent = FALSE, crit_message = TRUE)
 				emote("embed")
 				L.receive_damage(I.w_class*I.embedding.embedded_impact_pain_multiplier)
 //					visible_message("<span class='danger'>[I] embeds itself in [src]'s [L.name]!</span>","<span class='danger'>[I] embeds itself in my [L.name]!</span>")
-				SEND_SIGNAL(src, COMSIG_ADD_MOOD_EVENT, "embedded", /datum/mood_event/embedded)
+				add_stress(/datum/stress_event/embedded)
 				hitpush = FALSE
 				skipcatch = TRUE //can't catch the now embedded item
 

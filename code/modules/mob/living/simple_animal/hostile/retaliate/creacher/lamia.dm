@@ -38,12 +38,13 @@
 	defdrain = 5
 	del_on_deaggro = 999 SECONDS
 	retreat_health = 0.1
-	food = 0
+
 	dodgetime = 15
 	aggressive = 1
 	remains_type = null
 
 	ai_controller = /datum/ai_controller/lamia
+	dendor_taming_chance = DENDOR_TAME_PROB_LOW
 
 
 

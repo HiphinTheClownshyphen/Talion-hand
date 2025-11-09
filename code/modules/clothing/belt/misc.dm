@@ -4,10 +4,13 @@
 	icon_state = "leather"
 	item_state = "leather"
 	equip_sound = 'sound/blank.ogg'
+	var/empty_when_dropped = TRUE
 
 /obj/item/storage/belt/leather/dropped(mob/living/carbon/human/user)
 	..()
 	if(QDELETED(src))
+		return
+	if(!empty_when_dropped)
 		return
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 	if(STR)
@@ -16,6 +19,7 @@
 			STR.remove_from_storage(I, get_turf(src))
 
 /obj/item/storage/belt/leather/assassin // Assassin's super edgy and cool belt can carry normal items (for poison vial, lockpick).
+	empty_when_dropped = FALSE
 	component_type = /datum/component/storage/concrete/grid/belt/assassin
 
 	populate_contents = list(
@@ -32,7 +36,22 @@
 		/obj/item/key/bandit,
 	)
 
-//Bandit's belt starts with a bandage and a key to their guildhall.
+
+//Garrison's belt starts with a simple needle, and a key to their hideout.
+
+/obj/item/storage/belt/leather/fgarrison
+	populate_contents = list(
+		/obj/item/needle/thorn,
+		/obj/item/key/forrestgarrison,
+	)
+
+/obj/item/storage/belt/leather/townguard //they get their keys + dagger there
+	populate_contents = list(
+		/obj/item/weapon/knife/dagger/steel/special,
+		/obj/item/storage/keyring/guard,
+	)
+
+// Bandit's belt starts with a bandage and a key to their guildhall.
 /obj/item/storage/belt/leather/mercenary
 	populate_contents = list(
 		/obj/item/natural/cloth,
@@ -69,6 +88,10 @@
 	desc = "A belt with a silver plaque on its front."
 	icon_state = "silverplaque"
 	sellprice = 30
+
+/obj/item/storage/belt/leather/plaquesilver/Initialize(mapload)
+	. = ..()
+	enchant(/datum/enchantment/silver)
 
 /obj/item/storage/belt/leather/steel
 	name = "steel belt"
@@ -196,6 +219,7 @@
 	name = "cloth pouch"
 	desc = "Usually used for holding small amount of coins."
 	icon_state = "clothpouch"
+	salvage_result = /obj/item/natural/cloth
 	component_type = /datum/component/storage/concrete/grid/coin_pouch/cloth
 
 //Poison darts pouch
@@ -222,12 +246,12 @@
 	alternate_worn_layer = UNDER_CLOAK_LAYER
 	component_type = /datum/component/storage/concrete/grid/satchel
 
-
 /obj/item/storage/backpack/satchel/cloth
 	name = "cloth knapsack"
 	desc = "A rudimentary cloth sack strapped to the back for storing small amounts of items."
 	icon_state = "clothbackpack"
 	item_state = "clothbackpack"
+	salvage_result = /obj/item/natural/cloth
 	component_type = /datum/component/storage/concrete/grid/satchel/cloth
 
 /obj/item/storage/backpack/satchel/heartfelt
@@ -235,6 +259,12 @@
 		/obj/item/natural/feather,
 		/obj/item/paper/heartfelt,
 	)
+
+/obj/item/storage/backpack/satchel/otavan
+	name = "grenzelhoftian leather satchel"
+	desc = "A made to last leather bag from the Psydonian heart of Grenzelhoft. It's Grenzelhoft's finest."
+	icon_state = "osatchel"
+	item_state = "osatchel"
 
 /obj/item/storage/backpack/satchel/mule/PopulateContents()
 	for(var/i in 1 to 3)
@@ -265,6 +295,10 @@
 	bloody_icon_state = "bodyblood"
 	component_type = /datum/component/storage/concrete/grid/backpack
 
+/obj/item/storage/backpack/backpack/Initialize()
+	. = ..()
+	ADD_TRAIT(src, TRAIT_HARD_TO_STEAL, TRAIT_GENERIC)
+
 /obj/item/storage/backpack/backpack/artibackpack
 	name = "cooling backpack"
 	desc = "A leather backpack with complex bronze pipework coursing through it. It hums and vibrates constantly."
@@ -272,6 +306,13 @@
 	item_state = "artibackpack"
 	resistance_flags = FIRE_PROOF
 	sewrepair = FALSE
+	//for those curious, yes the artibackpack preserves organs and food. Check _organ.dm and snacks.dm
+
+/obj/item/storage/backpack/backpack/artibackpack/porter
+	name = "humdrum"
+	desc = "A absurdly oversized backpack with complex bronze pipework coursing through it. It hums and vibrates constantly."
+	sewrepair = TRUE //Kobold thing, trust.
+	component_type = /datum/component/storage/concrete/grid/porter
 
 /obj/item/storage/backpack/satchel/surgbag
 	name = "surgery bag"
@@ -300,6 +341,8 @@
 	. = ..()
 	new /obj/item/weapon/surgery/scalpel(loc)
 	new /obj/item/weapon/surgery/saw(loc)
+	//two hemostats because one is needed to clamp bleeders, the other is needed to actually remove stuff with it
+	new /obj/item/weapon/surgery/hemostat(loc)
 	new /obj/item/weapon/surgery/hemostat(loc)
 	new /obj/item/weapon/surgery/retractor(loc)
 	new /obj/item/weapon/surgery/bonesetter(loc)
@@ -324,7 +367,6 @@
 	)
 
 /obj/item/storage/belt/leather/knifebelt
-
 	name = "tossblade belt"
 	desc = "A many-slotted belt meant for tossblades. Little room left over."
 	icon_state = "knife"
@@ -333,12 +375,17 @@
 	var/max_storage = 8
 	sewrepair = TRUE
 	component_type = /datum/component/storage/concrete/grid/belt/knife_belt
+	empty_when_dropped = FALSE
 
+/obj/item/storage/belt/leather/knifebelt/attack_atom(atom/attacked_atom, mob/living/user)
+	if(!isturf(attacked_atom))
+		return ..()
 
-/obj/item/storage/belt/leather/knifebelt/attack_turf(turf/T, mob/living/user)
+	. = TRUE
 	if(length(contents) >= max_storage)
 		to_chat(user, span_warning("Your [src.name] is full!"))
 		return
+	var/turf/T = attacked_atom
 	to_chat(user, span_notice("You begin to gather the ammunition..."))
 	for(var/obj/item/weapon/knife/throwingknife/knife in T.contents)
 		if(do_after(user, 5 DECISECONDS))
@@ -360,9 +407,6 @@
 	. = ..()
 
 /obj/item/storage/belt/leather/knifebelt/attack_hand_secondary(mob/user, params)
-	. = ..()
-	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
-		return
 	if(length(contents))
 		var/list/knives = list()
 		SEND_SIGNAL(src, COMSIG_TRY_STORAGE_TAKE_TYPE, /obj/item/weapon/knife/throwingknife, drop_location(), amount = 1, check_adjacent = TRUE, user = user, inserted = knives)
@@ -370,6 +414,7 @@
 			if(!user.put_in_active_hand(knife))
 				break
 		return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
+	. = ..()
 
 /obj/item/storage/belt/leather/knifebelt/examine(mob/user)
 	. = ..()
@@ -419,6 +464,13 @@
 	. = ..()
 	for(var/i in 1 to max_storage)
 		var/obj/item/weapon/knife/throwingknife/psydon/A = new(loc)
+		if(!SEND_SIGNAL(src, COMSIG_TRY_STORAGE_INSERT, A, null, TRUE, TRUE))
+			qdel(A)
+
+/obj/item/storage/belt/leather/knifebelt/black/rous/Initialize()
+	. = ..()
+	for(var/i in 1 to max_storage)
+		var/obj/item/weapon/knife/throwingknife/rous/A = new(loc)
 		if(!SEND_SIGNAL(src, COMSIG_TRY_STORAGE_INSERT, A, null, TRUE, TRUE))
 			qdel(A)
 

@@ -3,7 +3,6 @@
 	tutorial = "Slice, chop, and into the pot... \
 	you work closely with the innkeep to prepare meals for all the hungry mouths of Vanderlin. \
 	You've spent more nites than you can count cutting meat and vegetables until your fingers are bloody and raw, but it's honest work."
-	flag = COOK
 	department_flag = PEASANTS
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
@@ -12,27 +11,16 @@
 	min_pq = -20
 	bypass_lastclass = TRUE
 
-	allowed_races = list(\
-		SPEC_ID_HUMEN,\
-		SPEC_ID_ELF,\
-		SPEC_ID_HALF_ELF,\
-		SPEC_ID_DWARF,\
-		SPEC_ID_DROW,\
-		SPEC_ID_HALF_DROW,\
-		SPEC_ID_TIEFLING,\
-		SPEC_ID_AASIMAR,\
-		SPEC_ID_HARPY,\
-	)
+	allowed_races = RACES_PLAYER_NONEXOTIC
 
-	outfit = /datum/outfit/job/cook
+	outfit = /datum/outfit/cook
 	display_order = JDO_COOK
 	give_bank_account = 8
 	cmode_music = 'sound/music/cmode/towner/CombatInn.ogg'
 
-/datum/outfit/job/cook
 	job_bitflag = BITFLAG_CONSTRUCTOR
 
-/datum/outfit/job/cook/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/cook/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_skillrank(/datum/skill/combat/knives, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/reading, 1, TRUE)

@@ -18,7 +18,7 @@
 		return TRUE
 
 /obj/structure/water_vent/process()
-	if(input)
+	if(length(input?.providers))
 		spew_water()
 
 /obj/structure/water_vent/proc/spew_water()
@@ -38,9 +38,65 @@
 			matrix.Turn(270)
 	emitter.transform = matrix
 
-/obj/structure/water_vent/return_rotation_chat(atom/movable/screen/movable/mouseover/mouseover)
-	mouseover.maptext_height = 96
+	var/range = max(1, FLOOR(input.water_pressure * 0.1, 1))
+	range = min(3, range)
+
+	var/list/emitter_velocity = list(0, 0.25 * range, 0)
+	emitter.particles.velocity = emitter_velocity
+	if(reagent)
+		var/datum/reagent/faux_reagent = new reagent
+		faux_reagent.on_aeration(input.water_pressure, get_turf(src))
+
+	var/datum/reagents/splash_holder
+	for(var/i = 1 to range)
+		var/taking_pressure = input.water_pressure
+		var/fallen = FALSE
+		var/turf/pipe_turf
+		if(!pipe_turf)
+			pipe_turf = get_turf(src)
+		else
+			pipe_turf = get_step(src, dir)
+
+		if(isclosedturf(pipe_turf))
+			break
+		if(isopenspace(pipe_turf))
+			fallen = TRUE
+			while(isopenspace(pipe_turf))
+				for(var/mob/living/mob in pipe_turf.contents)
+					if(!splash_holder)
+						splash_holder = new/datum/reagents(FLOOR(input.water_pressure * 0.5, 1))
+						splash_holder.my_atom = src
+						splash_holder.add_reagent(reagent, FLOOR(input.water_pressure * 0.5, 1))
+					splash_holder.reaction(mob, TOUCH, 1)
+				pipe_turf = get_step_multiz(pipe_turf, DOWN)
+		if(istype(pipe_turf, /turf/open/water))
+			var/turf/open/water/water = pipe_turf
+			if(water.mapped)
+				return
+			water.water_volume = min(water.water_volume + taking_pressure, water.water_maximum)
+
+		for(var/mob/living/mob in pipe_turf.contents)
+			if(!splash_holder)
+				splash_holder = new/datum/reagents(FLOOR(input.water_pressure * 0.5, 1))
+				splash_holder.my_atom = src
+				splash_holder.add_reagent(reagent, FLOOR(input.water_pressure * 0.5, 1))
+			splash_holder.reaction(mob, TOUCH, 1)
+			if(!fallen && range == 3 && i < 2)
+				mob.safe_throw_at(get_edge_target_turf(src, dir), 2, 3, spin = FALSE)
+		var/obj/structure/water_pipe/picked_provider = pick(input.providers)
+		picked_provider?.taking_from?.use_water_pressure(taking_pressure)
+		if(!istype(pipe_turf, /turf/open/water) && !ispath(reagent, /datum/reagent/water))
+			var/datum/reagent/add_reagent = reagent
+			var/send_pressure = taking_pressure
+			if(ispath(reagent, /datum/reagent/steam))
+				add_reagent = /datum/reagent/water
+				send_pressure *= 0.25
+				send_pressure = round(send_pressure, 1)
+			pipe_turf.add_liquid(add_reagent, send_pressure)
+
+
+
+/obj/structure/water_vent/return_rotation_chat()
 	var/datum/reagent/reagent = input.carrying_reagent
-	return {"<span style='font-size:8pt;font-family:"Pterra";color:#808000;text-shadow:0 0 1px #fff, 0 0 2px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;' class='center maptext '>
-			Input Pressure: [input ? input.water_pressure : "0"]
-			Fluid: [reagent ? initial(reagent.name) : "Nothing"]</span>"}
+	return "Input Pressure: [input ? input.water_pressure : "0"]\n\
+			Fluid: [reagent ? initial(reagent.name) : "Nothing"]"

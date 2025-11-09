@@ -95,7 +95,7 @@
 
 /obj/item/clothing/face/goblin_mask/take_damage(damage_amount, damage_type = BRUTE, damage_flag = 0, sound_effect = 1, attack_dir)
 	..()
-	if(obj_integrity < 90)
+	if(atom_integrity < 90)
 		Die()
 
 /obj/item/clothing/face/goblin_mask/proc/Die()
@@ -106,9 +106,6 @@
 	stat = DEAD
 
 	visible_message("<span class='danger'>[src] curls up into a ball!</span>")
-
-/obj/item/clothing/face/goblin_mask/attackby(obj/item/O, mob/user, params)
-	return O.attack_obj(src, user)
 
 /obj/item/clothing/face/goblin_mask/attack_hand(mob/user)
 	if(iscarbon(user))
@@ -176,10 +173,6 @@
 	..()
 	if(user.transferItemToLoc(src, get_turf(M)))
 		Leap(M)
-
-/obj/item/clothing/face/goblin_mask/Die()
-	qdel(src)
-
 
 /obj/item/clothing/face/goblin_mask/proc/Attach(mob/living/M)
 	if(!valid_to_attach(M))
@@ -260,7 +253,7 @@
 		if(H.bloodpool < 1)
 			to_chat(owner, span_warning("You don't have enough <b>BLOOD</b> to do that!"))
 			return
-		H.bloodpool = max(H.bloodpool - 1, 0)
+		H.adjust_bloodpool(-15)
 		switch(try_trap)
 			if("Brutal")
 				var/obj/fae_trickery_trap/trap = new (get_turf(owner))
@@ -332,9 +325,7 @@
 	if(iscarbon(AM) && owner)
 		if(AM != owner)
 			var/mob/living/carbon/L = AM
-			for(var/obj/item/I in L.get_equipped_items(include_pockets = TRUE))
-				if(I)
-					L.dropItemToGround(I, TRUE)
+			L.drop_all_held_items()
 			qdel(src)
 
 //CHANJELIN WARD
@@ -481,7 +472,7 @@
 		to_chat(riddler, span_danger("Your riddle is too complicated."))
 		return FALSE
 
-/datum/riddle/proc/answer_riddle(mob/living/answerer, the_answer, var/atom/movable/screen/alert/riddle/alert)
+/datum/riddle/proc/answer_riddle(mob/living/answerer, the_answer, atom/movable/screen/alert/riddle/alert)
 	if(the_answer != riddle_answer)
 		alert.bad_answers++
 		to_chat(answerer,

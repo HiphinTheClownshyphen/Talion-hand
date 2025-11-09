@@ -234,7 +234,7 @@ GLOBAL_LIST_EMPTY(explosions)
 
 		var/throw_dir = get_dir(epicenter,T)
 		for(var/obj/item/I in T)
-			if(!I.anchored)
+			if(!I.anchored && !(I.resistance_flags & EXPLOSION_MOVE_PROOF))
 				var/throw_range = rand(throw_dist, max_range)
 				var/turf/throw_at = get_ranged_target_turf(I, throw_dir, throw_range)
 				I.throw_at(throw_at, throw_range, EXPLOSION_THROW_SPEED)
@@ -391,13 +391,13 @@ GLOBAL_LIST_EMPTY(explosions)
 
 		if(dist < dev)
 			T.color = "red"
-			T.maptext = "Dev"
+			T.maptext = MAPTEXT("Dev")
 		else if (dist < heavy)
 			T.color = "yellow"
-			T.maptext = "Heavy"
+			T.maptext = MAPTEXT("Heavy")
 		else if (dist < light)
 			T.color = "blue"
-			T.maptext = "Light"
+			T.maptext = MAPTEXT("Light")
 		else
 			continue
 

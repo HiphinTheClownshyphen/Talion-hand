@@ -4,7 +4,6 @@
 		You command a position of a fool, envious of the position your superiors have upon you. \
 		Your cheap tricks and illusions of intelligence will only work for so long, \
 		and someday you'll find yourself at the end of something sharper than you."
-	flag = JESTER
 	department_flag = PEASANTS
 	display_order = JDO_JESTER
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
@@ -17,16 +16,16 @@
 	allowed_races = RACES_PLAYER_ALL
 
 
-	outfit = /datum/outfit/job/jester
+	outfit = /datum/outfit/jester
 	spells = list(
 		/datum/action/cooldown/spell/undirected/joke,
 		/datum/action/cooldown/spell/undirected/tragedy,
 		/datum/action/cooldown/spell/undirected/fart,
-		/datum/action/cooldown/spell/undirected/list_target/vicious_mockery,
+		/datum/action/cooldown/spell/vicious_mockery,
 	)
 	give_bank_account = TRUE
 
-/datum/outfit/job/jester/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/jester/pre_equip(mob/living/carbon/human/H)
 	..()
 	shoes = /obj/item/clothing/shoes/jester
 	pants = /obj/item/clothing/pants/tights
@@ -72,6 +71,7 @@
 	ADD_TRAIT(H, TRAIT_EMPATH, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_NUTCRACKER, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_ZJUMP, TRAIT_GENERIC)
+	ADD_TRAIT(H, TRAIT_SHAKY_SPEECH, TRAIT_GENERIC)
 
 //Ventriloquism! Make things speak!
 

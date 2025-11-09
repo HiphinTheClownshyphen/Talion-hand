@@ -21,7 +21,7 @@
 
 /obj/item/clothing/head/padded/deathface
 	name = "death shroud"
-	desc = "When inducted into the cult of Necra, the supplicant must make a talisman from the remains of a deceased loved one. Many favor a chin-guard made from a jawbone."
+	desc = "A Veil for those in service to the Veiled Lady. When inducted into the cult of Necra, the supplicant must make a talisman to hold the memory of a loved one since passed."
 	icon_state = "deathface"
 	flags_inv = HIDEEARS | HIDEHAIR | HIDEFACIALHAIR
 
@@ -47,18 +47,6 @@
 	icon = 'icons/roguetown/clothing/patron_hoods.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/patron_robes.dmi'
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR
-
-/obj/item/clothing/head/padded/operavisage
-	name = "opera visage"
-	desc = "A painted wooden opera mask worn by the faithful of Eora, usually during their rituals."
-	icon_state = "eoramask"
-	mob_overlay_icon = 'icons/roguetown/clothing/onmob/64x64/head.dmi'
-	bloody_icon = 'icons/effects/blood64x64.dmi'
-	bloody_icon_state = "helmetblood_big"
-	worn_x_dimension = 64
-	worn_y_dimension = 64
-	dynamic_hair_suffix = ""
-	salvage_result = /obj/item/natural/silk
 
 /obj/item/clothing/head/roguehood/eora
 	name = "opera hood"

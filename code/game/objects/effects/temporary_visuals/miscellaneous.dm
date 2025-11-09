@@ -8,11 +8,6 @@
 	var/splatter_type = "splatter"
 
 /obj/effect/temp_visual/dir_setting/bloodsplatter/Initialize(mapload, set_dir)
-	icon_state = "[splatter_type][rand(1, 6)]"
-	. = ..()
-	animate(src, alpha = 0, time = duration)
-/*
-/obj/effect/temp_visual/dir_setting/bloodsplatter/Initialize(mapload, set_dir)
 	if(set_dir in GLOB.diagonals)
 		icon_state = "[splatter_type][pick(1, 2, 6)]"
 	else
@@ -45,7 +40,7 @@
 			target_pixel_y = -16
 			layer = ABOVE_MOB_LAYER
 	animate(src, pixel_x = target_pixel_x, pixel_y = target_pixel_y, alpha = 0, time = duration)
-*/
+
 /obj/effect/temp_visual/dir_setting/bloodsplatter/xenosplatter
 	splatter_type = "xsplatter"
 
@@ -65,15 +60,15 @@
 	switch(newdir)
 		if(NORTH)
 			layer = BELOW_MOB_LAYER
-			pixel_x = rand(-3,3)
-			pixel_y = rand(4,6)
+			pixel_x = base_pixel_x + rand(-3,3)
+			pixel_y = base_pixel_y + rand(4,6)
 		if(SOUTH)
-			pixel_x = rand(-3,3)
-			pixel_y = rand(-1,1)
+			pixel_x = base_pixel_x + rand(-3,3)
+			pixel_y = base_pixel_y + rand(-1,1)
 		else
-			pixel_x = rand(-1,1)
-			pixel_y = rand(-1,1)
-	..()
+			pixel_x = base_pixel_x + rand(-1,1)
+			pixel_y = base_pixel_y + rand(-1,1)
+	return ..()
 
 /obj/effect/temp_visual/dir_setting/firing_effect/energy
 	icon_state = "firing_effect_energy"
@@ -125,9 +120,8 @@
 /obj/effect/temp_visual/dir_setting/curse/grasp_portal
 	icon = 'icons/effects/64x64.dmi'
 	layer = LARGE_MOB_LAYER
-	pixel_y = -16
-	pixel_x = -16
-	duration = 32
+	SET_BASE_PIXEL(-16, -16)
+	duration = 3.2 SECONDS
 	fades = FALSE
 
 /obj/effect/temp_visual/dir_setting/curse/grasp_portal/fading
@@ -258,8 +252,8 @@
 	if(set_color)
 		add_atom_colour(set_color, FIXED_COLOUR_PRIORITY)
 	. = ..()
-	pixel_x = rand(-12, 12)
-	pixel_y = rand(-9, 0)
+	pixel_x = base_pixel_x + rand(-12, 12)
+	pixel_y = base_pixel_y + rand(-9, 0)
 
 /obj/effect/temp_visual/kinetic_blast
 	name = "kinetic explosion"
@@ -272,9 +266,8 @@
 	name = "explosion"
 	icon = 'icons/effects/96x96.dmi'
 	icon_state = "explosion"
-	pixel_x = -32
-	pixel_y = -32
-	duration = 8
+	SET_BASE_PIXEL(-32, -32)
+	duration = 0.8 SECONDS
 
 /obj/effect/temp_visual/explosion/fast
 	icon_state = "explosionfast"
@@ -297,8 +290,8 @@
 	duration = 5
 
 /obj/effect/temp_visual/impact_effect/Initialize(mapload, x, y)
-	pixel_x = x
-	pixel_y = y
+	pixel_x = base_pixel_x + x
+	pixel_y = base_pixel_y + y
 	return ..()
 
 /obj/effect/temp_visual/impact_effect/red_laser
@@ -337,8 +330,8 @@
 
 /obj/effect/temp_visual/heart/Initialize(mapload)
 	. = ..()
-	pixel_x = rand(-4,4)
-	pixel_y = rand(-4,4)
+	pixel_x = base_pixel_x + rand(-4,4)
+	pixel_y = base_pixel_y + rand(-4,4)
 	animate(src, pixel_y = pixel_y + 32, alpha = 0, time = 25)
 
 /obj/effect/temp_visual/love_heart
@@ -349,8 +342,8 @@
 
 /obj/effect/temp_visual/love_heart/Initialize(mapload)
 	. = ..()
-	pixel_x = rand(-10,10)
-	pixel_y = rand(-10,10)
+	pixel_x = base_pixel_x + rand(-10,10)
+	pixel_y = base_pixel_y + rand(-10,10)
 	animate(src, pixel_y = pixel_y + 32, alpha = 0, time = duration)
 
 /obj/effect/temp_visual/love_heart/invisible

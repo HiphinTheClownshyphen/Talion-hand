@@ -1,4 +1,24 @@
 
+/mob/living/proc/get_elemental_resistance(resistance_type = COLD_DAMAGE)
+	switch(resistance_type)
+		if(COLD_DAMAGE)
+			return min(cold_res, max_cold_res)
+		if(FIRE_DAMAGE)
+			return min(fire_res, max_fire_res)
+		if(LIGHTNING_DAMAGE)
+			return min(lightning_res, max_lightning_res)
+
+/mob/living/proc/get_status_mod(status_key)
+	if(!length(status_modifiers))
+		return 0
+	return LAZYACCESS(status_modifiers, status_key)
+
+/mob/living/proc/apply_elemental_damage(damage = 0, damage_type = COLD_DAMAGE, elemental_pen = 0)
+	var/elemental_resistance = get_elemental_resistance(damage_type)
+	elemental_resistance = max(0, elemental_resistance - elemental_pen)
+	damage *= (1 - (elemental_resistance * 0.01))
+	apply_damage(damage)
+
 /*
 	apply_damage(a,b,c)
 	args
@@ -8,6 +28,7 @@
 	Returns
 	standard 0 if fail
 */
+
 /mob/living/proc/apply_damage(damage = 0, damagetype = BRUTE, def_zone = null, blocked = 0, forced = FALSE, spread_damage = FALSE)
 	SEND_SIGNAL(src, COMSIG_MOB_APPLY_DAMGE, damage, damagetype, def_zone)
 	var/hit_percent = 1
@@ -123,6 +144,7 @@
 	if(!forced && (status_flags & GODMODE))
 		return FALSE
 	bruteloss = CLAMP((bruteloss + (amount * CONFIG_GET(number/damage_multiplier))), 0, maxHealth * 2)
+	SEND_SIGNAL(src, COMSIG_LIVING_ADJUSTED, (amount * CONFIG_GET(number/damage_multiplier)), BRUTE)
 	if(updating_health)
 		updatehealth(amount)
 	return amount
@@ -135,6 +157,7 @@
 		return
 	. = oxyloss
 	oxyloss = clamp((oxyloss + (amount * CONFIG_GET(number/damage_multiplier))), 0, maxHealth * 2)
+	SEND_SIGNAL(src, COMSIG_LIVING_ADJUSTED, (amount * CONFIG_GET(number/damage_multiplier)), OXY)
 	if(updating_health)
 		updatehealth(amount)
 
@@ -153,6 +176,7 @@
 	if(!forced && (status_flags & GODMODE))
 		return
 	toxloss = clamp((toxloss + (amount * CONFIG_GET(number/damage_multiplier))), 0, maxHealth * 2)
+	SEND_SIGNAL(src, COMSIG_LIVING_ADJUSTED, (amount * CONFIG_GET(number/damage_multiplier)), TOX)
 	if(updating_health)
 		updatehealth(amount)
 	return amount
@@ -172,6 +196,7 @@
 	if(!forced && (status_flags & GODMODE))
 		return FALSE
 	fireloss = CLAMP((fireloss + (amount * CONFIG_GET(number/damage_multiplier))), 0, maxHealth * 2)
+	SEND_SIGNAL(src, COMSIG_LIVING_ADJUSTED, (amount * CONFIG_GET(number/damage_multiplier)), BURN)
 	if(updating_health)
 		updatehealth(amount)
 	return amount
@@ -183,6 +208,7 @@
 	if(!forced && (status_flags & GODMODE))
 		return FALSE
 	cloneloss = CLAMP((cloneloss + (amount * CONFIG_GET(number/damage_multiplier))), 0, maxHealth * 2)
+	SEND_SIGNAL(src, COMSIG_LIVING_ADJUSTED, (amount * CONFIG_GET(number/damage_multiplier)), CLONE)
 	if(updating_health)
 		updatehealth(amount)
 	return amount

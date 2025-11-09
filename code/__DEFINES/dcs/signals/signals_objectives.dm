@@ -12,7 +12,7 @@
 #define COMSIG_SKILL_RANK_INCREASED "skill_rank_increased"
 /// from base of /atom/proc/OnCrafted() (user, craft_path)
 #define COMSIG_ITEM_CRAFTED "item_crafted"
-/// from base of /obj/item/reagent_containers/food/snacks/organ/on_consume() (mob/living/consumer, organ_type)
+/// from base of /obj/item/reagent_containers/food/snacks/organ/on_consume() (organ_type, obj/item/organ/organ_inside)
 #define COMSIG_ORGAN_CONSUMED "organ_consumed"
 /// from base of /mob/living/carbon/human/proc/torture_victim() (mob/living/torturer, mob/living/victim)
 #define COMSIG_TORTURE_PERFORMED "torture_performed"
@@ -44,7 +44,7 @@
 #define COMSIG_COIN_FLIPPED "coin_flipped"
 /// From base of /obj/item/reagent_containers/glass/attack() (mob/user, mob/target, list/reagents_splashed)
 #define COMSIG_SPLASHED_MOB "splashed_mob"
-/// From base of /datum/stressevent/bathwater/on_apply() (mob/living/user)
+/// From base of /datum/stress_event/bathwater/on_apply() (mob/living/user)
 #define COMSIG_BATH_TAKEN "bath_taken"
 /// from /mob/living/adjust_energy() (mob/user, amount_spent)
 #define COMSIG_MOB_ENERGY_SPENT "mob_energy_spent"
@@ -56,7 +56,6 @@
 #define COMSIG_GRAVE_ROBBED "grave_robbed"
 /// from /datum/action/cooldown/spell/find_flaw/cast() (datum/charflaw/flaw, mob/target)
 #define COMSIG_FLAW_FOUND "flaw_found"
-
 // Globals
 
 /// from base of /obj/structure/fluff/psycross/attackby() (bride, groom)

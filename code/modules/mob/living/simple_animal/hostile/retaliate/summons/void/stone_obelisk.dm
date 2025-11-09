@@ -33,7 +33,7 @@
 	move_to_delay = 12
 	vision_range = 9
 	aggro_vision_range = 9
-	movement_type = FLYING
+	is_flying_animal = TRUE
 
 	butcher_results = list()
 
@@ -57,14 +57,15 @@
 	defprob = 35
 	defdrain = 5
 	retreat_health = 0.2
-	food = 0
+
 	dodgetime = 17
 	aggressive = 1
+	food_max = 0
 	dontmakesentient = TRUE
 
 
 	ai_controller = /datum/ai_controller/void_obelisk
-
+	dendor_taming_chance = DENDOR_TAME_PROB_NONE
 	del_on_death = TRUE
 
 	var/datum/action/cooldown/mob_cooldown/voidblast/beam

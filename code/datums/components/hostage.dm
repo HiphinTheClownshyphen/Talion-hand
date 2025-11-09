@@ -5,11 +5,11 @@
 /// How long it takes from stage 2 starting to move up to stage 3
 #define DELAY_STAGE_3 (7.5 SECONDS)
 /// How much the damage and wound bonus mod is multiplied when you're on stage 1
-#define MULT_STAGE_1 1
+#define MULT_STAGE_1 1.5
 /// As above, for stage 2
-#define MULT_STAGE_2 2
+#define MULT_STAGE_2 2.5
 /// As above, for stage 3
-#define MULT_STAGE_3 2.5
+#define MULT_STAGE_3 3.5
 /// How many tiles around the target the captor can roam without losing their shot
 #define CAPTOR_STRAY_RANGE 2
 
@@ -74,7 +74,7 @@
 	captor.apply_status_effect(/datum/status_effect/holdup)
 	target.apply_status_effect(/datum/status_effect/grouped/heldup, REF(captor))
 
-	target.add_stress(/datum/stressevent/taken_hostage)
+	target.add_stress(/datum/stress_event/taken_hostage)
 
 	stage_timer = addtimer(CALLBACK(src, PROC_REF(update_stage), 2), DELAY_STAGE_2, TIMER_STOPPABLE)
 
@@ -82,7 +82,7 @@
 	var/mob/living/captor = parent
 	captor.remove_status_effect(/datum/status_effect/holdup)
 	target.remove_status_effect(/datum/status_effect/grouped/heldup, REF(captor))
-	target.remove_stress(/datum/stressevent/taken_hostage)
+	target.remove_stress(/datum/stress_event/taken_hostage)
 	deltimer(stage_timer)
 	return ..()
 

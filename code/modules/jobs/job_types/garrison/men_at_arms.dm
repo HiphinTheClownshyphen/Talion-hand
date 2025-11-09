@@ -1,12 +1,12 @@
 /datum/job/men_at_arms
 	title = "Men-at-arms"
-	tutorial = "Like a hound on a leash, you stand vigilant for your masters. \
+	tutorial = "Chosen by the Captain and King, you're not like those shit stinking City Watchmen. \
+	Like a hound on a leash, you stand vigilant for your masters. \
 	You live better than the rest of the taffers in this kingdom-- \
-	infact, you take shifts manning the gate with your brethren, \
+	infact, you take shifts manning the gate with your brethren, assuming the gatemaster isn't there, \
 	keeping the savages out, keeping the shit-covered knaves away from your foppish superiors. \
 	It will be a cold day in hell when you and your compatriots are slain, and nobody in this town will care. \
 	The nobility needs good men, and they only come in a pair of pairs."
-	flag = WATCHMAN
 	department_flag = GARRISON
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_MENATARMS
@@ -17,17 +17,18 @@
 	bypass_lastclass = TRUE
 
 	allowed_races = RACES_PLAYER_NONDISCRIMINATED
+	blacklisted_species = list(SPEC_ID_HALFLING)
 
-	outfit = /datum/outfit/job/watchman
+	outfit = /datum/outfit/watchman
 	advclass_cat_rolls = list(CTAG_MENATARMS = 20)
 	cmode_music = 'sound/music/cmode/garrison/CombatManAtArms.ogg'
 	give_bank_account = 15
 	min_pq = 6
+	give_bank_account = 30
 
-/datum/outfit/job/watchman
 	job_bitflag = BITFLAG_GARRISON
 
-/datum/outfit/job/watchman/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/watchman/pre_equip(mob/living/carbon/human/H)
 	. = ..()
 	cloak = /obj/item/clothing/cloak/stabard/guard
 	wrists = /obj/item/clothing/wrists/bracers/leather
@@ -36,7 +37,7 @@
 	belt = /obj/item/storage/belt/leather
 	beltl = /obj/item/storage/keyring/manorguard
 
-/datum/outfit/job/watchman/post_equip(mob/living/carbon/human/H)
+/datum/outfit/watchman/post_equip(mob/living/carbon/human/H)
 	. = ..()
 	if(H.cloak)
 		if(!findtext(H.cloak.name,"([H.real_name])"))
@@ -45,23 +46,23 @@
 /datum/job/men_at_arms/after_spawn(mob/living/carbon/spawned, client/player_client)
 	..()
 
-/datum/advclass/menatarms/watchman_pikeman
-	name = "Pikeman Men-At-Arms"
+/datum/job/advclass/menatarms/watchman_pikeman
+	title = "Pikeman Men-At-Arms"
 	tutorial = "You once warded the town, beating the poor and killing the senseless. \
 	Now you get to stare at them in the eyes, watching as they bleed, \
 	exanguinated personally by one of the Monarch's best. \
 	You are poor, and your belly is yet full."
-	outfit = /datum/outfit/job/watchman/pikeman
+	outfit = /datum/outfit/watchman/pikeman
 
 	category_tags = list(CTAG_MENATARMS)
 
-/datum/outfit/job/watchman/pikeman/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/watchman/pikeman/pre_equip(mob/living/carbon/human/H)
 	..()
-	head = /obj/item/clothing/head/helmet/kettle
-	armor = /obj/item/clothing/armor/cuirass
-	shirt = /obj/item/clothing/armor/chainmail
-	neck = /obj/item/clothing/neck/chaincoif/iron
-	gloves = /obj/item/clothing/gloves/chain
+	head = /obj/item/clothing/head/helmet/kettle/slit/atarms
+	armor = /obj/item/clothing/armor/chainmail/hauberk //leg & arm protection on one piece, nothing else needed
+	shirt = /obj/item/clothing/armor/gambeson/arming
+	neck = /obj/item/clothing/neck/bevor
+	gloves = /obj/item/clothing/gloves/leather
 	beltr = /obj/item/weapon/sword/arming
 	backr = /obj/item/weapon/polearm/spear/billhook
 	backl = /obj/item/storage/backpack/satchel
@@ -87,21 +88,21 @@
 	ADD_TRAIT(H, TRAIT_KNOWBANDITS, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
 
-/datum/advclass/menatarms/watchman_swordsmen
-	name = "Fencer Men-At-Arms"
+/datum/job/advclass/menatarms/watchman_swordsmen
+	title = "Fencer Men-At-Arms"
 	tutorial = "You once warded the town, beating the poor and killing the senseless. \
 	You were quite a good dancer, you've blended that skill with your blade- \
 	exanguinated personally by one of the Monarch's best. \
 	You are poor, and your belly is yet full."
-	outfit = /datum/outfit/job/watchman/swordsmen
+	outfit = /datum/outfit/watchman/swordsmen
 	category_tags = list(CTAG_MENATARMS)
 
-/datum/outfit/job/watchman/swordsmen/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/watchman/swordsmen/pre_equip(mob/living/carbon/human/H)
 	..()
-	head = pick(/obj/item/clothing/head/roguehood/colored/guard, /obj/item/clothing/head/roguehood/colored/guardsecond)
-	armor = /obj/item/clothing/armor/leather/advanced
-	shirt = /obj/item/clothing/armor/gambeson
-	neck = /obj/item/clothing/neck/gorget
+	head = /obj/item/clothing/head/helmet/kettle/slit/atarms
+	armor = /obj/item/clothing/armor/leather/splint
+	shirt = /obj/item/clothing/armor/gambeson/arming
+	neck = /obj/item/clothing/neck/bevor
 	gloves = /obj/item/clothing/gloves/chain
 	beltr = /obj/item/weapon/sword/rapier
 	backl = /obj/item/storage/backpack/satchel
@@ -124,22 +125,22 @@
 		ADD_TRAIT(H, TRAIT_KNOWBANDITS, TRAIT_GENERIC)
 		H.verbs |= /mob/proc/haltyell
 
-/datum/advclass/menatarms/watchman_ranger
-	name = "Archer Men-At-Arms"
+/datum/job/advclass/menatarms/watchman_ranger
+	title = "Archer Men-At-Arms"
 	tutorial = "You once warded the town, beating the poor and killing the senseless. \
 	Now you stare at them from above, raining hell down upon the knaves and the curs that see you a traitor. \
 	You are poor, and your belly is yet full."
-	outfit = /datum/outfit/job/watchman/ranger
+	outfit = /datum/outfit/watchman/ranger
 
 	category_tags = list(CTAG_MENATARMS)
 
-/datum/outfit/job/watchman/ranger/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/watchman/ranger/pre_equip(mob/living/carbon/human/H)
 	..()
-	head = /obj/item/clothing/head/helmet/kettle
-	armor = /obj/item/clothing/armor/leather/hide
-	shirt = /obj/item/clothing/armor/gambeson/heavy
+	head = /obj/item/clothing/head/helmet/kettle/slit/atarms
+	armor = /obj/item/clothing/armor/leather/splint
+	shirt = /obj/item/clothing/armor/gambeson/arming
 	beltr = /obj/item/weapon/mace/cudgel
-	neck = /obj/item/clothing/neck/chaincoif/iron
+	neck = /obj/item/clothing/neck/bevor
 	gloves = /obj/item/clothing/gloves/leather
 	backpack_contents = list(/obj/item/weapon/knife/dagger/steel/special)
 	if(H.mind)

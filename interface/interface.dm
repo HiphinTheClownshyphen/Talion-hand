@@ -64,6 +64,12 @@
 	else
 		to_chat(src, span_danger("You can't currently use Mentorhelp in the main menu."))
 
+/client/verb/mentor_stats()
+	set name = "Mentor Statistics"
+	set desc = ""
+	set category = "Admin"
+	check_mentor_stats_menu(src.ckey)
+
 /client/verb/reportissue()
 	set name = "Report a bug"
 	set desc = "Report a bug"
@@ -128,7 +134,7 @@
 		"body" = local_template,
 	)
 	var/datum/http_request/issue_report = new
-	rustg_file_write(local_template, "[GLOB.log_directory]/issue_reports/[ckey]-[world.time]-[sanitize_filename(issue_title)].txt")
+	rustg_file_write(local_template, "[GLOB.log_directory]/issue_reports/[ckey]-[world.time]-[SANITIZE_FILENAME(issue_title)].txt")
 	message_admins("BUGREPORT: Bug report filed by [ADMIN_LOOKUPFLW(src)], Title: [strip_html(issue_title)]")
 	issue_report.prepare(
 		RUSTG_HTTP_METHOD_POST,
@@ -292,3 +298,13 @@
 	if(prefs.lastchangelog != GLOB.changelog_hash)
 		prefs.lastchangelog = GLOB.changelog_hash
 		prefs.save_preferences()
+
+/client/verb/do_rp_prompt()
+	set name = "Lore Primer"
+	set category = "OOC"
+	var/list/dat = list()
+	dat += GLOB.roleplay_readme
+	if(dat)
+		var/datum/browser/popup = new(usr, "Primer", "VANDERLIN", 650, 900)
+		popup.set_content(dat.Join())
+		popup.open()

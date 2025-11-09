@@ -4,7 +4,6 @@
 	tutorial = "Silent and yet full of life, the forests of Dendor grant you both happiness and misery. \
 	In tales you've heard of small woodland creechers frolicking, now there is only the beastspawn of Graggar and Dendor... \
 	And yet you seek beasts small enough to skin, scalp, and sell. Take heed, lest you become a beast yourself."
-	flag = HUNTER
 	department_flag = PEASANTS
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_HUNTER
@@ -16,15 +15,14 @@
 
 	allowed_races = RACES_PLAYER_ALL
 
-	outfit = /datum/outfit/job/hunter
+	outfit = /datum/outfit/hunter
 	give_bank_account = 15
 	apprentice_name = "Hunter"
 	cmode_music = 'sound/music/cmode/towner/CombatTowner2.ogg'
 
-/datum/outfit/job/hunter
 	job_bitflag = BITFLAG_CONSTRUCTOR
 
-/datum/outfit/job/hunter/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/hunter/pre_equip(mob/living/carbon/human/H)
 	..()
 	pants = /obj/item/clothing/pants/tights/colored/random
 	shirt = /obj/item/clothing/shirt/shortshirt/colored/random
@@ -55,12 +53,14 @@
 	H.adjust_skillrank(/datum/skill/misc/climbing, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/swimming, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/reading, 1, TRUE)
+	//old people get 2 extra perception from their age, hence the if/else
 	if(H.age == AGE_OLD)
 		H.adjust_skillrank(/datum/skill/combat/bows, 1, TRUE)
+		H.adjust_skillrank(/datum/skill/craft/crafting, 1, TRUE)
 		H.adjust_skillrank(/datum/skill/craft/traps, 1, TRUE)
 		H.change_stat(STATKEY_PER, 1)
 		H.change_stat(STATKEY_END, -1)
 	else
-		H.change_stat(STATKEY_INT, 1)
 		H.change_stat(STATKEY_PER, 3)
 	ADD_TRAIT(H, TRAIT_FORAGER, TRAIT_GENERIC)
+

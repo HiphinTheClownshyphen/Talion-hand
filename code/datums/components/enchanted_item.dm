@@ -60,8 +60,7 @@
 		if(SEARING_BLADE_ENCHANT)
 			I.add_filter(SEARING_FILTER, 2, outline_filter(1, "#64af18"))
 		if(DURABILITY_ENCHANT)
-			I.max_integrity += DURABILITY_INCREASE
-			I.obj_integrity += DURABILITY_INCREASE
+			I.modify_max_integrity(I.max_integrity + DURABILITY_INCREASE)
 			I.add_filter(DURABILITY_FILTER, 2, outline_filter(1, "#808080"))
 
 	decay_timer = addtimer(CALLBACK(src, PROC_REF(try_decay)), duration, TIMER_STOPPABLE|TIMER_UNIQUE|TIMER_OVERRIDE)
@@ -78,12 +77,17 @@
 	if(QDELETED(holder))
 		clean_up(TRUE)
 		return
-	if(!refresh_skill || !holder.has_skill(refresh_skill))
+	if(refresh_count != -1 && refresh_count <= 0)
 		clean_up(TRUE)
 		return
-	if(skill_threshold && (!holder.get_skill_level(refresh_skill) > skill_threshold))
+	if(refresh_skill && !holder.has_skill(refresh_skill))
 		clean_up(TRUE)
 		return
+	if(skill_threshold && holder.get_skill_level(refresh_skill) < skill_threshold)
+		clean_up(TRUE)
+		return
+
+	refresh_count--
 
 	to_chat(holder, span_nicegreen("A faint glow eminates from \the [parent], its enchantment is renewed!"))
 
@@ -105,8 +109,7 @@
 		if(SEARING_BLADE_ENCHANT)
 			I.remove_filter(SEARING_FILTER)
 		if(DURABILITY_ENCHANT)
-			I.max_integrity -= DURABILITY_INCREASE
-			I.obj_integrity -= DURABILITY_INCREASE
+			I.modify_max_integrity(I.max_integrity - DURABILITY_INCREASE, can_break = FALSE)
 			I.remove_filter(DURABILITY_FILTER)
 
 	I.visible_message(span_warning("\The enchantment on [I] falls!"))
@@ -130,6 +133,8 @@
 	examine_list += "It will last for [timeleft(decay_timer) / 10] more seconds."
 
 /datum/component/enchanted_weapon/proc/item_afterattack(obj/item/source, atom/target, mob/user, proximity_flag, click_parameters)
+	if(!proximity_flag)
+		return
 	if(enchant_type == SEARING_BLADE_ENCHANT)
 		if(isliving(target))
 			var/mob/living/M = target

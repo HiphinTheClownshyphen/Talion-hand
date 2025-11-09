@@ -4,7 +4,6 @@
 	mostly because they are the last ones in a party to die. \
 	Their wish is to experience the greatest adventures of the age and write amazing songs \
 	about them. This is not your story, for you are the storyteller."
-	flag = BARD
 	department_flag = PEASANTS
 	display_order = JDO_BARD
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
@@ -13,10 +12,10 @@
 	spawn_positions = 4
 
 	allowed_races = RACES_PLAYER_ALL
-	outfit = /datum/outfit/job/bard
+	outfit = /datum/outfit/bard
 	cmode_music = 'sound/music/cmode/adventurer/CombatIntense.ogg'
 
-/datum/outfit/job/bard/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/bard/pre_equip(mob/living/carbon/human/H)
 	. = ..()
 	H.adjust_skillrank(/datum/skill/combat/knives, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/unarmed, 2, TRUE)
@@ -32,7 +31,8 @@
 	H.adjust_skillrank(/datum/skill/misc/lockpicking, 1, TRUE)
 	H.clamped_adjust_skillrank(/datum/skill/misc/music, 4, 4, TRUE) //Due to Harpy's innate music skill giving them legendary
 	H.adjust_skillrank(/datum/skill/misc/athletics, 3, TRUE)
-	H.add_spell(/datum/action/cooldown/spell/undirected/list_target/vicious_mockery)
+	H.add_spell(/datum/action/cooldown/spell/vicious_mockery)
+	H.add_spell(/datum/action/cooldown/spell/bardic_inspiration)
 	head = /obj/item/clothing/head/bardhat
 	shoes = /obj/item/clothing/shoes/boots
 	pants = /obj/item/clothing/pants/tights/colored/random
@@ -56,6 +56,8 @@
 	H.change_stat(STATKEY_PER, 1)
 	H.change_stat(STATKEY_SPD, 2)
 	H.change_stat(STATKEY_STR, -1)
+	var/datum/inspiration/I = new /datum/inspiration(H)
+	I.grant_inspiration(H, bard_tier = BARD_T3)
 
 /datum/job/bard/after_spawn(mob/living/spawned, client/player_client)
 	. = ..()

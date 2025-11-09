@@ -49,7 +49,7 @@
 /obj/item/reagent_containers/food/snacks/rotten/Initialize()
 	var/mutable_appearance/rotflies = mutable_appearance('icons/roguetown/mob/rotten.dmi', "rotten")
 	add_overlay(rotflies)
-	rot_away_timer = QDEL_IN_STOPPABLE(src, 10 MINUTES)
+	rot_away_timer = QDEL_IN_STOPPABLE(src, 15 MINUTES)
 	. = ..()
 
 /obj/item/reagent_containers/food/snacks/rotten/meat
@@ -84,8 +84,8 @@
 	if(!..()) //was it caught by a mob?
 		var/turf/T = get_turf(hit_atom)
 		var/obj/O = new /obj/effect/decal/cleanable/food/egg_smudge(T)
-		O.pixel_x = rand(-8,8)
-		O.pixel_y = rand(-8,8)
+		O.pixel_x = O.base_pixel_x + rand(-8,8)
+		O.pixel_y = O.base_pixel_y + rand(-8,8)
 		O.color = "#9794be"
 		qdel(src)
 
@@ -117,68 +117,37 @@
 	name = "wooden spoon"
 	desc = "Traditional utensil for shoveling soup into your mouth, or to churn butter with."
 	icon_state = "spoon"
+	smeltresult = /obj/item/fertilizer/ash
 
 /obj/item/kitchen/spoon/iron
 	name = "iron spoon"
 	icon_state = "spoon_iron"
+	melting_material = /datum/material/iron
+	melt_amount = 20
 
 /obj/item/kitchen/spoon/pewter
 	name = "pewter spoon"
 	icon_state = "spoon_iron"
+	melting_material = /datum/material/tin
+	melt_amount = 20
 
 /obj/item/kitchen/fork
 	name = "wooden fork"
 	desc = "Traditional utensil for stabbing your food in order to shove it into your mouth."
 	icon_state = "fork"
+	smeltresult = /obj/item/fertilizer/ash
 
 /obj/item/kitchen/fork/iron
 	name = "iron fork"
 	icon_state = "fork_iron"
+	melting_material = /datum/material/iron
+	melt_amount = 20
 
 /obj/item/kitchen/fork/pewter
 	name = "pewter fork"
 	icon_state = "fork_iron"
-
-/// DEPRECIATED. USE /obj/item/plate instead.
-/obj/item/kitchen/platter
-	name = "platter"
-	desc = "Made from wood."
-	icon_state = "platter"
-	dropshrink = 0.9
-	grid_height = 32
-	grid_width = 64
-	resistance_flags = NONE
-	drop_sound = 'sound/foley/dropsound/wooden_drop.ogg'
-	experimental_inhand = FALSE
-	w_class = WEIGHT_CLASS_NORMAL
-	base_item = /obj/item/kitchen/platter
-
-/// DEPRECIATED. USE /obj/item/plate/clay instead.
-/obj/item/kitchen/platter/clay
-	desc = "Made from fired clay."
-	icon_state = "platter_clay"
-	drop_sound = 'sound/foley/dropsound/brick_drop.ogg'
-	resistance_flags = FIRE_PROOF
-	base_item = /obj/item/kitchen/platter/clay
-
-/obj/item/kitchen/platter/clay/set_material_information()
-	. = ..()
-	name = "[lowertext(initial(main_material.name))] clay platter"
-
-
-/obj/item/kitchen/platter/clay/throw_impact(atom/hit_atom, datum/thrownthing/thrownthing)
-	new /obj/effect/decal/cleanable/shreds/clay(get_turf(src))
-	playsound(get_turf(src), 'sound/foley/break_clay.ogg', 90, TRUE)
-	..()
-	qdel(src)
-
-/// DEPRECIATED. USE /obj/item/plate/copper instead.
-/obj/item/kitchen/platter/copper
-	desc = "Made from thin metal."
-	icon_state = "platter_copper"
-	resistance_flags = FIRE_PROOF
-	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	base_item = /obj/item/kitchen/platter/copper
+	melting_material = /datum/material/tin
+	melt_amount = 20
 
 /obj/item/reagent_containers/glass/bowl
 	name = "bowl"
@@ -191,28 +160,102 @@
 	reagent_flags = TRANSFERABLE | AMOUNT_VISIBLE
 	force = 5
 	throwforce = 5
-	amount_per_transfer_from_this = 6
-	possible_transfer_amounts = list(6)
+	amount_per_transfer_from_this = 5
+	possible_transfer_amounts = list(5)
 	dropshrink = 0.8
 	w_class = WEIGHT_CLASS_SMALL
-	volume = 24
+	volume = 25
 	obj_flags = CAN_BE_HIT
 	sellprice = 1
 	drinksounds = list('sound/items/drink_cup (1).ogg','sound/items/drink_cup (2).ogg','sound/items/drink_cup (3).ogg','sound/items/drink_cup (4).ogg','sound/items/drink_cup (5).ogg')
 	fillsounds = list('sound/items/fillcup.ogg')
 	metalizer_result = /obj/item/reagent_containers/glass/bowl/iron
+	smeltresult = /obj/item/fertilizer/ash
 
 /obj/item/reagent_containers/glass/bowl/iron
 	icon_state = "bowl_iron"
+	fill_icon_state = "bowl"
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	melting_material = /datum/material/iron
+	melt_amount = 20
 
 /obj/item/reagent_containers/glass/bowl/pewter
 	icon_state = "bowl_iron"
+	fill_icon_state = "bowl"
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	melting_material = /datum/material/tin
+	melt_amount = 20
+
+/obj/item/reagent_containers/glass/bowl/jade
+	name = "joapstone bowl"
+	desc = "A bowl carved out of joapstone."
+	icon_state = "bowl_jade"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 55
+
+/obj/item/reagent_containers/glass/bowl/onyxa
+	name = "onyxa bowl"
+	desc = "A bowl carved out of onyxa."
+	icon_state = "bowl_onyxa"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 35
+
+/obj/item/reagent_containers/glass/bowl/rose
+	name = "rosellusk bowl"
+	desc = "A bowl carved out of rosellusk."
+	icon_state = "bowl_rose"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 20
+
+/obj/item/reagent_containers/glass/bowl/amber
+	name = "petriamber bowl"
+	desc = "A bowl carved out of petriamber."
+	icon_state = "bowl_amber"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 55
+
+/obj/item/reagent_containers/glass/bowl/turq
+	name = "ceruleabaster bowl"
+	desc = "A bowl carved out of ceruleabaster."
+	icon_state = "bowl_turq"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 80
+
+/obj/item/reagent_containers/glass/bowl/shell
+	name = "shell bowl"
+	desc = "A bowl carved out of shell."
+	icon_state = "bowl_shell"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 15
+
+
+/obj/item/reagent_containers/glass/bowl/coral
+	name = "aoetal bowl"
+	desc = "A bowl carved out of aoetal."
+	icon_state = "bowl_coral"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 65
+
+/obj/item/reagent_containers/glass/bowl/opal
+	name = "opaloise bowl"
+	desc = "A bowl carved out of opaloise."
+	icon_state = "bowl_opal"
+	fill_icon_state = "bowl"
+	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
+	sellprice = 85
+
 
 /obj/item/reagent_containers/glass/bowl/clay
 	desc = "Made from fired clay."
 	icon_state = "bowl_clay"
+	fill_icon_state = "bowl"
 	drop_sound = 'sound/foley/dropsound/brick_drop.ogg'
 
 /obj/item/reagent_containers/glass/bowl/clay/set_material_information()
@@ -422,7 +465,7 @@
 		if(prob(12))
 			M.emote("gag")
 			M.add_nausea(9)
-			if(isdwarf(M))
+			if(HAS_TRAIT(M, TRAIT_POISON_RESILIENCE))
 				M.adjustToxLoss(2)
 			else
 				M.adjustToxLoss(5)
@@ -488,7 +531,8 @@
 		short_cooktime = (40 - ((user.get_skill_level(/datum/skill/craft/cooking))*5))
 		playsound(get_turf(user), 'sound/foley/kneading_alt.ogg', 90, TRUE, -1)
 		if(do_after(user, short_cooktime, src))
-			new /obj/item/reagent_containers/food/snacks/dough_base(get_turf(src))
+			var/obj/item/reagent_containers/food/snacks/dough_base/base = new /obj/item/reagent_containers/food/snacks/dough_base(get_turf(src))
+			base.set_quality(recipe_quality)
 			user.mind.add_sleep_experience(/datum/skill/craft/cooking, (user.STAINT*0.5))
 			qdel(src)
 	else
@@ -510,34 +554,6 @@
 	new /obj/effect/decal/cleanable/food/flour(get_turf(src))
 	..()
 	qdel(src)
-
-/*------------------\
-| Meals on platters |
-\------------------*/
-
-/*	..................   Food platter   ................... */
-/obj/item/kitchen/platter/attackby(obj/item/I, mob/user, params)
-	if(istype(I, /obj/item/reagent_containers/food/snacks))
-		var/obj/item/reagent_containers/food/snacks/S = I
-		if (S.plateable == TRUE)
-			playsound(get_turf(user), 'sound/foley/dropsound/food_drop.ogg', 40, TRUE, -1)
-			if(do_after(user, 1 SECONDS, src))
-				S.plated()
-				S.trash = base_item
-				S.plateable = FALSE
-				S.rotprocess =  SHELFLIFE_LONG
-				S.w_class = WEIGHT_CLASS_NORMAL
-				S.dropshrink = 0.9
-				S.bonus_reagents = list(/datum/reagent/consumable/nutriment = 2)
-				var/mutable_appearance/platter = mutable_appearance(icon, icon_state)
-				S.underlays += platter
-				qdel(src)
-		else
-			to_chat(user, span_warning("[S] cannot be plated."))
-	else
-		return ..()
-
-
 
 /* * * * * * * * * * * **
  *						*

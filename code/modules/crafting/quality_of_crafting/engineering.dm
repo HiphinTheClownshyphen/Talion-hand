@@ -189,6 +189,48 @@
 	output_amount = 2
 	craft_time = 5 SECONDS
 
+/datum/repeatable_crafting_recipe/engineering/sprinkler
+	name = "sprinkler"
+	requirements = list(
+		/obj/item/ingot/bronze = 1,
+	)
+	tool_usage = list(
+		/obj/item/weapon/hammer = list(span_notice("starts to hammer"), span_notice("start to hammer"), 'sound/items/bsmith2.ogg'),
+	)
+	attacked_atom = /obj/item/ingot/bronze
+	starting_atom = /obj/item/weapon/hammer
+	output = /obj/item/rotation_contraption/sprinkler
+	output_amount = 2
+	craft_time = 5 SECONDS
+
+/datum/repeatable_crafting_recipe/engineering/pressurizer
+	name = "pressurizer"
+	requirements = list(
+		/obj/item/ingot/bronze = 1,
+	)
+	tool_usage = list(
+		/obj/item/weapon/hammer = list(span_notice("starts to hammer"), span_notice("start to hammer"), 'sound/items/bsmith2.ogg'),
+	)
+	attacked_atom = /obj/item/ingot/bronze
+	starting_atom = /obj/item/weapon/hammer
+	output = /obj/item/rotation_contraption/pressurizer
+	output_amount = 2
+	craft_time = 5 SECONDS
+
+/datum/repeatable_crafting_recipe/engineering/drain
+	name = "drain"
+	requirements = list(
+		/obj/item/ingot/bronze = 1,
+	)
+	tool_usage = list(
+		/obj/item/weapon/hammer = list(span_notice("starts to hammer"), span_notice("start to hammer"), 'sound/items/bsmith2.ogg'),
+	)
+	attacked_atom = /obj/item/ingot/bronze
+	starting_atom = /obj/item/weapon/hammer
+	output = /obj/item/rotation_contraption/drain
+	output_amount = 2
+	craft_time = 5 SECONDS
+
 /datum/repeatable_crafting_recipe/engineering/steam_recharger
 	name = "steam recharger"
 	requirements = list(
@@ -200,34 +242,4 @@
 	attacked_atom = /obj/item/ingot/bronze
 	starting_atom = /obj/item/weapon/hammer
 	output = /obj/item/rotation_contraption/steam_recharger
-	craft_time = 5 SECONDS
-
-/datum/repeatable_crafting_recipe/engineering/gunpowder
-	name = "blastpowder"
-	requirements = list(
-		/obj/item/reagent_containers/food/snacks/badrecipe = 1,
-		/obj/item/alch/coaldust = 1,
-		/obj/item/alch/firedust = 1,
-	)
-	tool_usage = list(
-		/obj/item/pestle = list(span_notice("starts to grind together"), span_notice("start to grind together"), 'sound/foley/mortarpestle.ogg'),
-	)
-
-	attacked_atom = /obj/item/reagent_containers/glass/mortar
-	starting_atom = /obj/item/pestle
-	output = /obj/item/reagent_containers/powder/blastpowder
-	output_amount = 3
-	craft_time = 5 SECONDS
-
-/datum/repeatable_crafting_recipe/engineering/breaching_charge
-	name = "breaching charge"
-	requirements = list(
-		/obj/item/reagent_containers/powder/blastpowder = 2,
-		/obj/item/natural/fibers = 1,
-		/obj/item/natural/cloth = 1,
-	)
-
-	attacked_atom = /obj/item/natural/cloth
-	starting_atom = /obj/item/reagent_containers/powder/blastpowder
-	output = /obj/item/breach_charge
 	craft_time = 5 SECONDS

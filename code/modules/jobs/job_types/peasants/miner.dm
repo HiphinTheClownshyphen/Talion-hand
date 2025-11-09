@@ -2,7 +2,6 @@
 	title = "Miner"
 	tutorial = "The depths of the hills, the ends of the lands - deeper and deeper below, you seek salt, ores, rocks - \
 	the heat and encroaching darkness shepherds you, giving forth your living... Soon enough, the earth will swallow you whole."
-	flag = MINER
 	department_flag = PEASANTS
 	display_order = JDO_MINER
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
@@ -13,13 +12,22 @@
 
 	allowed_races = RACES_PLAYER_ALL
 
-	outfit = /datum/outfit/job/miner
+	outfit = /datum/outfit/miner
+	give_bank_account = 6
 	cmode_music = 'sound/music/cmode/towner/CombatTowner2.ogg'
 
-/datum/outfit/job/miner
 	job_bitflag = BITFLAG_CONSTRUCTOR
 
-/datum/outfit/job/miner/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/miner/map_override(mob/living/carbon/human/H)
+	if(SSmapping.config.map_name != "Voyage")
+		return
+	head = /obj/item/clothing/head/armingcap
+	shirt = /obj/item/clothing/shirt/undershirt/sailor
+	pants = /obj/item/clothing/pants/tights/sailor
+	wrists = null
+	shoes = /obj/item/clothing/shoes/boots
+
+/datum/outfit/miner/pre_equip(mob/living/carbon/human/H)
 	..()
 	head = /obj/item/clothing/head/armingcap
 	pants = /obj/item/clothing/pants/trou
@@ -43,7 +51,8 @@
 	H.adjust_skillrank(/datum/skill/misc/athletics, 3, TRUE)
 	H.adjust_skillrank(/datum/skill/craft/traps, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/craft/engineering, 2, TRUE)
-	H.adjust_skillrank(/datum/skill/craft/smelting, 4, TRUE)
+	H.adjust_skillrank(/datum/skill/craft/blacksmithing, 1, TRUE)//I assume they would know a thing or two about smithing
+	H.adjust_skillrank(/datum/skill/craft/smelting, pick(2,3,3,4), TRUE)//if they are such good smelters
 	H.adjust_skillrank(/datum/skill/misc/reading, 1, TRUE)
 	H.change_stat(STATKEY_STR, 1)
 	H.change_stat(STATKEY_INT, -2)

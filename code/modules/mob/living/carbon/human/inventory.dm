@@ -153,39 +153,47 @@
 
 //This is an UNSAFE proc. Use mob_can_equip() before calling this one! Or rather use equip_to_slot_if_possible() or advanced_equip_to_slot_if_possible()
 // Initial is used to indicate whether or not this is the initial equipment (job datums etc) or just a player doing it
-/mob/living/carbon/human/equip_to_slot(obj/item/I, slot, initial)
+/mob/living/carbon/human/equip_to_slot(obj/item/equipping, slot, initial = FALSE, redraw_mob = FALSE)
 	if(!..()) //a check failed or the item has already found its slot
 		return
 
 	var/not_handled = FALSE //Added in case we make this type path deeper one day
 	switch(slot)
 		if(ITEM_SLOT_BELT)
-
-			belt = I
+			if(belt)
+				return
+			belt = equipping
 			update_inv_belt()
 		if(ITEM_SLOT_RING)
-			wear_ring = I
+			if(wear_ring)
+				return
+			wear_ring = equipping
 			update_inv_ring()
 		if(ITEM_SLOT_WRISTS)
-
-			wear_wrists = I
+			if(wear_wrists)
+				return
+			wear_wrists = equipping
 			update_inv_wrists()
 		if(ITEM_SLOT_HEAD)
-
-			head = I
+			if(head)
+				return
+			head = equipping
 			update_inv_head()
 		if(ITEM_SLOT_GLOVES)
-
-			gloves = I
+			if(gloves)
+				return
+			gloves = equipping
 			update_inv_gloves()
 		if(ITEM_SLOT_SHOES)
-
-			shoes = I
+			if(shoes)
+				return
+			shoes = equipping
 			update_inv_shoes()
 		if(ITEM_SLOT_ARMOR)
-
-			wear_armor = I
-			if(I.flags_inv & HIDEJUMPSUIT)
+			if(wear_armor)
+				return
+			wear_armor = equipping
+			if(equipping.flags_inv & HIDEJUMPSUIT)
 				update_inv_shirt()
 			if(wear_armor.breakouttime) //when equipping a straightjacket
 				ADD_TRAIT(src, TRAIT_RESTRAINED, SUIT_TRAIT)
@@ -193,56 +201,69 @@
 				update_mob_action_buttons() //certain action buttons will no longer be usable.
 			update_inv_armor()
 		if(ITEM_SLOT_PANTS)
-			wear_pants = I
+			if(wear_pants)
+				return
+			wear_pants = equipping
 			update_inv_pants()
 		if(ITEM_SLOT_SHIRT)
-			wear_shirt = I
+			if(wear_shirt)
+				return
+			wear_shirt = equipping
 			update_inv_shirt()
 		if(ITEM_SLOT_CLOAK)
-			cloak = I
+			if(cloak)
+				return
+			cloak = equipping
 			update_inv_cloak()
 		if(ITEM_SLOT_BELT_L)
-			beltl = I
+			if(beltl)
+				return
+			beltl = equipping
 			update_inv_belt()
 		if(ITEM_SLOT_BELT_R)
-			beltr = I
+			if(beltr)
+				return
+			beltr = equipping
 			update_inv_belt()
 		if(ITEM_SLOT_BACK_R)
-			backr = I
+			if(backr)
+				return
+			backr = equipping
 			update_inv_back()
 		if(ITEM_SLOT_BACK_L)
-			backl = I
+			if(backl)
+				return
+			backl = equipping
 			update_inv_back()
 		if(ITEM_SLOT_MOUTH)
-			mouth = I
+			if(mouth)
+				return
+			mouth = equipping
 			update_inv_mouth()
 		if(ITEM_SLOT_BACKPACK)
 			not_handled = TRUE
 			if(beltr)
-				if(SEND_SIGNAL(beltr, COMSIG_TRY_STORAGE_INSERT, I, src, TRUE))
+				if(SEND_SIGNAL(beltr, COMSIG_TRY_STORAGE_INSERT, equipping, src, TRUE))
 					not_handled = FALSE
 			if(beltl && not_handled)
-				if(SEND_SIGNAL(beltl, COMSIG_TRY_STORAGE_INSERT, I, src, TRUE))
+				if(SEND_SIGNAL(beltl, COMSIG_TRY_STORAGE_INSERT, equipping, src, TRUE))
 					not_handled = FALSE
 			if(belt && not_handled)
-				if(SEND_SIGNAL(belt, COMSIG_TRY_STORAGE_INSERT, I, src, TRUE))
+				if(SEND_SIGNAL(belt, COMSIG_TRY_STORAGE_INSERT, equipping, src, TRUE))
 					not_handled = FALSE
 			if(backr && not_handled)
-				if(SEND_SIGNAL(backr, COMSIG_TRY_STORAGE_CAN_INSERT, I, src, TRUE))
+				if(SEND_SIGNAL(backr, COMSIG_TRY_STORAGE_CAN_INSERT, equipping, src, TRUE))
 					not_handled = FALSE
 			if(backl && not_handled)
-				if(SEND_SIGNAL(backl, COMSIG_TRY_STORAGE_CAN_INSERT, I, src, TRUE))
+				if(SEND_SIGNAL(backl, COMSIG_TRY_STORAGE_CAN_INSERT, equipping, src, TRUE))
 					not_handled = FALSE
 		else
 			not_handled = TRUE
-//		else
-//			to_chat(src, "<span class='danger'>I am trying to equip this item to an unsupported inventory slot. Report this to a coder!</span>")
 
 	//Item is handled and in slot, valid to call callback, for this proc should always be true
 	if(!not_handled)
-		I.equipped(src, slot, initial)
+		equipping.equipped(src, slot, initial)
 		check_armor_class()
-
 
 	if(hud_used)
 		hud_used.throw_icon?.update_appearance()
@@ -263,6 +284,7 @@
 		return
 	if(index && !QDELETED(src) && dna.species.mutanthands) //hand freed, fill with claws, skip if we're getting deleted.
 		put_in_hand(new dna.species.mutanthands(), index)
+	I.screen_loc = null
 	if(I == wear_armor)
 		if(wear_armor.breakouttime) //when unequipping a straightjacket
 			REMOVE_TRAIT(src, TRAIT_RESTRAINED, SUIT_TRAIT)
@@ -328,11 +350,6 @@
 			update_inv_mouth()
 	check_armor_class()
 	update_reflection()
-//	if(!QDELETED(src))
-//		if(I.eweight)
-//			encumbrance -= I.eweight
-//			if(encumbrance < 0)
-//				encumbrance = 0
 
 /mob/living/carbon/human/wear_mask_update(obj/item/I, toggle_off = 1)
 	if((I.flags_inv & (HIDEHAIR|HIDEFACIALHAIR)) || (initial(I.flags_inv) & (HIDEHAIR|HIDEFACIALHAIR)))
@@ -356,7 +373,7 @@
 	check_armor_class()
 	..()
 
-/mob/living/carbon/human/proc/equipOutfit(outfit, visualsOnly = FALSE)
+/mob/living/carbon/human/proc/equipOutfit(outfit, visuals_only = FALSE)
 	var/datum/outfit/O = null
 
 	if(ispath(outfit))
@@ -368,7 +385,7 @@
 	if(!O)
 		return 0
 
-	return O.equip(src, visualsOnly)
+	return O.equip(src, visuals_only)
 
 
 //delete all equipment without dropping anything
@@ -377,6 +394,44 @@
 		qdel(slot)
 	for(var/obj/item/I in held_items)
 		qdel(I)
+
+/mob/living/carbon/human/proc/smart_equipbag(slot_id) // take most recent item out of bag or place held item in bag
+	if(incapacitated())
+		return
+	var/obj/item/thing = get_active_held_item()
+	var/obj/item/equipped_back = get_item_by_slot(slot_id)
+	if(!equipped_back) // We also let you equip a backpack like this
+		if(!thing)
+			to_chat(src, span_warning("I have no backpack to take something out of!"))
+			return
+		if(equip_to_slot_if_possible(thing, slot_id))
+			update_inv_hands()
+		return
+	// Since you have to take off /obj/item/storage/backpack/backpack to access the inventory we handle it differently:
+	if(istype(equipped_back, /obj/item/storage/backpack/backpack))
+		if(thing) // Check for held item, if there is one, don't let them insert it in the backpack
+			to_chat(src, span_warning("I need to take my backpack off first"))
+			return
+		equipped_back.attack_hand(src) // If there is no held item, take off the backpack by invoking attack_hand
+		return
+	if(!SEND_SIGNAL(equipped_back, COMSIG_CONTAINS_STORAGE)) // not a storage item
+		if(!thing)
+			equipped_back.attack_hand(src)
+		else
+			to_chat(src, span_warning("I can't fit anything in!"))
+		return
+	if(thing) // put thing in backpack
+		if(!SEND_SIGNAL(equipped_back, COMSIG_TRY_STORAGE_INSERT, thing, src))
+			to_chat(src, span_warning("I can't fit anything in!"))
+		return
+	if(!equipped_back.contents.len) // nothing to take out
+		to_chat(src, span_warning("There's nothing in your backpack to take out!"))
+		return
+	var/obj/item/stored = equipped_back.contents[equipped_back.contents.len]
+	if(!stored || stored.on_found(src))
+		return
+	stored.attack_hand(src) // take out thing from backpack
+	return
 
 /mob/living/carbon/human/proc/smart_equipbelt() // put held thing in belt or take most recent item out of belt
 	if(incapacitated(IGNORE_GRAB))

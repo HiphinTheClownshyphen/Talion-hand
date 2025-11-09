@@ -774,15 +774,10 @@
 		if(BODY_ZONE_PRECISE_L_FOOT)
 			aimheight = 1
 
-///Checks if passed through item is blind
-/proc/is_blind(A)
-	if(ismob(A))
-		var/mob/B = A
-		if(HAS_TRAIT(B, TRAIT_BLIND))
-			return TRUE
-		return B.eye_blind
-	return FALSE
-
+/mob/proc/is_blind()
+	if(HAS_TRAIT(src, TRAIT_BLIND))
+		return TRUE
+	return eye_blind
 
 // moved out of admins.dm because things other than admin procs were calling this.
 /**
@@ -921,13 +916,6 @@
 		message_admins("No ghosts were willing to take control of [ADMIN_LOOKUPFLW(M)])")
 		return FALSE
 
-///Is the mob a flying mob
-/mob/proc/is_flying(mob/M = src)
-	if(M.movement_type & FLYING)
-		return 1
-	else
-		return 0
-
 ///Clicks a random nearby mob with the source from this mob
 /mob/proc/click_random_mob()
 	var/list/nearby_mobs = list()
@@ -1011,15 +999,10 @@
 
 /mob/living/carbon/human/proc/get_role_title()
 	var/used_title
-	if(migrant_type)
-		var/datum/migrant_role/migrant = MIGRANT_ROLE(migrant_type)
-		used_title = migrant.name
-	else if(advjob)
-		used_title = advjob
-	else if(job)
+	if(job)
 		var/datum/job/J = SSjob.GetJob(job)
 		if(!J)
-			return "Unknown"
+			return job
 		used_title = J.get_informed_title(src)
 	if(is_apprentice())
 		used_title = return_our_apprentice_name()

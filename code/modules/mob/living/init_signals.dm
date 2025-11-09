@@ -27,6 +27,9 @@
 	RegisterSignal(src, SIGNAL_ADDTRAIT(TRAIT_RESTRAINED), PROC_REF(on_restrained_trait_gain))
 	RegisterSignal(src, SIGNAL_REMOVETRAIT(TRAIT_RESTRAINED), PROC_REF(on_restrained_trait_loss))
 
+	RegisterSignal(src, COMSIG_MOVETYPE_FLAG_ENABLED, PROC_REF(on_movement_type_flag_enabled))
+	RegisterSignal(src, COMSIG_MOVETYPE_FLAG_DISABLED, PROC_REF(on_movement_type_flag_disabled))
+
 	RegisterSignal(src, SIGNAL_ADDTRAIT(TRAIT_DEAF), PROC_REF(on_hearing_loss))
 	RegisterSignal(src, SIGNAL_REMOVETRAIT(TRAIT_DEAF), PROC_REF(on_hearing_regain))
 
@@ -147,12 +150,13 @@
 ///Called when TRAIT_LEPROSY is added to the mob.
 /mob/living/proc/on_leprosy_trait_gain(datum/source)
 	SIGNAL_HANDLER
-	set_stat_modifier(TRAIT_LEPROSY, STATKEY_STR, -5)
-	set_stat_modifier(TRAIT_LEPROSY, STATKEY_SPD, -5)
-	set_stat_modifier(TRAIT_LEPROSY, STATKEY_END, -2)
-	set_stat_modifier(TRAIT_LEPROSY, STATKEY_CON, -2)
-	set_stat_modifier(TRAIT_LEPROSY, STATKEY_INT, -5)
-	set_stat_modifier(TRAIT_LEPROSY, STATKEY_LCK, -5)
+	set_stat_modifier(TRAIT_LEPROSY, STATKEY_STR, -3)
+	set_stat_modifier(TRAIT_LEPROSY, STATKEY_END, -3)
+	set_stat_modifier(TRAIT_LEPROSY, STATKEY_CON, -3)
+	set_stat_modifier(TRAIT_LEPROSY, STATKEY_PER, -3)
+	set_stat_modifier(TRAIT_LEPROSY, STATKEY_SPD, -3)
+	set_stat_modifier(TRAIT_LEPROSY, STATKEY_INT, -3)
+	set_stat_modifier(TRAIT_LEPROSY, STATKEY_LCK, -3)
 
 ///Called when TRAIT_LEPROSY is removed from the mob.
 /mob/living/proc/on_leprosy_trait_loss(datum/source)
@@ -170,6 +174,16 @@
 	var/datum/component/strongpull = GetComponent(/datum/component/strong_pull)
 	if(strongpull)
 		strongpull.RemoveComponent()
+
+///From [element/movetype_handler/on_movement_type_trait_gain()]
+/mob/living/proc/on_movement_type_flag_enabled(datum/source, trait)
+	SIGNAL_HANDLER
+	update_movespeed(FALSE)
+
+///From [element/movetype_handler/on_movement_type_trait_loss()]
+/mob/living/proc/on_movement_type_flag_disabled(datum/source, trait)
+	SIGNAL_HANDLER
+	update_movespeed(FALSE)
 
 ///Called when [TRAIT_DEAF] is added to the mob
 /mob/living/proc/on_hearing_loss()

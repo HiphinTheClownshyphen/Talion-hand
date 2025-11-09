@@ -17,13 +17,10 @@
 	job_reopens_slots_on_death = FALSE
 	shows_in_list = FALSE
 	can_have_apprentices = FALSE
-
-/datum/job/adventurer/courtagent
+	scales = FALSE
 
 //Hooking in here does not mess with their equipment procs
 /datum/job/adventurer/courtagent/after_spawn(mob/living/spawned, client/player_client)
 	if(ishuman(spawned))
 		GLOB.roundstart_court_agents += spawned.real_name
 	..()
-	if(advclass_cat_rolls)
-		hugboxify_for_class_selection(spawned)

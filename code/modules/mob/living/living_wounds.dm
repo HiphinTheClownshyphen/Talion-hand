@@ -84,6 +84,7 @@
 	if(!wound.apply_to_mob(src, silent, crit_message))
 		qdel(wound)
 		return
+	SEND_SIGNAL(src, COMSIG_LIVING_WOUND_GAINED, wound)
 	return wound
 
 /// Simple version for removing a wound - DO NOT CALL THIS ON CARBON MOBS!
@@ -112,7 +113,7 @@
 
 	var/added_wound
 	switch(bclass) //do stuff but only when we are a blade that adds wounds
-		if(BCLASS_SMASH, BCLASS_BLUNT)
+		if(BCLASS_SMASH, BCLASS_BLUNT, BCLASS_PUNCH)
 			switch(dam)
 				if(20 to INFINITY)
 					added_wound = /datum/wound/bruise/large
@@ -219,7 +220,7 @@
 
 /// Simple version for adding an embedded object - DO NOT CALL THIS ON CARBON MOBS!
 /mob/living/proc/simple_add_embedded_object(obj/item/embedder, silent = FALSE, crit_message = FALSE)
-	if(!embedder || !can_embed(embedder) || (status_flags & GODMODE) || !HAS_TRAIT(src, TRAIT_SIMPLE_WOUNDS) || HAS_TRAIT(src, TRAIT_PIERCEIMMUNE))
+	if(!embedder || !embedder.can_embed() || (status_flags & GODMODE) || !HAS_TRAIT(src, TRAIT_SIMPLE_WOUNDS) || HAS_TRAIT(src, TRAIT_PIERCEIMMUNE))
 		return FALSE
 	LAZYADD(simple_embedded_objects, embedder)
 	embedder.is_embedded = TRUE
@@ -249,7 +250,4 @@
 			embedder.forceMove(drop_location)
 		else
 			qdel(embedder)
-	if(!has_embedded_objects())
-		clear_alert("embeddedobject")
-		SEND_SIGNAL(src, COMSIG_CLEAR_MOOD_EVENT, "embedded")
 	return TRUE

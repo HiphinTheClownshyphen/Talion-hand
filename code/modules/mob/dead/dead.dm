@@ -90,7 +90,7 @@ INITIALIZE_IMMEDIATE(/mob/dead)
 				continue
 			if(player.client.prefs.job_preferences[job.title] != JP_HIGH)
 				//i'm sorry for doing this
-				if(!is_adventurer_job(job) || player.client.prefs.job_preferences["Court Agent"] != JP_HIGH)
+				if(!istype(job, /datum/job/adventurer) || player.client.prefs.job_preferences["Court Agent"] != JP_HIGH)
 					continue
 			if(player.ready != PLAYER_READY_TO_PLAY)
 				continue
@@ -135,7 +135,7 @@ INITIALIZE_IMMEDIATE(/mob/dead)
 	set name = "Server Hop!"
 	set desc= "Jump to the other server"
 	set hidden = 1
-	if(notransform)
+	if(HAS_TRAIT(src, TRAIT_NO_TRANSFORM))
 		return
 	var/list/csa = CONFIG_GET(keyed_list/cross_server)
 	var/pick
@@ -158,11 +158,11 @@ INITIALIZE_IMMEDIATE(/mob/dead)
 
 	var/client/C = client
 	to_chat(C, "<span class='notice'>Sending you to [pick].</span>")
-	new /atom/movable/screen/splash(C)
+	new /atom/movable/screen/splash(null, null, C, FALSE, FALSE)
 
-	notransform = TRUE
+	ADD_TRAIT(src, TRAIT_NO_TRANSFORM, "server_hop")
 	sleep(29)	//let the animation play
-	notransform = FALSE
+	REMOVE_TRAIT(src, TRAIT_NO_TRANSFORM, "server_hop")
 
 	if(!C)
 		return

@@ -35,40 +35,48 @@
 
 /obj/structure/vampire/bloodpool/attack_hand(mob/living/user)
 	var/datum/antagonist/vampire/lord/lord = user.mind.has_antag_datum(/datum/antagonist/vampire/lord)
-	if(!lord)
+	if(!(user.clan_position?.can_assign_positions))
 		return
 
-	var/list/available_options = list()
+
+	var/list/available_options_lord = list()
+	var/list/available_options_contributor = list()
 
 	// Add available project types that aren't already active
 	for(var/project_type in available_project_types)
 		var/datum/vampire_project/temp_project = new project_type()
 		if(temp_project.can_start(user, src) && !(project_type in active_projects))
-			available_options[temp_project.display_name] = project_type
+			available_options_lord[temp_project.display_name] = project_type
 		qdel(temp_project)
 
 	// Add option to contribute to existing projects
 	if(active_projects.len)
-		available_options["Contribute to Project"] = "contribute"
-
+		available_options_lord["Contribute to Project"] = "contribute"
+		available_options_contributor["Contribute to Project"] = "contribute"
 	// Add option to view/cancel projects
 	if(active_projects.len)
-		available_options["Manage Projects"] = "manage"
+		available_options_lord["Manage Projects"] = "manage"
 
-	var/choice = browser_input_list(user, "What to do?", "VANDERLIN", available_options)
+	var/choice = browser_input_list(user, "What to do?", "VANDERLIN", available_options_lord)
 	if(!choice)
 		return
 
-	var/action = available_options[choice]
+	var/action_lord = available_options_lord[choice]
+	var/action_contributor = available_options_contributor[choice]
 
-	switch(action)
-		if("contribute")
-			handle_project_contribution(user)
-		if("manage")
-			handle_project_management(user)
-		else
-			// It's a project type
-			start_new_project(action, user)
+	if(lord)
+		switch(action_lord)
+			if("contribute")
+				handle_project_contribution(user)
+			if("manage")
+				handle_project_management(user)
+			else
+				// It's a project type
+				start_new_project(action_lord, user)
+	else
+		switch(action_contributor)
+			if("contribute")
+				handle_project_contribution(user)
 
 /obj/structure/vampire/bloodpool/proc/start_new_project(project_type, mob/living/user)
 	var/datum/vampire_project/project = new project_type()
@@ -193,7 +201,12 @@
 	return
 
 /datum/vampire_project/proc/handle_contribution(mob/living/user)
+	var/datum/antagonist/vampire/lord/lord = user.mind?.has_antag_datum(/datum/antagonist/vampire/lord)
 	var/max_contribution = min(user.bloodpool, total_cost - paid_amount)
+	if(!lord)
+		if(display_name != "Wicked Plate" || display_name != "World Anchor")
+			max_contribution = min(user.bloodpool, (total_cost - paid_amount) - 100)
+
 	var/contribution = input(user, "How much vitae to contribute? (Max: [max_contribution])", "CONTRIBUTION") as num|null
 
 	if(!contribution || contribution <= 0)
@@ -212,7 +225,7 @@
 		contributors += user
 
 	to_chat(user, span_greentext("Contributed [contribution] vitae to [display_name]. ([paid_amount]/[total_cost])"))
-	make_tracker_effects(user.loc, src, 1, "soul", 3, /obj/effect/tracker/drain, 1)
+	make_tracker_effects(user.loc, bloodpool, 1, "soul", 3, /obj/effect/tracker/drain, 1)
 
 	if(paid_amount >= total_cost)
 		bloodpool.complete_project(type)
@@ -238,8 +251,8 @@
 
 // Specific project types
 /datum/vampire_project/power_growth
-	display_name = "Ascension Ritual"
-	description = "Channel collective vitae to transcend mortal limitations."
+	display_name = "Rite of Stirring"
+	description = "The ancient blood stirs once more. Forgotten whispers echo through the marrow of the land."
 	total_cost = VAMPCOST_ONE
 	completion_sound = 'sound/misc/batsound.ogg'
 
@@ -252,10 +265,80 @@
 	for(var/mob/living/user in range(1, bloodpool))
 		var/datum/antagonist/vampire/lord/lord = user.mind?.has_antag_datum(/datum/antagonist/vampire/lord)
 		if(lord && !lord.ascended)
+			var/mob/living/carbon/human/lord_body = user
 			to_chat(user, span_greentext("My power grows through collective sacrifice."))
-			// Add actual level up logic here
+			for(var/S in MOBSTATS)
+				lord_body.change_stat(S, 2)
+			lord_body.maxbloodpool += 1000
+			bloodpool.available_project_types -= /datum/vampire_project/power_growth
+			bloodpool.available_project_types += /datum/vampire_project/power_growth_2
 			break
 
+/datum/vampire_project/power_growth_2
+	display_name = "Rite of Reclamation"
+	description = "Strength long sealed returns. The soil, the stone, and the shadows bend again to their rightful master."
+	total_cost = VAMPCOST_TWO
+	completion_sound = 'sound/misc/batsound.ogg'
+
+/datum/vampire_project/power_growth_2/on_complete()
+	// Find nearby vampire lords who can level up
+	for(var/mob/living/user in range(1, bloodpool))
+		var/datum/antagonist/vampire/lord/lord = user.mind?.has_antag_datum(/datum/antagonist/vampire/lord)
+		if(lord && !lord.ascended)
+			var/mob/living/carbon/human/lord_body = user
+			to_chat(user, span_greentext("My power grows through collective sacrifice."))
+			for(var/S in MOBSTATS)
+				lord_body.change_stat(S, 2)
+			lord_body.maxbloodpool += 1000
+			bloodpool.available_project_types -= /datum/vampire_project/power_growth_2
+			bloodpool.available_project_types += /datum/vampire_project/power_growth_3
+			break
+
+/datum/vampire_project/power_growth_3
+	display_name = "Rite of Dominion"
+	description = "The veil of time shreds. The Elder's will pours forth, binding trespassers within the grasp of the Land."
+	total_cost = VAMPCOST_THREE
+	completion_sound = 'sound/misc/batsound.ogg'
+
+/datum/vampire_project/power_growth_3/on_complete()
+	// Find nearby vampire lords who can level up
+	for(var/mob/living/user in range(1, bloodpool))
+		var/datum/antagonist/vampire/lord/lord = user.mind?.has_antag_datum(/datum/antagonist/vampire/lord)
+		if(lord && !lord.ascended)
+			var/mob/living/carbon/human/lord_body = user
+			to_chat(user, span_greentext("My power grows through collective sacrifice."))
+			for(var/S in MOBSTATS)
+				lord_body.change_stat(S, 2)
+			lord_body.maxbloodpool += 1000
+			bloodpool.available_project_types -= /datum/vampire_project/power_growth_3
+			bloodpool.available_project_types += /datum/vampire_project/power_growth_4
+			break
+
+/datum/vampire_project/power_growth_4
+	display_name = "Rite of Sovereignty"
+	description = "The Lord is whole. Ancient power saturates every stone and vein, for the Land and its master are one."
+	total_cost = VAMPCOST_FOUR
+	completion_sound = 'sound/misc/batsound.ogg'
+
+/datum/vampire_project/power_growth_4/on_complete()
+	// Find nearby vampire lords who can level up
+	for(var/mob/living/user in range(1, bloodpool))
+		var/datum/antagonist/vampire/lord/lord = user.mind?.has_antag_datum(/datum/antagonist/vampire/lord)
+		if(lord && !lord.ascended)
+			var/mob/living/carbon/human/lord_body = user
+			for(var/S in MOBSTATS)
+				lord_body.change_stat(S, 2)
+			lord_body.maxbloodpool += 1000
+			to_chat(user, span_danger("I AM ANCIENT, I AM THE LAND. EVEN THE SUN BOWS TO ME."))
+			lord.ascended = TRUE
+			var/list/all_subordinates = user.clan_position.get_all_subordinates()
+			for(var/mob/living/carbon/human/subordinate_body  in all_subordinates)
+				subordinate_body.maxbloodpool += 1000
+				for(var/S in MOBSTATS)
+					subordinate_body.change_stat(S, 2)
+
+			bloodpool.available_project_types -= /datum/vampire_project/power_growth_4
+			break
 /datum/vampire_project/amulet_crafting
 	display_name = "World Anchor"
 	description = "Forge a mystical amulet to bind souls across realms."
@@ -265,7 +348,7 @@
 
 /datum/vampire_project/amulet_crafting/confirm_start(mob/living/user)
 	if(..())
-		amulet_name = input(user, "Select a name for the amulet.", "VANDERLIN") as text|null
+		amulet_name = browser_input_text(user, "Select a name for the amulet", max_length = MAX_NAME_LEN)
 		return TRUE
 	return FALSE
 
@@ -285,9 +368,9 @@
 	new /obj/item/clothing/pants/platelegs/vampire (bloodpool.loc)
 	new /obj/item/clothing/gloves/chain/vampire (bloodpool.loc)
 	new /obj/item/clothing/armor/chainmail/hauberk/vampire (bloodpool.loc)
-	new /obj/item/clothing/armor/cuirass/vampire (bloodpool.loc)
+	new /obj/item/clothing/armor/plate/vampire (bloodpool.loc)
 	new /obj/item/clothing/shoes/boots/armor/vampire (bloodpool.loc)
-	new /obj/item/clothing/head/helmet/heavy/savoyard (bloodpool.loc)
+	new /obj/item/clothing/head/helmet/heavy/vampire (bloodpool.loc)
 	creation_point.visible_message(span_notice("A complete set of armor materializes from the crimson crucible."))
 
 #undef VAMPCOST_ONE

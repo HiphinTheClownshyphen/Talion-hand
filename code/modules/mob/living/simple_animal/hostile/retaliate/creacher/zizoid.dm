@@ -34,12 +34,13 @@
 	del_on_deaggro = 99 SECONDS
 	retreat_health = 0
 	food_max = 250
-	food = 0
+
 	dodgetime = 20
 	aggressive = TRUE
 //	stat_attack = UNCONSCIOUS
 	remains_type = /obj/effect/decal/remains/troll // Placeholder until Troll remains are sprited.
 	body_eater = TRUE
+	dendor_taming_chance = DENDOR_TAME_PROB_NONE
 
 	ai_controller = /datum/ai_controller/zizoid
 
@@ -159,3 +160,9 @@
 		if(BODY_ZONE_L_ARM)
 			return "foreleg"
 	return ..()
+
+/// Very temporary sprite
+/mob/living/simple_animal/hostile/retaliate/blood/weird
+	icon = 'icons/roguetown/underworld/carriageman.dmi'
+	icon_state = "weird"
+	SET_BASE_PIXEL(-16, 0)

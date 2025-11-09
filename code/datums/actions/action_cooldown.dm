@@ -55,10 +55,10 @@
 /datum/action/cooldown/create_button()
 	var/atom/movable/screen/movable/action_button/button = ..()
 	button.maptext = ""
-	button.maptext_x = 6
-	button.maptext_y = 0
-	button.maptext_width = 24
-	button.maptext_height = 12
+	button.maptext_x = 4
+	button.maptext_y = 2
+	button.maptext_width = 32
+	button.maptext_height = 16
 	return button
 
 /datum/action/cooldown/update_button_status(atom/movable/screen/movable/action_button/button, force = FALSE)
@@ -67,7 +67,7 @@
 	if(!text_cooldown || !owner || time_left == 0 || time_left >= COOLDOWN_NO_DISPLAY_TIME)
 		button.maptext = ""
 	else
-		button.maptext = "<b>[round(time_left/10, 0.1)]</b>"
+		button.maptext = MAPTEXT_PIXELIFY("[round(time_left/10, 0.1)]")
 
 	if(!IsAvailable() || !is_action_active(button))
 		return
@@ -136,8 +136,8 @@
 		if(real_time > 0)
 			RegisterSignal(owner, COMSIG_MOB_SPELL_ACTIVATED, PROC_REF(cancel_retrigger))
 			retrigger_timer = addtimer(CALLBACK(src, PROC_REF(retrigger)), real_time, TIMER_STOPPABLE)
-			return
-		retrigger()
+		else
+			retrigger()
 	build_all_button_icons(UPDATE_BUTTON_STATUS)
 	START_PROCESSING(SSfastprocess, src)
 
@@ -212,7 +212,7 @@
 /datum/action/cooldown/proc/InterceptClickOn(mob/living/clicker, params, atom/target)
 	if(!LAZYACCESS(params2list(params), MIDDLE_CLICK))
 		return FALSE
-	if(!IsAvailable())
+	if(!IsAvailable(TRUE))
 		return FALSE
 	if(!target)
 		return FALSE

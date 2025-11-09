@@ -39,10 +39,12 @@
 	set category = "IC"
 	set hidden = 1
 
+	#ifdef USES_PQ
 	if(client)
 		if(get_playerquality(client.ckey) <= -20)
 			to_chat(usr, "<span class='warning'>I can't use custom emotes. (LOW PQ)</span>")
 			return
+		#endif
 	var/message = input(usr, "", "me") as text|null
 	// If they don't type anything just drop the message.
 	set_typing_indicator(FALSE)
@@ -52,7 +54,32 @@
 		to_chat(usr, "<span class='danger'>Speech is currently admin-disabled.</span>")
 		return
 	message = trim(copytext_char(sanitize(message), 1, MAX_MESSAGE_LEN))
+	message = parsemarkdown_basic(message, limited = TRUE, barebones = TRUE)
 	usr.emote("me",1,message,TRUE, custom_me = TRUE)
+
+///The big me emote verb
+/mob/verb/me_big_verb()
+	set name = "Me(Big)"
+	set category = "IC"
+	set hidden = TRUE
+
+	#ifdef USES_PQ
+	if(client)
+		if(get_playerquality(client.ckey) <= -20)
+			to_chat(usr, "<span class='warning'>I can't use custom emotes. (LOW PQ)</span>")
+			return
+		#endif
+	var/message = input(usr, "", "me") as message|null
+	// If they don't type anything just drop the message.
+	set_typing_indicator(FALSE)
+	if(!length(message))
+		return
+	if(GLOB.say_disabled)	//This is here to try to identify lag problems
+		to_chat(usr, "<span class='danger'>Speech is currently admin-disabled.</span>")
+		return
+	message = trim(copytext_char(html_encode(message), 1, MAX_MESSAGE_BIGME))
+	message = parsemarkdown_basic(message, limited = TRUE, barebones = TRUE)
+	usr.emote("me", 1, message, TRUE, custom_me = TRUE)
 
 ///Speak as a dead person (ghost etc)
 /mob/proc/say_dead(message)
@@ -111,7 +138,9 @@
 
 /mob/proc/check_whisper(message, forced)
 	if(copytext(message, 1, 2) == "+")
-		whisper(copytext(message, 2),sanitize = FALSE)//already sani'd
+		var/text = copytext(message, 2)
+		var/boldcheck = findtext_char(text, "+")	//Check for a *second* + in the text, implying the message is meant to have something formatted as bold (+text+)
+		whisper(copytext_char(message, boldcheck ? 1 : 2),sanitize = FALSE)//already sani'd
 		return 1
 /* commenting out subtler
 /mob/proc/check_subtler(message, forced)
@@ -130,18 +159,18 @@
 ///The amount of items we are looking for in the message
 #define MESSAGE_MODS_LENGTH 6
 /**
-  * Extracts and cleans message of any extenstions at the begining of the message
-  * Inserts the info into the passed list, returns the cleaned message
-  *
-  * Result can be
-  * * SAY_MODE (Things like aliens, channels that aren't channels)
-  * * MODE_WHISPER (Quiet speech)
-  * * MODE_SING (Singing)
-  * * MODE_HEADSET (Common radio channel)
-  * * RADIO_EXTENSION the extension we're using (lots of values here)
-  * * RADIO_KEY the radio key we're using, to make some things easier later (lots of values here)
-  * * LANGUAGE_EXTENSION the language we're trying to use (lots of values here)
-  */
+ * Extracts and cleans message of any extenstions at the begining of the message
+ * Inserts the info into the passed list, returns the cleaned message
+ *
+ * Result can be
+ * * SAY_MODE (Things like aliens, channels that aren't channels)
+ * * MODE_WHISPER (Quiet speech)
+ * * MODE_SING (Singing)
+ * * MODE_HEADSET (Common radio channel)
+ * * RADIO_EXTENSION the extension we're using (lots of values here)
+ * * RADIO_KEY the radio key we're using, to make some things easier later (lots of values here)
+ * * LANGUAGE_EXTENSION the language we're trying to use (lots of values here)
+ */
 /mob/proc/get_message_mods(message, list/mods)
 	for(var/I in 1 to MESSAGE_MODS_LENGTH)
 		var/key = message[1]

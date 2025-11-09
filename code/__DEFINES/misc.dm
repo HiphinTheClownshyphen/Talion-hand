@@ -19,6 +19,7 @@
 #define FEMALE_BOOB 	2
 
 //Human Overlays Indexes/////////
+#define SMELL_LAYER				52		//Hygiene
 #define REFLECTION_LAYER		51
 #define POTENCE_LAYER			50
 #define MUTATIONS_LAYER			49		//mutations. Tk headglows, cold resistance glow, etc
@@ -70,7 +71,7 @@
 #define BITE_LAYER				3
 #define FIRE_LAYER				2		//If you're on fire
 #define TURF_LAYER				1		//If you're on fire
-#define TOTAL_LAYERS			51		//KEEP THIS UP-TO-DATE OR SHIT WILL BREAK ;_;
+#define TOTAL_LAYERS			52		//KEEP THIS UP-TO-DATE OR SHIT WILL BREAK ;_;
 
 #define BACK_CLOAK_SOUTH_LAYER		(BODY_BEHIND_LAYER+1)
 
@@ -181,14 +182,6 @@ GLOBAL_LIST_EMPTY(bloody_footprints_cache)
 #define POLLTYPE_RATING		"NUMVAL"
 #define POLLTYPE_MULTI		"MULTICHOICE"
 #define POLLTYPE_IRV		"IRV"
-
-
-
-//subtypesof(), typesof() without the parent path
-#define subtypesof(typepath) ( typesof(typepath) - typepath )
-
-/// Takes a datum as input, returns its ref string
-#define text_ref(datum) ref(datum)
 
 //Gets the turf this atom inhabits
 #define get_turf(A) (get_step(A, 0))
@@ -351,6 +344,12 @@ GLOBAL_LIST_INIT(pda_styles, sortList(list(MONO, VT, ORBITRON, SHARE)))
 //for obj explosion block calculation
 #define EXPLOSION_BLOCK_PROC -1
 
+#define EXPLOSION_FALLOFF_SHAPE_LINEAR   0
+#define EXPLOSION_FALLOFF_SHAPE_EXPONENTIAL  1
+#define EXPLOSION_FALLOFF_SHAPE_EXPONENTIAL_HALF 2
+#define EXPLOSION_MAX_POWER 5000
+
+
 //for determining which type of heartbeat sound is playing
 #define BEAT_FAST 1
 #define BEAT_SLOW 2
@@ -438,9 +437,6 @@ GLOBAL_LIST_INIT(pda_styles, sortList(list(MONO, VT, ORBITRON, SHARE)))
 #define AMBIENT_OCCLUSION filter(type="drop_shadow", x=0, y=-0, size=1, offset = 0, color="#04080FAA")
 #define GAUSSIAN_BLUR(filter_size) filter(type="blur", size=filter_size)
 
-#define STANDARD_GRAVITY 1 //Anything above this is high gravity, anything below no grav
-#define GRAVITY_DAMAGE_TRESHOLD 3 //Starting with this value gravity will start to damage mobs
-
 #define CAMERA_NO_GHOSTS 0
 #define CAMERA_SEE_GHOSTS_BASIC 1
 #define CAMERA_SEE_GHOSTS_ORBIT 2
@@ -506,4 +502,4 @@ GLOBAL_LIST_INIT(pda_styles, sortList(list(MONO, VT, ORBITRON, SHARE)))
 #define IGNORE_USER_DIR_CHANGE (1<<5)
 #define IGNORE_USER_DOING (1<<6)
 
-GLOBAL_LIST_EMPTY(frenzy_list)
+#define MESSAGE_ADMINS_ROLES list(/datum/job/lord, /datum/job/priest)

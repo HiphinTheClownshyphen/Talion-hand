@@ -1,6 +1,6 @@
 /obj/item/essence_connector
-	name = "thaumic connector"
-	desc = "A mystical linking device used to create essence flow connections between alchemical apparatus. Click and drag between devices to establish connections, or right-click to remove connections."
+	name = "pestran connector"
+	desc = "A oddly shaped object used to create connections between alchemical apparatus. Something under the metal squirms..."
 	icon = 'icons/roguetown/misc/alchemy.dmi'
 	icon_state = "connector"
 	w_class = WEIGHT_CLASS_SMALL
@@ -10,6 +10,7 @@
 
 /obj/item/essence_connector/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
 	if(!proximity_flag)
+		. = ..()
 		return
 
 	var/obj/machinery/essence/machine = target
@@ -23,7 +24,11 @@
 		start_connection(machine, user)
 
 /obj/item/essence_connector/attack_self(mob/user, params)
-	cancel_connection(user)
+	if(connecting)
+		cancel_connection(user)
+	else
+		to_chat(user, span_info("Click and drag between devices to establish connections, or right-click to remove connections."))
+
 
 /obj/item/essence_connector/proc/start_connection(obj/machinery/essence/machine, mob/user)
 	source_device = machine
@@ -107,7 +112,7 @@
 
 /obj/effect/essence_orb
 	name = "essence orb"
-	desc = "A concentrated ball of thaumaturgical essence traveling between devices."
+	desc = "Alchemical essence in transit along a silver thread."
 	icon = 'icons/effects/effects.dmi'
 	icon_state = "phasein"
 	density = FALSE

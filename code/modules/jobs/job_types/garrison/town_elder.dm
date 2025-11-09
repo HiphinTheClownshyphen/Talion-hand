@@ -5,7 +5,6 @@
 	Now, the days of adventure are long past. You sit as the town's beloved elder; while the crown may rule from afar, the people\
 	look to you to settle disputes, mend rifts, and keep the true peace in town. Not every conflict must end in bloodshed,\
 	but when it must, you will do what is necessary, as you always have."
-	flag = TOWN_ELDER
 	department_flag = GARRISON
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_CHIEF
@@ -16,7 +15,8 @@
 	bypass_lastclass = TRUE
 	spells = list(/datum/action/cooldown/spell/undirected/list_target/convert_role/militia)
 	allowed_ages = list(AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
-	allowed_races = RACES_PLAYER_NONDISCRIMINATED
+	allowed_races = RACES_PLAYER_NONHERETICAL
+	blacklisted_species = list(SPEC_ID_HALFLING)
 
 	advclass_cat_rolls = list(CTAG_TOWN_ELDER = 20)
 	give_bank_account = 50
@@ -52,11 +52,8 @@
 	ADD_TRAIT(H, TRAIT_OLDPARTY, TRAIT_GENERIC)
 	H.verbs |= /mob/living/carbon/human/proc/townannouncement
 
-/datum/outfit/job/town_elder/post_equip(mob/living/carbon/human/H, visualsOnly = FALSE)
+/datum/outfit/town_elder/post_equip(mob/living/carbon/human/H, visuals_only = FALSE)
 	. = ..()
-	H.advsetup = 1
-	H.invisibility = INVISIBILITY_MAXIMUM
-	H.become_blind("bard_select")
 	var/instruments = list(
 		"Harp" = /obj/item/instrument/harp,
 		"Lute" = /obj/item/instrument/lute,
@@ -71,25 +68,20 @@
 	if(!spawn_instrument)
 		spawn_instrument = /obj/item/instrument/lute
 	H.equip_to_slot_or_del(new spawn_instrument(H),ITEM_SLOT_BACK_R, TRUE)
-	H.advsetup = 0
-	H.invisibility = initial(H.invisibility)
-	H.cure_blind("bard_select")
-	var/atom/movable/screen/advsetup/GET_IT_OUT = locate() in H.hud_used?.static_inventory
-	qdel(GET_IT_OUT)
 
-/datum/advclass/town_elder/mayor
-	name = "Mayor"
-
+/datum/job/advclass/town_elder/mayor
+	title = "Mayor"
+	allowed_races = RACES_PLAYER_NONDISCRIMINATED // Due to the inherent nobility coming from being a mayor, non-humen species are barred.
 	tutorial = "Before politics, you were a bard, your voice stirred hearts, your tales traveled farther than your feet ever could. You carved your name in history not with steel, but with stories that moved kings and commoners alike. In time, your charisma became counsel, your songs gave way to speeches. Decades later, your skill in diplomacy and trade earned you nobility, and with it, the title of Mayor. Now, you lead not from a stage, but from the heart of the people you once sang for."
-	outfit = /datum/outfit/job/town_elder/mayor
+	outfit = /datum/outfit/town_elder/mayor
 
 	category_tags = list(CTAG_TOWN_ELDER)
 
-// Mayor start with slightly changes, they were turned noble and got more money, also highly skilled in merchant skills.
+// Mayor start with slight changes, they were turned noble and got more money, also highly skilled in merchant skills.
 
 
 
-/datum/outfit/job/town_elder/mayor/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/town_elder/mayor/pre_equip(mob/living/carbon/human/H)
 
 
 	pants = /obj/item/clothing/pants/trou/leather
@@ -117,8 +109,8 @@
 	H.adjust_skillrank(/datum/skill/combat/polearms, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/misc/music, 5, TRUE)
 
-	H.add_spell(/datum/action/cooldown/spell/undirected/list_target/vicious_mockery)
-
+	H.add_spell(/datum/action/cooldown/spell/vicious_mockery)
+	H.add_spell(/datum/action/cooldown/spell/bardic_inspiration)
 	H.change_stat(STATKEY_STR, -1)
 	H.change_stat(STATKEY_PER, 2)
 	H.change_stat(STATKEY_END, 1)
@@ -133,26 +125,27 @@
 		H.change_stat(STATKEY_STR, -1)
 		H.change_stat(STATKEY_PER, 1)
 		H.change_stat(STATKEY_INT, 1)
-
 	ADD_TRAIT(H, TRAIT_NOBLE, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_SEEPRICES, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_BARDIC_TRAINING, TRAIT_GENERIC)
+	var/datum/inspiration/I = new /datum/inspiration(H)
+	I.grant_inspiration(H, bard_tier = BARD_T3)
 
 
 
 
-/datum/advclass/town_elder/master_of_crafts_and_labor
-	name = "Master of Crafts and Labor"
+/datum/job/advclass/town_elder/master_of_crafts_and_labor
+	title = "Master of Crafts and Labor"
 
 	tutorial = "You were one of the hardest-working individuals in the city, there isn’t a single job you haven’t done. From farming and butchery to alchemy, blacksmithing, cooking, and even medicine, your vast knowledge made you a guiding light for the people. Yet amid your labors, it was your songs that bound the workers together: rhythmic chants in the forge, lullabies in the sick wards, ballads hummed in the fields. Your voice became a beacon of focus and unity. Recognizing both your wisdom and your spirit, the townsfolk turned to you for guidance. Now, as the Master of Crafts and Labor, you oversee and uplift all who contribute to the city’s survival. Lead them well."
-	outfit = /datum/outfit/job/town_elder/master_of_crafts_and_labor
+	outfit = /datum/outfit/town_elder/master_of_crafts_and_labor
 
 	//A Job meant to guide and help new players in multiple areas heavy RNG so it can range from Average to Master.
 
 	category_tags = list(CTAG_TOWN_ELDER)
 
 
-/datum/outfit/job/town_elder/master_of_crafts_and_labor/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/town_elder/master_of_crafts_and_labor/pre_equip(mob/living/carbon/human/H)
 
 	head = /obj/item/clothing/head/hatblu
 	armor = /obj/item/clothing/armor/leather/vest/colored/random
@@ -225,25 +218,24 @@
 			H.change_stat(STATKEY_INT, 1)
 
 
-		ADD_TRAIT(H, TRAIT_NOSTINK, TRAIT_GENERIC)
+		ADD_TRAIT(H, TRAIT_DEADNOSE, TRAIT_GENERIC)
 		ADD_TRAIT(H, TRAIT_SEEDKNOW, TRAIT_GENERIC)
 		ADD_TRAIT(H, TRAIT_MALUMFIRE, TRAIT_GENERIC)
 
 
-/datum/advclass/town_elder/hearth_acolyte
-	name = "Hearth Acolyte"
+/datum/job/advclass/town_elder/hearth_acolyte
+	title = "Hearth Acolyte"
 
 	tutorial = "As an Acolyte, you dedicated your life to faith and service, expecting nothing in return. When you saved a noble, they repaid you with a home and gold, but you accepted it as the will of the Ten. Though you stepped away from the Church, you found a new purpose, not in grand temples, but in the rhythm of the streets. Your voice, once raised in hymns and prayers, now carries through alleyways and taverns, offering solace in melody and verse. Whether through healing, wisdom, or song, your faith endures. Only now, your congregation is the town itself."
-	outfit = /datum/outfit/job/town_elder/hearth_acolyte
+	outfit = /datum/outfit/town_elder/hearth_acolyte
 
 	//An acolyte that left the church and now serve and help the town people.
 
 	category_tags = list(CTAG_TOWN_ELDER)
 
-/datum/outfit/job/town_elder/hearth_acolyte
 	allowed_patrons = ALL_TEMPLE_PATRONS
 
-/datum/outfit/job/town_elder/hearth_acolyte/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/town_elder/hearth_acolyte/pre_equip(mob/living/carbon/human/H)
 	. = ..()
 	head = /obj/item/clothing/head/roguehood/colored/random
 	armor = /obj/item/clothing/shirt/robe
@@ -269,7 +261,7 @@
 			ADD_TRAIT(H, TRAIT_EMPATH, TRAIT_GENERIC)
 			H.virginity = FALSE
 		if(/datum/patron/divine/noc)
-			neck = /obj/item/clothing/neck/psycross/noc
+			neck = /obj/item/clothing/neck/psycross/silver/noc
 			H.cmode_music = 'sound/music/cmode/adventurer/CombatMonk.ogg'
 			var/language = pickweight(list("Dwarvish" = 1, "Elvish" = 1, "Hellspeak" = 1, "Zaladin" = 1, "Orcish" = 1,))
 			switch(language)
@@ -281,7 +273,7 @@
 				if("Elvish")
 					H.grant_language(/datum/language/elvish)
 					to_chat(H,span_info("\
-					I learned the tongue of the primordial race.")
+					I learned the tongue of the primordial species.")
 					)
 				if("Hellspeak")
 					H.grant_language(/datum/language/hellspeak)
@@ -314,11 +306,11 @@
 			H.adjust_skillrank(/datum/skill/labor/fishing, 2, TRUE)
 		if(/datum/patron/divine/ravox)
 			neck = /obj/item/clothing/neck/psycross/silver/ravox
-			H.cmode_music = 'sound/music/cmode/adventurer/CombatOutlander2.ogg'
+			H.cmode_music = 'sound/music/cmode/church/CombatRavox.ogg'
 			H.adjust_skillrank(/datum/skill/combat/polearms, 1, TRUE)
 		if(/datum/patron/divine/xylix)
 			neck = /obj/item/clothing/neck/psycross/silver/xylix
-			H.cmode_music = 'sound/music/cmode/adventurer/CombatMonk.ogg'
+			H.cmode_music = 'sound/music/cmode/church/CombatXylix.ogg'
 			H.adjust_skillrank(/datum/skill/misc/stealing, 1, TRUE)
 		if(/datum/patron/divine/malum)
 			neck = /obj/item/clothing/neck/psycross/silver/malum
@@ -354,22 +346,21 @@
 			H.grant_language(/datum/language/celestial)
 			to_chat(H, "<span class='info'>I can speak Celestial with ,c before my speech.</span>")
 
+	var/holder = H.patron?.devotion_holder
+	if(holder)
+		var/datum/devotion/devotion = new holder()
+		devotion.make_acolyte()
+		devotion.grant_to(H)
 
-	var/datum/devotion/cleric_holder/C = new /datum/devotion/cleric_holder(H, H.patron)
-	H.verbs += list(/mob/living/carbon/human/proc/devotionreport, /mob/living/carbon/human/proc/clericpray)
-	C.grant_spells(H)
-
-
-
-/datum/advclass/town_elder/lorekeeper
-	name = "Lorekeeper"
+/datum/job/advclass/town_elder/lorekeeper
+	title = "Lorekeeper"
 
 	tutorial = "Your tales once lit up taverns, your ballads echoed through cities, and your curiosity led you across kingdoms. But the stage grows quiet, and your thirst for stories has shifted. Now, you collect history instead of applause, recording the town’s past, preserving its legends, and guiding the present with the wisdom of ages. In a world where memory is power, you are its guardian."
-	outfit = /datum/outfit/job/town_elder/lorekeeper
+	outfit = /datum/outfit/town_elder/lorekeeper
 
 	category_tags = list(CTAG_TOWN_ELDER)
 
-/datum/outfit/job/town_elder/lorekeeper/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/town_elder/lorekeeper/pre_equip(mob/living/carbon/human/H)
 	head = /obj/item/clothing/head/bardhat
 	shoes = /obj/item/clothing/shoes/boots
 	pants = /obj/item/clothing/pants/trou/leather
@@ -412,20 +403,23 @@
 
 	ADD_TRAIT(H, TRAIT_DODGEEXPERT, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_BARDIC_TRAINING, TRAIT_GENERIC)
-	H.add_spell(/datum/action/cooldown/spell/undirected/list_target/vicious_mockery)
+	var/datum/inspiration/I = new /datum/inspiration(H)
+	I.grant_inspiration(H, bard_tier = BARD_T3)
+	H.add_spell(/datum/action/cooldown/spell/vicious_mockery)
+	H.add_spell(/datum/action/cooldown/spell/bardic_inspiration)
 
 
-/datum/advclass/town_elder/dreamwatcher
-	name = "Dreamwatcher"
+/datum/job/advclass/town_elder/dreamwatcher
+	title = "Dreamwatcher"
 
 	tutorial = "Your dreams have always been vivid, filled with colors, voices, and shadows that seemed to watch. As a child, you feared them. As an adult, you began to listen. The Church speaks of Noc as the keeper of magic, but to you, he is something deeper: a silent guide whose truths are not written in scripture, but in sleep. Over time, you learned to echo those truths in your own way, through murmured lullabies, whispered verses, and songs shaped from silence. Now, as Elder of this town, you offer more than leadership. You help others find clarity in the quiet spaces of their hearts, through signs, symbols, and melodies only the soul remembers. Some call it intuition. Others call it wisdom. You know it simply as listening.(Not all your dreams are true, some may lie)"
-	outfit = /datum/outfit/job/town_elder/dreamwatcher
+	outfit = /datum/outfit/town_elder/dreamwatcher
 
 	//Not a Magician nor an Acolyte, but something more, blessed by Noc since they were born, being capable of Visions and Feelings through dreams, they can feel the highest god influence or and get a hint about any of the active antags.
 	category_tags = list(CTAG_TOWN_ELDER)
 
 
-/datum/outfit/job/town_elder/dreamwatcher/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/town_elder/dreamwatcher/pre_equip(mob/living/carbon/human/H)
 	head = /obj/item/clothing/head/armingcap
 	armor = /obj/item/clothing/shirt/robe/colored/black
 	shoes = /obj/item/clothing/shoes/sandals
@@ -434,11 +428,11 @@
 	beltl = /obj/item/flashlight/flare/torch/lantern
 	backl = /obj/item/storage/backpack/satchel
 	wrists = /obj/item/clothing/wrists/nocwrappings
-	neck = /obj/item/clothing/neck/psycross/noc
+	neck = /obj/item/clothing/neck/psycross/silver/noc
 	backpack_contents = list(/obj/item/storage/belt/pouch/coins/poor = 1, /obj/item/needle = 1 )
 
 	if(H.patron != /datum/patron/divine/noc)
-		H.set_patron(/datum/patron/divine/noc)
+		H.set_patron(/datum/patron/divine/noc, TRUE)
 
 	H.apply_status_effect(/datum/status_effect/buff/nocblessed)
 	// 3 INT and 2 PER buff, stats will be lowered because of that

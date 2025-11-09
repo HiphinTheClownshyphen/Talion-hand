@@ -14,6 +14,24 @@
 #define BREAKFAST	(1<<13)
 #define CLOTH 		(1<<14)
 
+#define FOOD_FLAGS_IC list( \
+	"Meat", \
+	"Vegetables", \
+	"Raw food", \
+	"Junk food", \
+	"Grain", \
+	"Fruits", \
+	"Dairy products", \
+	"Fried food", \
+	"Alcohol", \
+	"Sugary food", \
+	"Gross food", \
+	"Toxic food", \
+	"Pineapples", \
+	"Breakfast food", \
+	"Clothing", \
+)
+
 #define DRINK_NICE	1
 #define DRINK_GOOD	2
 #define DRINK_VERYGOOD	3
@@ -25,3 +43,11 @@
 #define FARE_NEUTRAL 3
 #define FARE_FINE 4
 #define FARE_LAVISH 5
+
+#define CULINARY_FAVOURITE_FOOD "Favourite Food"
+#define CULINARY_FAVOURITE_DRINK "Favourite Drink"
+#define CULINARY_HATED_FOOD "Hated Food"
+#define CULINARY_HATED_DRINK "Hated Drink"
+#define CULINARY_RANDOM_PREFERENCES "Random Preferences"
+#define FAVOURITE_FOOD_TRIUMPH "Favourite Food Triumph"
+#define FAVOURITE_DRINK_TRIUMPH "Favourite Drink Triumph"

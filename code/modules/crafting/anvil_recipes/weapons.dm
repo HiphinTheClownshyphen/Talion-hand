@@ -4,6 +4,30 @@
 	abstract_type = /datum/anvil_recipe/weapons
 	category = "Weapons"
 
+
+////////////////////////////////////
+// --------- TIN -----------
+//honestly the only tin "weapon" that comes to mind would be lead bullets
+/datum/anvil_recipe/weapons/tin
+	abstract_type = /datum/anvil_recipe/weapons/tin
+	req_bar = /obj/item/ingot/tin
+	craftdiff = 0
+////////////////////////////////////
+
+/datum/anvil_recipe/weapons/tin/lead_bullet
+	name = "4x Lead Bullets"
+	recipe_name = "a handful of lead bullets."
+	created_item = /obj/item/ammo_casing/caseless/bullet
+	craftdiff = 1
+	createditem_extra = 3
+
+/datum/anvil_recipe/weapons/tin/grenade_shell
+	name = "2x Grenade shells"
+	recipe_name = "Grenade Casings"
+	created_item = /obj/item/ammo_casing/caseless/grenadeshell
+	craftdiff = 3
+	createditem_extra = 1
+	///jokes on you whoever said lead bullets were the only tin weapon, may I introduce the pipe casing.
 //////////////////////////////////////////////////////////////////////////////////////////////
 // --------- COPPER -----------
 /datum/anvil_recipe/weapons/copper
@@ -113,6 +137,13 @@
 	additional_items = list(/obj/item/grown/log/tree/stick)
 	created_item = /obj/item/weapon/axe/iron
 
+/datum/anvil_recipe/weapons/iron/nsapo
+	name = "Iron Kasuyu (+Stick)"
+	recipe_name = "an Iron Kasuyu Axe"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/grown/log/tree/stick)
+	created_item = /obj/item/weapon/axe/nsapo/iron
+
 /datum/anvil_recipe/weapons/iron/bardiche
 	name = "Bardiche (+Bar, +Small Log)"
 	recipe_name = "a Bardiche"
@@ -120,6 +151,13 @@
 	additional_items = list(/obj/item/ingot/iron,/obj/item/grown/log/tree/small)
 	created_item = /obj/item/weapon/polearm/halberd/bardiche
 	craftdiff = 2
+
+/datum/anvil_recipe/weapons/iron/assegai
+	name = "Iron Assegai (+ Small Log)"
+	recipe_name = "an Iron Assegai"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/grown/log/tree/small)
+	created_item = /obj/item/weapon/polearm/spear/assegai
 
 /datum/anvil_recipe/weapons/iron/woodcutter
 	name = "Woodcutter Axe (+Small Log)"
@@ -136,6 +174,14 @@
 	created_item = /obj/item/weapon/polearm/halberd/bardiche/warcutter
 	craftdiff = 2
 
+/datum/anvil_recipe/weapons/iron/greataxe
+	name = "Greataxe (+Bar x2), (+Small log)"
+	additional_items = list(/obj/item/grown/log/tree/small, /obj/item/ingot/iron, /obj/item/ingot/iron)
+	recipe_name = "a Greataxe with a single blade."
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/greataxe
+	craftdiff = 3
+
 /datum/anvil_recipe/weapons/iron/dagger_iron
 	name = "Dagger x2"
 	recipe_name = "a couple Daggers"
@@ -143,6 +189,80 @@
 	created_item = /obj/item/weapon/knife/dagger
 	createditem_extra = 1
 	craftdiff = 0 // To train with
+
+/datum/anvil_recipe/weapons/iron/njora
+	name = "2x Iron Seme's"
+	recipe_name = "a Iron Seme"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/knife/njora/iron
+	createditem_extra = 1
+	craftdiff = 0
+
+/datum/anvil_recipe/weapons/iron/kukri
+	name = "Iron Kukri"
+	recipe_name = "a Iron Kukri"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/knife/dagger/kukri/iron
+
+/datum/anvil_recipe/weapons/iron/ada
+	name = "Iron Ada"
+	recipe_name = "a Iron Ada"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/scimitar/ada/iron
+
+/datum/anvil_recipe/weapons/iron/aruval
+	name = "Iron Aruval (+2 Iron Bar)"
+	recipe_name = "a Iron Aruval"
+	additional_items = list(/obj/item/ingot/iron, /obj/item/ingot/iron)
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/long/aruval/iron
+
+/datum/anvil_recipe/weapons/iron/dadao
+	name = "Iron Dadao (+1 Iron Bar)"
+	recipe_name = "a Iron Dadao"
+	additional_items = list(/obj/item/ingot/iron)
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/sabre/dadao/iron
+
+/datum/anvil_recipe/weapons/iron/ji
+	name = "Iron Dagger-Ax (+ Small Log)"
+	recipe_name = "a Iron Dagger-Ax"
+	additional_items = list(/obj/item/grown/log/tree/small)
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/polearm/spear/billhook/ji/iron
+
+/datum/anvil_recipe/weapons/iron/wodao
+	name = "Iron Wo Dao"
+	recipe_name = "a Iron Wo Dao"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/scimitar/wodao/iron
+
+/datum/anvil_recipe/weapons/iron/urumi
+	name = "Iron Urumi (+1 Iron Bar)"
+	recipe_name = "a Iron Urumi"
+	additional_items = list(/obj/item/ingot/iron)
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/whip/urumi/iron
+
+/datum/anvil_recipe/weapons/iron/lakkarikhopesh
+	name = "Iron Khopesh"
+	recipe_name = "a Iron Khopesh"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/scimitar/lakkarikhopesh/iron
+
+/datum/anvil_recipe/weapons/iron/sengese
+	name = "Iron Sengese"
+	recipe_name = "a Iron Sengese"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/scimitar/sengese/iron
+
+/datum/anvil_recipe/weapons/iron/jile
+	name = "2x Iron Jile Daggers"
+	recipe_name = "a Iron Jile"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/knife/jile/iron
+	createditem_extra = 1
+	craftdiff = 0
 
 /datum/anvil_recipe/weapons/iron/dagger_iron
 	name = "3x Villager Knives"
@@ -186,6 +306,13 @@
 	additional_items = list(/obj/item/grown/log/tree/stick)
 	created_item = /obj/item/weapon/mace
 
+/datum/anvil_recipe/weapons/iron/rungu
+	name = "Iron Rungu (+Stick)"
+	recipe_name = "an Iron Rungu"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/grown/log/tree/stick)
+	created_item = /obj/item/weapon/mace/rungu/iron
+
 /datum/anvil_recipe/weapons/iron/ibludgeon
 	name = "Iron Bludgeon (+Stick)"
 	recipe_name = "a Bludgeon"
@@ -216,7 +343,34 @@
 /datum/anvil_recipe/weapons/iron/shortsword_iron
 	name = "Short Sword"
 	recipe_name = "a Short Sword"
-	created_item = /obj/item/weapon/sword/short
+	created_item = /obj/item/weapon/sword/short/iron
+
+/datum/anvil_recipe/weapons/iron/ida
+	name = "Ida"
+	recipe_name= "an Iron Ida"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/ida/iron
+
+/datum/anvil_recipe/weapons/iron/hwi
+	name = "Hwi (+Iron Bar)"
+	recipe_name= "an Iron Hwi"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items= list(/obj/item/ingot/iron,)
+	created_item = /obj/item/weapon/sword/sabre/hwi/iron
+
+/datum/anvil_recipe/weapons/iron/shotel
+	name = "Shotel (+Iron Bar)"
+	recipe_name= "an Iron Shotel"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/ingot/iron,)
+	created_item = /obj/item/weapon/sword/long/shotel/iron
+
+/datum/anvil_recipe/weapons/iron/shishpar
+	name = "Iron Shishpar (+ Iron Bar)"
+	recipe_name = "a Iron Shishpar"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/ingot/iron)
+	created_item = /obj/item/weapon/mace/shishpar/iron
 
 /datum/anvil_recipe/weapons/iron/sword_iron
 	name = "Sword"
@@ -230,6 +384,12 @@
 	recipe_name = "a Duelist Sword"
 	appro_skill = /datum/skill/craft/weaponsmithing
 	created_item = /obj/item/weapon/sword/rapier/ironestoc
+
+/datum/anvil_recipe/weapons/iron/kaskara
+	name = "Iron Kaskara"
+	recipe_name = "a Iron Kaskara"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/kaskara/iron
 
 /datum/anvil_recipe/weapons/iron/towershield
 	name = "Tower Shield (+Small Log)"
@@ -273,7 +433,72 @@
 	abstract_type = /datum/anvil_recipe/weapons/steel
 	req_bar = /obj/item/ingot/steel
 	craftdiff = 2
+
 ///////////////////////////////////////////////
+
+/datum/anvil_recipe/weapons/steel/short_sword
+	name = "Steel Short Sword"
+	recipe_name = "a Steel Short Sword"
+	created_item = /obj/item/weapon/sword/short
+
+/datum/anvil_recipe/weapons/steel/assegai
+	name = "Steel Assegai (+ Small Log)"
+	recipe_name = "a Steel Assegai"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/grown/log/tree/small)
+	created_item = /obj/item/weapon/polearm/spear/steel/assegai
+
+/datum/anvil_recipe/weapons/steel/ada
+	name = "Steel Ada"
+	recipe_name = "a Steel Ada"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/scimitar/ada
+
+/datum/anvil_recipe/weapons/steel/aruval
+	name = "Steel Aruval (+2 Steel Bar)"
+	recipe_name = "a Steel Aruval"
+	additional_items = list(/obj/item/ingot/steel, /obj/item/ingot/steel)
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/long/aruval
+
+/datum/anvil_recipe/weapons/steel/dadao
+	name = "Steel Dadao (+1 Steel Bar)"
+	recipe_name = "a Steel Dadao"
+	additional_items = list(/obj/item/ingot/steel)
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/sabre/dadao
+
+/datum/anvil_recipe/weapons/steel/ji
+	name = "Steel Dagger-Ax (+ Small Log)"
+	recipe_name = "a Steel Dagger-Ax"
+	additional_items = list(/obj/item/grown/log/tree/small)
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/polearm/spear/billhook/ji
+
+/datum/anvil_recipe/weapons/steel/wodao
+	name = "Steel Wo Dao"
+	recipe_name = "a Steel Wo Dao"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/scimitar/wodao
+
+/datum/anvil_recipe/weapons/steel/urumi
+	name = "Steel Urumi (+1 Steel Bar)"
+	recipe_name = "a Steel Urumi"
+	additional_items = list(/obj/item/ingot/steel)
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/whip/urumi
+
+/datum/anvil_recipe/weapons/steel/lakkarikhopesh
+	name = "Steel Khopesh"
+	recipe_name = "a Steel Khopesh"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/scimitar/lakkarikhopesh
+
+/datum/anvil_recipe/weapons/steel/sengese
+	name = "Steel Sengese"
+	recipe_name = "a Steel Sengese"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/scimitar/sengese
 
 /datum/anvil_recipe/weapons/steel/axe_steel
 	name = "Steel Axe (+Stick)"
@@ -282,12 +507,59 @@
 	additional_items = list(/obj/item/grown/log/tree/stick)
 	created_item = /obj/item/weapon/axe/steel
 
+/datum/anvil_recipe/weapons/steel/greataxe
+	name = "Greataxe (+Bar x2), (+Small log)"
+	additional_items = list(/obj/item/grown/log/tree/small, /obj/item/ingot/steel, /obj/item/ingot/steel)
+	recipe_name = "a Greataxe with a single blade."
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/greataxe/steel
+	craftdiff = 4
+
+/datum/anvil_recipe/weapons/steel/doubleheaded_greataxe
+	name = "Double-headed Greataxe (+Bar x3), (+Small log)"
+	additional_items = list(/obj/item/grown/log/tree/small, /obj/item/ingot/steel, /obj/item/ingot/steel, /obj/item/ingot/steel)
+	recipe_name = "a Greataxe with two blades."
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/greataxe/steel/doublehead
+	craftdiff = 5
+
+/datum/anvil_recipe/weapons/steel/nsapo/
+	name = "Steel Kasuyu (+Stick)"
+	recipe_name = "an Steel Kasuyu Axe"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/grown/log/tree/stick)
+	created_item = /obj/item/weapon/axe/nsapo/
+
+/datum/anvil_recipe/weapons/steel/rungu
+	name = "Steel Rungu (+Stick)"
+	recipe_name = "an Steel Rungu"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/grown/log/tree/stick)
+	created_item = /obj/item/weapon/mace/steel/rungu
+
+
 /datum/anvil_recipe/weapons/steel/sledgehammer
 	name = "Steel Sledgehammer (+Small Log)"
 	recipe_name = "a big Sledgehammer"
 	appro_skill = /datum/skill/craft/weaponsmithing
 	additional_items = list(/obj/item/grown/log/tree/small)
 	created_item = 	/obj/item/weapon/hammer/sledgehammer/war
+
+/datum/anvil_recipe/weapons/steel/njora
+	name = "2x Steel Seme's"
+	recipe_name = "a Steel Seme"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/knife/njora/steel
+	createditem_extra = 1
+	craftdiff = 1
+
+/datum/anvil_recipe/weapons/steel/jile
+	name = "2x Steel Jile Daggers"
+	recipe_name = "a Steel Jile"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/knife/jile/steel
+	createditem_extra = 1
+	craftdiff = 1
 
 /datum/anvil_recipe/weapons/steel/battleaxe
 	name = "Battle Axe (+Bar x2)"
@@ -310,6 +582,52 @@
 	recipe_name = "a Cutlass"
 	appro_skill = /datum/skill/craft/weaponsmithing
 	created_item = /obj/item/weapon/sword/sabre/cutlass
+
+/datum/anvil_recipe/weapons/steel/hwi
+	name = "Steel Hwi (+ Steel Bar)"
+	recipe_name = "a Steel Hwi"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/ingot/steel)
+	created_item = /obj/item/weapon/sword/sabre/hwi
+
+/datum/anvil_recipe/weapons/steel/shotel
+	name = "Steel Shotel (+ Steel Bar)"
+	recipe_name = "a Steel Shotel"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/ingot/steel)
+	created_item = /obj/item/weapon/sword/long/shotel
+
+/datum/anvil_recipe/weapons/steel/shishpar
+	name = "Steel Shishpar (+ Steel Bar)"
+	recipe_name = "a Steel Shishpar"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/ingot/steel)
+	created_item = /obj/item/weapon/mace/steel/shishpar
+
+/datum/anvil_recipe/weapons/steel/ida
+	name = "Steel Ida"
+	recipe_name = "a Steel Ida"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/ida
+
+/datum/anvil_recipe/weapons/steel/ngombe
+	name = "Ngombe Ngulu (+Steel Bar)"
+	recipe_name = "a Ngombe Ngulu"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/ingot/steel)
+	created_item = /obj/item/weapon/sword/scimitar/ngombe
+
+/datum/anvil_recipe/weapons/steel/kaskara // I FORGOT TO INCLUDE IT
+	name = "Steel Kaskara"
+	recipe_name = "a Steel Kaskara"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/kaskara
+
+/datum/anvil_recipe/weapons/steel/
+	name = "Steel Kukri"
+	recipe_name = "a Steel Kukri"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/knife/dagger/kukri/steel
 
 /datum/anvil_recipe/weapons/steel/dagger_steel
 	name = "2x Steel Daggers"
@@ -343,6 +661,14 @@
 	created_item = /obj/item/weapon/sword/rapier/dec
 	craftdiff = 3
 
+/datum/anvil_recipe/weapons/steel/nimcha
+	name = "Nimcha (+Gold Bar)"
+	recipe_name = "a Nimcha"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/ingot/gold)
+	created_item = /obj/item/weapon/sword/rapier/nimcha
+	craftdiff = 3
+
 /datum/anvil_recipe/weapons/steel/eaglebeak
 	name = "Eagle's Beak (+Bar, +Small Log)"
 	recipe_name = "an Eagle's Beak"
@@ -372,6 +698,34 @@
 	additional_items = list(/obj/item/ingot/steel, /obj/item/ingot/steel)
 	created_item = /obj/item/weapon/sword/long/greatsword
 	craftdiff = 4
+
+/datum/anvil_recipe/weapons/silver/noble_sword_scabbard
+	name = "Decorated Silver Sword Scabbard (+Scabbard)"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/weapon/scabbard/sword)
+	created_item = /obj/item/weapon/scabbard/sword/noble
+
+/datum/anvil_recipe/weapons/silver/noble_knife_sheath
+	name = "Decorated Silver Knife Sheath (+Sheath)"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/weapon/scabbard/knife)
+	created_item = /obj/item/weapon/scabbard/knife/noble
+
+/datum/anvil_recipe/weapons/gold
+	abstract_type = /datum/anvil_recipe/weapons/gold
+	req_bar = /obj/item/ingot/gold
+	craftdiff = 5
+
+/datum/anvil_recipe/weapons/gold/noble_sword_scabbard
+	name = "Decorated Golden Sword Scabbard (+Scabbard)"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/weapon/scabbard/sword)
+	created_item = /obj/item/weapon/scabbard/sword/royal
+
+/datum/anvil_recipe/weapons/gold/noble_knife_sheath
+	name = "Decorated Golden Knife Sheath (+Sheath)"
+	additional_items = list(/obj/item/weapon/scabbard/knife)
+	created_item = /obj/item/weapon/scabbard/knife/royal
 
 /datum/anvil_recipe/weapons/steel/halberd
 	name = "Halberd (+Bar, +Small Log)"
@@ -500,11 +854,24 @@
 	additional_items = list(/obj/item/natural/hide/cured,/obj/item/natural/hide/cured)
 	created_item = /obj/item/weapon/whip/silver
 
+/datum/anvil_recipe/weapons/silver/urumi
+	name = "Silver Urumi (+1 Silver Bar)"
+	recipe_name = "a Silver Urumi"
+	additional_items = list(/obj/item/ingot/silver)
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/whip/urumi/silver
+
 /datum/anvil_recipe/weapons/silver/sword_silver
 	name = "Silver Sword"
 	recipe_name = "a Silver Sword"
 	appro_skill = /datum/skill/craft/weaponsmithing
 	created_item = /obj/item/weapon/sword/silver
+
+/datum/anvil_recipe/weapons/silver/sengese
+	name = "Silver Sengese"
+	recipe_name = "a Silver Sengese"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	created_item = /obj/item/weapon/sword/scimitar/sengese/silver
 
 /datum/anvil_recipe/weapons/silver/rapier_silver
 	name = "Silver Rapier"
@@ -524,3 +891,120 @@
 	appro_skill = /datum/skill/craft/weaponsmithing
 	additional_items = list(/obj/item/ingot/silver, /obj/item/ingot/gold)
 	created_item = /obj/item/weapon/sword/long/decorated
+
+/datum/anvil_recipe/weapons/silver/rungu
+
+	name = "Silver Rungu (+ Stick)"
+	recipe_name = "a Silver Rungu"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/grown/log/tree/stick)
+	created_item = /obj/item/weapon/mace/silver/rungu
+
+/datum/anvil_recipe/weapons/silver/gada
+	name = "Regal Gada (+1 Gold bar)"
+	appro_skill = /datum/skill/craft/weaponsmithing
+	additional_items = list(/obj/item/ingot/gold)
+	created_item = /obj/item/weapon/mace/silver/gada
+
+/datum/anvil_recipe/weapons/psy/axe
+	name = "Psydonian War Axe (+1 B. Silver, +1 Stick)"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/axe/psydon
+	additional_items = list(/obj/item/ingot/silverblessed, /obj/item/grown/log/tree/stick)
+	i_type = "Weapons"
+/datum/anvil_recipe/weapons/psy/mace
+	name = "Psydonian Mace (+1 B. Silver, +1 Stick)"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/mace/goden/psydon
+	additional_items = list(/obj/item/ingot/silverblessed, /obj/item/grown/log/tree/stick)
+	i_type = "Weapons"
+/datum/anvil_recipe/weapons/psy/spear
+	name = "Psydonian Spear (+1 Small Log)"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/polearm/spear/psydon
+	additional_items = list(/obj/item/grown/log/tree/small)
+	i_type = "Weapons"
+/datum/anvil_recipe/weapons/psy/dagger
+	name = "Psydonian Dagger"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/knife/dagger/silver/psydon
+	i_type = "Weapons"
+
+/datum/anvil_recipe/weapons/psy/shortsword
+	name = "Psydonian Shortsword"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/sword/short/psy
+	i_type = "Weapons"
+
+/datum/anvil_recipe/weapons/psy/katar
+	name = "Psydonian Katar"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/katar/psydon
+	i_type = "Weapons"
+
+/datum/anvil_recipe/weapons/psy/knuckles
+	name = "Psydonian Knuckles"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/knuckles/psydon
+	i_type = "Weapons"
+
+/datum/anvil_recipe/weapons/psy/cudgel
+	name = "Psydonian Handmace"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/mace/cudgel/psy
+	i_type = "Weapons"
+
+/datum/anvil_recipe/weapons/psy/halberd
+	name = "Psydonian Halberd (+1 B. Silver, +1 Small Log)"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/polearm/halberd/psydon
+	additional_items = list(/obj/item/ingot/silverblessed, /obj/item/grown/log/tree/small)
+	i_type = "Weapons"
+
+/datum/anvil_recipe/weapons/psy/gsword
+	name = "Psydonian Greatsword (+1 B. Silver)"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/sword/long/greatsword/psydon
+	additional_items = list(/obj/item/ingot/silverblessed)
+	i_type = "Weapons"
+
+/datum/anvil_recipe/weapons/psy/sword
+	name = "Psydonian Sword"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/sword/long/psydon
+	i_type = "Weapons"
+
+/datum/anvil_recipe/weapons/psy/whip
+	name = "Psydonian Whip (+2 Cured Leather)"
+	req_bar = /obj/item/ingot/silverblessed
+	craftdiff = 3
+	created_item = /obj/item/weapon/whip/psydon
+	additional_items = list(/obj/item/natural/hide/cured, /obj/item/natural/hide/cured)
+	i_type = "Weapons"
+
+/datum/anvil_recipe/weapons/atgervi_shield
+	name = "kite shield"
+	req_bar = /obj/item/ingot/steel
+	additional_items = list(/obj/item/grown/log/tree)
+	created_item = /obj/item/weapon/shield/atgervi
+	i_type = "Shields"
+	craftdiff = 2
+
+/datum/anvil_recipe/weapons/atgervi_axe
+	name = "bearded axe"
+	req_bar = /obj/item/ingot/steel
+	additional_items = list(/obj/item/grown/log/tree/small)
+	created_item = /obj/item/weapon/axe/steel/atgervi
+	i_type = "Weapons"
+	craftdiff = 3

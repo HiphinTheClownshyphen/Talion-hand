@@ -21,25 +21,25 @@
 	src.holder = null
 	return ..()
 
-/datum/lock/proc/toggle(mob/user, silent = FALSE)
+/datum/lock/proc/toggle(mob/user, obj/item, silent = FALSE)
 	if(!silent && user)
 		silent = user?.m_intent == MOVE_INTENT_SNEAK
 	if(locked)
-		unlock(user, silent)
+		unlock(user, item, silent)
 	else
-		lock(user, silent)
+		lock(user, item, silent)
 
-/datum/lock/proc/lock(user, silent = FALSE)
+/datum/lock/proc/lock(user, obj/item, silent = FALSE)
 	tampered = FALSE
 	locked = TRUE
 	if(user)
-		holder?.on_lock(user, silent)
+		holder?.on_lock(user, item, silent)
 
-/datum/lock/proc/unlock(user, silent = FALSE)
+/datum/lock/proc/unlock(user, obj/item, silent = FALSE)
 	tampered = FALSE
 	locked = FALSE
 	if(user)
-		holder?.on_unlock(user, silent)
+		holder?.on_unlock(user, item, silent)
 
 /// A keylock
 /datum/lock/key
@@ -95,7 +95,7 @@
 	SIGNAL_HANDLER
 
 	var/is_right = text2num(LAZYACCESS(modifiers, RIGHT_CLICK))
-	if(I.has_access() && source.pre_lock_interact(user))
+	if(I.can_lock_interact() && source.pre_lock_interact(user))
 		try_toggle(I, user, is_right)
 		// :( these are technically the same thing
 		return is_right ? COMPONENT_SECONDARY_CANCEL_ATTACK_CHAIN : COMPONENT_NO_AFTERATTACK
@@ -117,7 +117,7 @@
 		if(!locked && !is_right)
 			holder?.lock_failed(user, silent, "It won't turn this way, try turning it to the right.")
 			return
-	toggle(user, silent)
+	toggle(user, I, silent)
 
 /datum/lock/key/proc/set_pick_difficulty(difficulty)
 	src.difficulty = CLAMP(difficulty, 1, 6)

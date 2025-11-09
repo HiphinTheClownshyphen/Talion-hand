@@ -12,7 +12,7 @@
 	var/crossfire = TRUE
 	var/can_damage = FALSE
 
-	var/temperature_change = 25
+	var/temperature_change = 20
 	var/temperature_weight = 1
 	var/temperature_falloff = 0.9
 
@@ -114,7 +114,6 @@
 	if(cookonme)
 		if(istype(W, /obj/item/reagent_containers/food/snacks))
 			if(istype(W, /obj/item/reagent_containers/food/snacks/egg))
-				to_chat(user, "<span class='warning'>I wouldn't be able to cook this over the fire...</span>")
 				return FALSE
 			var/obj/item/A = user.get_inactive_held_item()
 			if(A)

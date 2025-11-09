@@ -19,6 +19,8 @@
 	lock = /datum/lock/key
 	can_add_lock = TRUE
 
+	var/omni_bolt = FALSE
+
 	/// Can people riding go through without falling off their mount
 	var/ridethrough = FALSE
 	/// If TRUE when bumped open we callback close
@@ -44,10 +46,9 @@
 	/// Are ghosts prevented from passing through
 	var/ghostproof = FALSE
 
-	var/repairable = TRUE
-	var/repair_state = 0
-	var/obj/item/repair_cost_first = /obj/item/grown/log/tree/small
-	var/obj/item/repair_cost_second = /obj/item/grown/log/tree/small
+	// See repairable component in repairable.dm for what these variables do
+	var/list/repair_thresholds = list(/obj/item/grown/log/tree/small = 1)
+	var/obj/item/broken_repair = /obj/item/grown/log/tree/small
 	var/repair_skill = /datum/skill/craft/carpentry
 	metalizer_result = /obj/structure/door/iron
 	/// Handle bolting on right click
@@ -70,9 +71,18 @@
 	)
 	AddElement(/datum/element/connect_loc, loc_connections)
 
+	if(repair_thresholds || broken_repair)
+		AddComponent(/datum/component/repairable, repair_thresholds, broken_repair, 'sound/misc/wood_saw.ogg', repair_skill)
+
 /obj/structure/door/Destroy()
 	. = ..()
 	UnregisterSignal(loc, COMSIG_ATOM_ATTACK_HAND, PROC_REF(redirect_attack))
+
+/obj/structure/door/get_explosion_resistance()
+	if(!door_opened)
+		return max_integrity
+	else
+		return 0
 
 /obj/structure/door/proc/redirect_attack(turf/source, mob/user)
 	attack_hand(user)
@@ -98,15 +108,6 @@
 		. += span_info("It's lock is a deadbolt.")
 	if(lock?.uses_key)
 		. += span_info("There is a keyhole below the handle.")
-	if(!repairable)
-		return
-	if(!repair_cost_first || !repair_cost_second)
-		return
-	if(obj_integrity < max_integrity)
-		if(repair_state == 0)
-			. += span_notice("A [repair_cost_first.name] can be used to repair it.")
-		if(obj_broken || repair_state == 1)
-			. += span_notice("An additional [repair_cost_second.name] is needed to finish repairs.")
 
 /obj/structure/door/onkick(mob/user)
 	if(obj_broken || switching_states)
@@ -121,7 +122,7 @@
 		playsound(get_turf(src), pick(attacked_sound), 100)
 		user.visible_message(span_warning("[user] kicks [src] open!"), \
 			span_notice("I kick [src] open!"))
-		force_open()
+		force_open(user)
 		return
 	if(isliving(user))
 		var/mob/living/L = user
@@ -135,7 +136,7 @@
 			user.visible_message(span_warning("[user] kicks open [src]!"), \
 				span_notice("I kick open [src]!"))
 			unlock()
-			force_open()
+			force_open(user)
 			return
 		playsound(get_turf(src), pick(attacked_sound), 100)
 		user.visible_message(span_warning("[user] kicks [src]!"), \
@@ -157,7 +158,7 @@
 		to_chat(user, span_warning("I claw at [src]"))
 		take_damage(40, BRUTE, BCLASS_CUT, TRUE)
 		return
-	if(isliving(user) && world.time > last_bump + 20)
+	if(isliving(user) && world.time > last_bump + 1 SECONDS)
 		last_bump = world.time
 		var/mob/living/L = user
 		if(L.m_intent == MOVE_INTENT_SNEAK)
@@ -173,20 +174,18 @@
 			user.visible_message(span_warning("[user] tries the handle, but the door does not move."), \
 				span_notice("I try the handle, but the door does not move."))
 
-/obj/structure/door/pre_lock_interact(mob/user)
+/obj/structure/door/pre_lock_interact(mob/living/user)
 	if(switching_states)
 		return FALSE
 	if(door_opened)
-		to_chat(user, span_notice("I cannot lock \the [src] while it is open."))
 		return FALSE
 	return ..()
 
 /obj/structure/door/attackby(obj/item/I, mob/user)
 	if(switching_states)
 		return
-	if(repairable && (user.get_skill_level(repair_skill) > 0) && ((istype(I, repair_cost_first)) || (istype(I, repair_cost_second)))) // At least 1 skill level needed
-		repairdoor(I, user)
-		return
+	if(I.can_lock_interact())
+		return (..() || attack_hand(user))
 	return ..()
 
 /obj/structure/door/attack_hand_secondary(mob/user, params)
@@ -200,7 +199,7 @@
 		if(obj_broken)
 			to_chat(user, span_warning("The bolt has nothing to latch to!"))
 			return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
-		if(get_dir(src, user) == dir)
+		if((get_dir(src, user) == dir) || omni_bolt)
 			lock?.toggle(user)
 			return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 		to_chat(user, span_notice("I can't reach the bolt from this side."))
@@ -225,7 +224,7 @@
 	. = ..()
 	if(obj_broken || switching_states)
 		return
-	if(world.time < last_bump + 20)
+	if(world.time < last_bump + 1 SECONDS)
 		return
 	last_bump = world.time
 	if(ismob(AM))
@@ -236,7 +235,7 @@
 				take_damage(200, BRUTE, BCLASS_BLUNT, TRUE)
 			else
 				playsound(src, 'sound/combat/hits/onwood/woodimpact (1).ogg', 100)
-				force_open()
+				force_open(AM)
 				user.visible_message(span_warning("[user] smashes through [src]!"))
 			return
 		if(HAS_TRAIT(user, TRAIT_ROTMAN))
@@ -245,7 +244,7 @@
 				take_damage(50, BRUTE, BCLASS_BLUNT, TRUE)
 			else
 				playsound(src, 'sound/combat/hits/onwood/woodimpact (1).ogg', 90)
-				force_open()
+				force_open(AM)
 				user.visible_message(span_warning("The deadite smashes through [src]!"))
 			return
 		if(locked())
@@ -280,10 +279,14 @@
 	. = ..()
 	set_opacity(anchored ? !door_opened : FALSE)
 
-/obj/structure/door/obj_break(damage_flag, silent)
+/obj/structure/door/atom_break(damage_flag, silent)
 	. = ..()
 	unlock()
 	force_open()
+
+/obj/structure/door/atom_fix()
+	. = ..()
+	force_closed()
 
 /obj/structure/door/OnCrafted(dirin, user)
 	. = ..()
@@ -311,23 +314,23 @@
 	if(!M.client)
 		return FALSE
 	if(!iscarbon(M))
-		SwitchState()
+		SwitchState(user = user)
 		return FALSE
 	var/mob/living/carbon/C = M
 	if(!C.handcuffed)
 		if(C.m_intent == MOVE_INTENT_SNEAK)
-			SwitchState(TRUE)
+			SwitchState(TRUE, user)
 		else
-			SwitchState()
+			SwitchState(user = user)
 		return TRUE
 
-/obj/structure/door/proc/SwitchState(silent = FALSE)
+/obj/structure/door/proc/SwitchState(silent = FALSE, mob/user)
 	if(door_opened)
 		Close(silent)
 		return
-	Open(silent)
+	Open(silent, user)
 
-/obj/structure/door/proc/Open(silent = FALSE)
+/obj/structure/door/proc/Open(silent = FALSE, mob/user)
 	switching_states = TRUE
 	if(!silent)
 		playsound(get_turf(src), open_sound, 90)
@@ -343,8 +346,10 @@
 
 	if(close_delay > 0)
 		addtimer(CALLBACK(src, PROC_REF(Close), silent), close_delay)
+	air_update_turf(TRUE)
+	SEND_SIGNAL(src, COMSIG_DOOR_OPENED, user)
 
-/obj/structure/door/proc/force_open()
+/obj/structure/door/proc/force_open(mob/user)
 	switching_states = TRUE
 	if(!windowed)
 		set_opacity(FALSE)
@@ -353,6 +358,8 @@
 	layer = OPEN_DOOR_LAYER
 	update_appearance(UPDATE_ICON_STATE)
 	switching_states = FALSE
+	air_update_turf(TRUE)
+	SEND_SIGNAL(src, COMSIG_DOOR_OPENED, user)
 
 /obj/structure/door/proc/Close(silent = FALSE)
 	if(switching_states || !door_opened)
@@ -371,6 +378,7 @@
 	layer = CLOSED_DOOR_LAYER
 	update_appearance(UPDATE_ICON_STATE)
 	switching_states = FALSE
+	air_update_turf(TRUE)
 
 /obj/structure/door/proc/force_closed()
 	switching_states = TRUE
@@ -381,6 +389,7 @@
 	layer = CLOSED_DOOR_LAYER
 	update_appearance(UPDATE_ICON_STATE)
 	switching_states = FALSE
+	air_update_turf(TRUE)
 
 /obj/structure/door/proc/viewport_toggle(mob/user)
 	if(switching_states || door_opened)
@@ -395,43 +404,6 @@
 	windowed = FALSE
 	set_opacity(TRUE)
 	playsound(src, 'sound/foley/doors/windowup.ogg', 100)
-
-/obj/structure/door/proc/repairdoor(obj/item/I, mob/user)
-	if(!obj_broken)
-		if(obj_integrity < max_integrity)
-			user.visible_message(span_notice("[user] starts repairing [src]."), span_notice("I start repairing [src]."))
-			playsound(user, 'sound/misc/wood_saw.ogg', 100, TRUE)
-			if(do_after(user, (30 SECONDS / user.get_skill_level(repair_skill)), src))
-				qdel(I)
-				playsound(user, 'sound/misc/wood_saw.ogg', 100, TRUE)
-				obj_integrity = clamp(obj_integrity + max_integrity * integrity_failure, 0, max_integrity)
-				user.visible_message(span_notice("[user] finishes repairing [src]."), span_notice("I finished repairing [src]."))
-			return
-	switch(repair_state)
-		if(0)
-			if(!istype(I, repair_cost_first))
-				return
-			user.visible_message(span_notice("[user] starts repairing [src]."), span_notice("I start repairing [src]."))
-			playsound(user, 'sound/misc/wood_saw.ogg', 100, TRUE)
-			if(!do_after(user, (30 SECONDS / user.get_skill_level(repair_skill)), src)) // 1 skill = 30 secs, 2 skill = 15 secs etc.
-				return
-			repair_state = 1
-			qdel(I)
-			playsound(user, 'sound/misc/wood_saw.ogg', 100, TRUE)
-		if(1)
-			if(!istype(I, repair_cost_second))
-				return
-			user.visible_message(span_notice("[user] starts repairing [src]."), span_notice("I start repairing [src]."))
-			playsound(user, 'sound/misc/wood_saw.ogg', 100, TRUE)
-			if(!do_after(user, (30 SECONDS / user.get_skill_level(repair_skill)), src)) // 1 skill = 30 secs, 2 skill = 15 secs etc.
-				return
-			qdel(I)
-			playsound(user, 'sound/misc/wood_saw.ogg', 100, TRUE)
-			force_closed()
-			obj_broken = FALSE
-			obj_integrity = max_integrity
-			repair_state = 0
-			user.visible_message(span_notice("[user] finishes repairing [src]."), span_notice("I finished repairing [src]."))
 
 /obj/structure/door/green
 	icon_state = "wcg"
@@ -458,7 +430,7 @@
 	unlock_sound = 'sound/foley/lockmetal.ogg'
 	rattle_sound = 'sound/foley/lockrattlemetal.ogg'
 	attacked_sound = list("sound/combat/hits/onmetal/metalimpact (1).ogg", "sound/combat/hits/onmetal/metalimpact (2).ogg")
-	repair_cost_second = /obj/item/ingot/iron
+	broken_repair = /obj/item/ingot/iron
 	metalizer_result = null
 
 /obj/structure/door/swing
@@ -496,6 +468,7 @@
 	dir = NORTH
 	lock = /datum/lock/locked
 	animate_time = 2.1 SECONDS
+	omni_bolt = TRUE
 
 /obj/structure/door/iron
 	name = "iron door"
@@ -511,8 +484,8 @@
 	unlock_sound = 'sound/foley/lockmetal.ogg'
 	rattle_sound = 'sound/foley/lockrattlemetal.ogg'
 	attacked_sound = list("sound/combat/hits/onmetal/metalimpact (1).ogg", "sound/combat/hits/onmetal/metalimpact (2).ogg")
-	repair_cost_first = /obj/item/ingot/iron
-	repair_cost_second = /obj/item/ingot/iron
+	repair_thresholds = list(/obj/item/ingot/iron = 1)
+	broken_repair = /obj/item/ingot/iron
 	repair_skill = /datum/skill/craft/blacksmithing
 	metalizer_result = null
 
@@ -524,6 +497,8 @@
 	opacity = FALSE
 	ridethrough = TRUE
 	animate_time = 0.6 SECONDS
+	lock_sound = 'sound/foley/lock.ogg'
+	unlock_sound = 'sound/foley/unlock.ogg'
 
 /obj/structure/door/iron/bars/cell
 	name = "cell door"
@@ -535,8 +510,8 @@
 	armor = list("blunt" = 15, "slash" = 30, "stab" = 30,  "piercing" = 0, "fire" = 50, "acid" = 50)
 	open_sound = 'sound/foley/doors/stoneopen.ogg'
 	close_sound = 'sound/foley/doors/stoneclose.ogg'
-	repair_cost_first = /obj/item/natural/stone
-	repair_cost_second = /obj/item/natural/stone
+	repair_thresholds = list(/obj/item/natural/stone = 1)
+	broken_repair = /obj/item/natural/stone
 	repair_skill = /datum/skill/craft/masonry
 	smeltresult = null
 	metalizer_result = null
@@ -547,3 +522,28 @@
 
 	INVOKE_ASYNC(src, PROC_REF(unlock))
 	INVOKE_ASYNC(src, PROC_REF(force_open))
+
+/obj/structure/door/abyss
+	name = "abyssal door"
+	icon_state = "abyssdoor"
+	icon = 'icons/delver/abyss_objects.dmi'
+	armor = list("blunt" = 15, "slash" = 30, "stab" = 30,  "piercing" = 0, "fire" = 50, "acid" = 50)
+	open_sound = 'sound/foley/doors/stoneopen.ogg'
+	close_sound = 'sound/foley/doors/stoneclose.ogg'
+	repair_thresholds = list(/obj/item/natural/stone = 1)
+	broken_repair = /obj/item/natural/stone
+	repair_skill = /datum/skill/craft/masonry
+	smeltresult = null
+	metalizer_result = null
+
+/obj/structure/door/driftwood
+	name = "driftwood door"
+	icon_state = "driftwood_door"
+	icon = 'icons/delver/abyss_objects.dmi'
+	windowed = TRUE
+	opacity = FALSE
+	lock = null
+	metalizer_result = /obj/structure/door/iron/bars
+	bump_closed = TRUE
+	close_delay =  1 SECONDS
+	animate_time = 0.4 SECONDS

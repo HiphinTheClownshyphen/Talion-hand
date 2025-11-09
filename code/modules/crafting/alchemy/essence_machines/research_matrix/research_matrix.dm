@@ -1,6 +1,6 @@
 /obj/machinery/essence/research_matrix
-	name = "thaumaturgical research matrix"
-	desc = "A complex crystalline construct that allows researchers to visualize and unlock the interconnected web of thaumaturgical knowledge. The surface shimmers with arcane symbols."
+	name = "Alchemical Engine"
+	desc = "A black iconosphere which heat radiates from. It hums with alchemic energy, assisting in process of extraction. "
 	icon = 'icons/roguetown/misc/alchemy.dmi'
 	icon_state = "placeholder"
 	density = TRUE
@@ -79,7 +79,7 @@
 			if(vial.essence_amount <= 0)
 				vial.contained_essence = null
 			vial.update_appearance(UPDATE_OVERLAYS)
-			to_chat(user, span_info("You pour [transferred] units of essence into the matrix."))
+			to_chat(user, span_info("You pour [transferred] units of essence into the engine."))
 		return
 
 	return ..()
@@ -121,17 +121,15 @@
 
 	for(var/datum/thaumic_research_node/node_type as anything in subtypesof(/datum/thaumic_research_node))
 		var/datum/thaumic_research_node/temp_node = new node_type
+		if(is_abstract(temp_node.type))
+			continue
 		if(selected_research.type in temp_node.prerequisites)
-			var/can_unlock = TRUE
 			for(var/prereq in temp_node.prerequisites)
 				if(!GLOB.thaumic_research.has_research(prereq))
-					can_unlock = FALSE
 					break
-			if(can_unlock && !GLOB.thaumic_research.has_research(node_type))
-				message_admins("test")
 		qdel(temp_node)
 
-	visible_message(span_notice("The research matrix pulses with arcane energy as new knowledge is unlocked!"))
+	visible_message(span_notice("The engine hums and grumbles with alchemic energy as it's fueled!"))
 
 	var/boon = user.get_learning_boon(/datum/skill/craft/alchemy)
 	user.adjust_experience(/datum/skill/craft/alchemy, selected_research.experience_reward * boon, FALSE)
@@ -175,7 +173,7 @@
 		return
 
 	var/content = generate_interface_html()
-	window = new(user, "research_matrix", null, 800, 600)
+	window = new(user, "alchemic_engine", null, 800, 600)
 	window.set_content(content)
 	window.open()
 
@@ -596,6 +594,8 @@
 
 	for(var/datum/thaumic_research_node/node_type as anything in subtypesof(/datum/thaumic_research_node))
 		var/datum/thaumic_research_node/node = new node_type
+		if(is_abstract(node.type))
+			continue
 		var/is_unlocked = GLOB.thaumic_research.has_research(node_type)
 		var/is_available = (node_type in available_research)
 		var/is_selected = (matrix.selected_research && matrix.selected_research.type == node_type)
@@ -649,11 +649,15 @@
 	var/list/node_positions = list()
 	for(var/datum/thaumic_research_node/node_type as anything in subtypesof(/datum/thaumic_research_node))
 		var/datum/thaumic_research_node/temp_node = new node_type
+		if(is_abstract(temp_node.type))
+			continue
 		node_positions[node_type] = list("x" = temp_node.node_x, "y" = temp_node.node_y)
 		qdel(temp_node)
 
 	for(var/datum/thaumic_research_node/node_type as anything in subtypesof(/datum/thaumic_research_node))
 		var/datum/thaumic_research_node/node = new node_type
+		if(is_abstract(node.type))
+			continue
 
 		// Draw connections FROM prerequisites TO this node
 		for(var/prereq_type in node.prerequisites)

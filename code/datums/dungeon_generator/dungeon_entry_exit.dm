@@ -17,12 +17,11 @@ GLOBAL_LIST_INIT(dungeon_exits, list())
 	icon_state = "portal"
 	density = TRUE
 	anchored = TRUE
-	pixel_x = -48
-	max_integrity = 0
+	SET_BASE_PIXEL(-48, 0)
 	bound_width = 128
 	appearance_flags = NONE
 	opacity = TRUE
-	obj_flags = INDESTRUCTIBLE
+	resistance_flags = INDESTRUCTIBLE
 
 	var/dungeon_id
 	var/list/dungeon_exits = list()
@@ -138,6 +137,8 @@ GLOBAL_LIST_INIT(dungeon_exits, list())
 	var/list/entry_requirements = list()
 	var/requires_all = FALSE
 
+	var/delve_level
+
 /obj/structure/dungeon_exit/Initialize()
 	. = ..()
 	GLOB.dungeon_exits |= src
@@ -160,6 +161,9 @@ GLOBAL_LIST_INIT(dungeon_exits, list())
 		break
 
 /obj/structure/dungeon_exit/Destroy()
+	for(var/obj/structure/dungeon_entry/listed as anything in GLOB.dungeon_entries)
+		listed.dungeon_exits -= src
+
 	entry = null
 	GLOB.dungeon_exits -= src
 	return ..()

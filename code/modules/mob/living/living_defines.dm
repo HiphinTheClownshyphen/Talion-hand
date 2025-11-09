@@ -5,8 +5,9 @@
 	hud_possible = list(ANTAG_HUD)
 
 	var/resize = 1 //Badminnery resize
-	var/last_attacker_name = null
-	var/last_attacker_ckey = null
+	var/lastattacker = null
+	var/lastattackerckey = null
+	var/datum/weakref/lastattacker_weakref = null
 	var/mob/fragger = null
 
 	//Health and life related vars
@@ -36,6 +37,11 @@
 	var/pixelshifted = FALSE
 	var/pixelshift_x = 0
 	var/pixelshift_y = 0
+
+	///The y amount a mob's sprite should be offset due to the current position they're in (e.g. lying down moves your sprite down)Add commentMore actions
+	var/body_position_pixel_x_offset = 0
+	///The x amount a mob's sprite should be offset due to the current position they're in
+	var/body_position_pixel_y_offset = 0
 
 	/// Variable to track the body position of a mob, regardgless of the actual angle of rotation (usually matching it, but not necessarily).
 	var/body_position = STANDING_UP
@@ -212,4 +218,21 @@
 	var/spell_points
 	/// amount of spell points this mob has used
 	var/used_spell_points
+
+	var/list/affixes = list()
+	var/delve_level = 0
+
+	var/cold_res = 0
+	var/max_cold_res = 75
+	var/fire_res = 0
+	var/max_fire_res = 75
+	var/lightning_res = 0
+	var/max_lightning_res = 75
+
+	var/list/status_modifiers
+
+	var/datum/blood_type/animal_type
+
+	/// cooldown for the next time this person can offer
+	COOLDOWN_DECLARE(offer_cooldown)
 	var/dontmakesentient = FALSE // to check if you should make the thing sentient if they get enough kills to earn it. used for bosses or shit that would suck to be a player on

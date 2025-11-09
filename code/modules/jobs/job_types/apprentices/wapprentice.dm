@@ -3,7 +3,6 @@
 	tutorial = "Your family managed to send you to college to learn the Arcyne Arts.\
 	 It's been stressful, but you'll earn your degree and become a fully fleged Magician one dae.\
 	  As long as you can keep your grades up, that is..."
-	flag = APPRENTICE
 	department_flag = APPRENTICES
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
@@ -14,7 +13,7 @@
 	allowed_ages = list(AGE_CHILD, AGE_ADULT)
 	allowed_sexes = list(MALE, FEMALE)
 
-	outfit = /datum/outfit/job/mageapprentice
+	outfit = /datum/outfit/mageapprentice
 	display_order = JDO_WAPP
 	min_pq = 3 //they actually have good magick now
 	give_bank_account = TRUE
@@ -26,8 +25,10 @@
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,
 	)
 
-/datum/outfit/job/mageapprentice/pre_equip(mob/living/carbon/human/H)
 	allowed_patrons = list(/datum/patron/divine/noc, /datum/patron/inhumen/zizo)//see court mage for explaination
+
+/datum/outfit/mageapprentice/pre_equip(mob/living/carbon/human/H)
+	. = ..()
 	if(H.gender == MALE)
 		pants = /obj/item/clothing/pants/tights/colored/random
 		shoes = /obj/item/clothing/shoes/simpleshoes

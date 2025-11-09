@@ -4,7 +4,6 @@
 	You're addicted to it, and you hold the position as the King's personal treasurer of both coin and information. \
 	You know the power silver and gold has on a man's mortal soul, \
 	and you know just what lengths they'll go to in order to get even more. Keep your festering economy and your rats alive, theyre the only two things you can weigh any trust into anymore."
-	flag = STEWARD
 	department_flag = NOBLEMEN
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_STEWARD
@@ -16,15 +15,14 @@
 
 	allowed_races = RACES_PLAYER_NONDISCRIMINATED
 
-	outfit = /datum/outfit/job/steward
+	outfit = /datum/outfit/steward
 	give_bank_account = 100
 	noble_income = 16
 	cmode_music = 'sound/music/cmode/nobility/combat_noble.ogg'
 
-/datum/outfit/job/steward
 	job_bitflag = BITFLAG_ROYALTY
 
-/datum/outfit/job/steward/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/steward/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.virginity = TRUE
 	if(H.gender == FEMALE)

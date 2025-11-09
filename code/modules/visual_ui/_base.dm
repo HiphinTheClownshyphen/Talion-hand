@@ -5,15 +5,12 @@
 	or other /datum/visual_ui that
 	* mind datums and their elements should avoid holding references to atoms in the real world.
 */
-/obj/abstract
-	base_icon_state
 
 /obj/abstract/proc/get_view_size()
 	if(usr && usr.client)
 		. = usr.client.view
 	else
 		. = world.view
-
 
 // During game setup we fill a list with the IDs and types of every /datum/visual_ui subtypes
 GLOBAL_VAR_INIT(visual_ui_init, FALSE)
@@ -346,13 +343,13 @@ GLOBAL_LIST_INIT(visual_ui_id_to_type, list())
 		return image(icon = null)
 
 	var/image/I_shadow = image(icon = null)
-	I_shadow.maptext = {"<span style="color:#000000;font-size:[font_size];font-family:'[font]';">[string]</span>"}
+	I_shadow.maptext = MAPTEXT("<span style='color:#000000;font-size:[font_size];font-family:'[font]';''>[string]</span>")
 	I_shadow.maptext_height = 512
 	I_shadow.maptext_width = 512
 	I_shadow.maptext_x = 1 + _pixel_x
 	I_shadow.maptext_y = -1 + _pixel_y
 	var/image/I = image(icon = null)
-	I.maptext = {"<span style="color:[_color];font-size:[font_size];font-family:'[font]';">[string]</span>"}
+	I.maptext = MAPTEXT("<span style='color:[_color];font-size:[font_size];font-family:'[font]';'>[string]</span>")
 	I.maptext_height = 512
 	I.maptext_width = 512
 	I.maptext_x = _pixel_x
@@ -360,7 +357,6 @@ GLOBAL_LIST_INIT(visual_ui_id_to_type, list())
 
 	overlays += I_shadow
 	overlays += I
-
 
 /obj/abstract/visual_ui_element/proc/slide_ui_element(new_x = 0, new_y = 0, duration, layer = VISUAL_UI_BACK, hide_after = FALSE)
 	invisibility = 101

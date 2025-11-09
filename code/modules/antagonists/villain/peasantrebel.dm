@@ -3,7 +3,7 @@
 
 /datum/antagonist/prebel
 	name = "Peasant Rebel"
-	roundend_category = "peasant rebels"
+	roundend_category = "Peasant Rebels"
 	antagpanel_category = "Peasant Rebellion"
 	job_rank = ROLE_PREBEL
 	antag_hud_type = ANTAG_HUD_REV
@@ -30,7 +30,7 @@
 	owner.special_role = ROLE_PREBEL
 	var/mob/living/carbon/human/H = owner.current
 	H.cmode_music = 'sound/music/cmode/antag/CombatSausageMaker.ogg'
-	H.add_stress(/datum/stressevent/prebel)
+	H.add_stress(/datum/stress_event/prebel)
 	ADD_TRAIT(H, TRAIT_VILLAIN, TRAIT_GENERIC)
 	create_objectives()
 	owner.current.log_message("has been converted to the revolution!", LOG_ATTACK, color="red")

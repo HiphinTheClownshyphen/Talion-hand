@@ -11,7 +11,7 @@
  *
  * make sure you add an update to the schema_version stable in the db changelog
  */
-#define DB_MAJOR_VERSION 5
+#define DB_MAJOR_VERSION 6
 
 /**
  * DB minor schema version
@@ -20,7 +20,7 @@
  *
  * make sure you add an update to the schema_version stable in the db changelog
  */
-#define DB_MINOR_VERSION 9
+#define DB_MINOR_VERSION 0
 
 
 //! ## Timing subsystem
@@ -104,8 +104,9 @@
 #define INIT_ORDER_TITLE 100
 #define INIT_ORDER_GARBAGE 99
 #define INIT_ORDER_DBCORE 95
-#define INIT_ORDER_BLACKBOX 94
-#define INIT_ORDER_SERVER_MAINT 93
+#define INIT_ORDER_PLEXORA  93
+#define INIT_ORDER_BLACKBOX 91
+#define INIT_ORDER_SERVER_MAINT 90
 #define INIT_ORDER_INPUT 85
 #define INIT_ORDER_GREYSCALE 81
 #define INIT_ORDER_VIS 80
@@ -124,12 +125,15 @@
 #define INIT_ORDER_MAPPING 52
 #define INIT_ORDER_EARLY_ASSETS 51
 #define INIT_ORDER_AI_IDLE_CONTROLLERS 50
-#define INIT_ORDER_DUNGEON 49
+#define INIT_ORDER_TERRAIN 49
+#define INIT_ORDER_DUNGEON 48
 #define INIT_ORDER_NETWORKS 45
 #define INIT_ORDER_SPATIAL_GRID 43
 #define INIT_ORDER_ECONOMY 40
 #define INIT_ORDER_OUTPUTS 35
+#define INIT_ORDER_HOUSING 31
 #define INIT_ORDER_ATOMS 30
+#define INIT_ORDER_TREASURY 29
 #define INIT_ORDER_LANGUAGE	25
 #define INIT_ORDER_MACHINES	20
 #define INIT_ORDER_SKILLS 15
@@ -140,14 +144,11 @@
 #define INIT_ORDER_ICON_SMOOTHING -5
 #define INIT_ORDER_OVERLAY -6
 #define INIT_ORDER_XKEYSCORE -10
-#define INIT_ORDER_STICKY_BAN -10
 #define INIT_ORDER_LIGHTING -20
 #define INIT_ORDER_OUTDOOR_EFFECTS -21
 #define INIT_ORDER_MINOR_MAPPING -40
 #define INIT_ORDER_PATH -50
 #define INIT_ORDER_OW -55
-#define INIT_ORDER_DISCORD -60
-#define INIT_ORDER_PLEXORA -61
 #define INIT_ORDER_PERSISTENCE -95
 #define INIT_ORDER_BAN_CACHE -98
 #define INIT_ORDER_CHAT -100 // Should be last to ensure chat remains smooth during init.
@@ -178,6 +179,7 @@
 #define FIRE_PRIORITY_SMOOTHING	35
 #define FIRE_PRIORITY_HUDS 40
 #define FIRE_PRIORITY_NETWORKS 40
+#define FIRE_PRIORITY_CELLULAR 40
 #define FIRE_PRIORITY_OBJ 40
 #define FIRE_PRIORITY_ACID 40
 #define FIRE_PRIORITY_BURNING 40
@@ -190,9 +192,10 @@
 #define FIRE_PRIORITY_ATMOS_ADJACENCY 130
 #define FIRE_PRIORITY_CHAT 140
 #define FIRE_PRIORITY_RUNECHAT 150
-#define FIRE_PRIORITY_TIMER	150
-#define FIRE_PRIORITY_DELAYED_VERBS 160
-#define FIRE_PRIORITY_INPUT	170 // This must always always be the max highest priority. Player input must never be lost.
+#define FIRE_PRIORITY_MOUSE_ENTERED 160
+#define FIRE_PRIORITY_TIMER	170
+#define FIRE_PRIORITY_DELAYED_VERBS 180
+#define FIRE_PRIORITY_INPUT	190 // This must always always be the max highest priority. Player input must never be lost.
 
 // SS runlevels
 

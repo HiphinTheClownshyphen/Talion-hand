@@ -10,6 +10,10 @@
 /datum/species/human/halfelf
 	name = "Half-Elf"
 	id = SPEC_ID_HALF_ELF
+	multiple_accents = list(
+		"Humen Accent" = "Imperial",
+		"Elf Accent" = "Elfish"
+	)
 	desc = "The child of an Elf and a Humen. \
 	\n\n\
 	Half-Elves are generally frowned upon by more conservative peoples, \
@@ -123,12 +127,17 @@
 		"Solar-Hue" = SKIN_COLOR_SOLAR_HUE, // - (White 2)
 		"Walnut-Stine" = SKIN_COLOR_WALNUT_STINE, // - (White 3)
 		"Amber-Stained" = SKIN_COLOR_AMBER_STAINED, // - (White 4)
-		"Joshua-Aligned" = SKIN_COLOR_JOSHUA_ALIGNED, // - (Middle-Eastern)
+		"Joshua-Aligned" = SKIN_COLOR_JOSHUA_ALIGNED, // - (Middle-Eastern 1)
+		"Acacia-Crossed" = SKIN_COLOR_ACACIA_CROSSED, // - (Middle Eastern 2)
 		"Arid-Birthed" = SKIN_COLOR_ARID_BIRTHED, // - (Black)
 		"Redwood-Rooted" = SKIN_COLOR_REDWOOD_ROOTED, // - (Mediterranean 1)
 		"Drifted-Wood" = SKIN_COLOR_DRIFTED_WOOD, // - (Mediterranean 2)
 		"Vine-Wrapped" = SKIN_COLOR_VINE_WRAPPED, // - (Latin 2)
 		"Sage-Bloomed" = SKIN_COLOR_SAGE_BLOOMED, // - (Black 2)
+		"Mangrove-Cradled" = SKIN_COLOR_MANGROVE_CRADLED, // - (Native American 1)
+		"Tundra-Kissed" = SKIN_COLOR_TUNDRA_KISSED, // - (Native American 2)
+		"Ocean-Born" = SKIN_COLOR_OCEAN_BORN, // - (Polynesian)
+		"Basalt-Birthed" = SKIN_COLOR_BASALT_BIRTHED, // - (Melanesian)
 	))
 
 /datum/species/human/halfelf/get_hairc_list()
@@ -168,8 +177,13 @@
 
 /datum/species/human/halfelf/after_creation(mob/living/carbon/human/C)
 	..()
+	//If a patreon user picks the Elf Accent as a Half Elf, it will work the same as a non patreon user.
+	if(C.accent == ACCENT_ELF)
+		C.dna.species.native_language = "Elfish"
+		C.dna.species.accent_language = C.dna.species.get_accent(C.dna.species.native_language, 1)
+	if(!(C.accent in GLOB.accent_list))
+		C.dna.species.native_language = C.accent
+	C.dna.species.accent_language = C.dna.species.get_accent(C.dna.species.native_language, 1)
 	C.grant_language(/datum/language/elvish)
 	to_chat(C, "<span class='info'>I can speak Elvish with ,e before my speech.</span>")
 
-/datum/species/human/halfelf/get_native_language()
-	return pick("Elfish", "Imperial")

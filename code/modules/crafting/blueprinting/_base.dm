@@ -183,6 +183,8 @@ GLOBAL_LIST_EMPTY(blueprint_recipes)
 		html += "<strong>Required Tool:</strong><br>"
 		html += "[icon2html(tool, user)] [initial(tool.name)]<br><br>"
 		qdel(tool)
+	else
+		html += "<strong>Required Tool: hand</strong><br>"
 
 	if(skillcraft)
 		html += "<strong>Required Skill:</strong> [initial(skillcraft.name)]<br>"
@@ -192,7 +194,6 @@ GLOBAL_LIST_EMPTY(blueprint_recipes)
 
 
 	html += "<strong>Construction Time:</strong> [build_time * 0.1] seconds<br>"
-	html += "<strong>Action:</strong> [verbage] ([verbage_tp])<br>"
 
 	if(supports_directions)
 		html += "<strong>Supports Rotation:</strong> Yes<br>"

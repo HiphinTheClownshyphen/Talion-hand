@@ -7,7 +7,6 @@
 	Maybe your old associates conspire now to release you in a daring rescue. \
 	Yet it is far surer that your tears will rust this cursed mask \
 	than the sun shine upon your face a freed soul once more." // changed to reduce dictation of character. Nikov.
-	flag = GRAVETENDER
 	department_flag = PEASANTS
 	display_order = JDO_PRISONER
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
@@ -19,15 +18,15 @@
 	banned_leprosy = FALSE
 	bypass_lastclass = TRUE
 
-	allowed_races = RACES_PLAYER_ALL
+	allowed_races = RACES_PLAYER_FOREIGNNOBLE
 
-	outfit = /datum/outfit/job/prisoner
+	outfit = /datum/outfit/prisoner
 	give_bank_account = 173
 
 	cmode_music = 'sound/music/cmode/towner/CombatPrisoner.ogg'
 	can_have_apprentices = FALSE
 
-/datum/outfit/job/prisoner/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/prisoner/pre_equip(mob/living/carbon/human/H)
 	..()
 	pants = /obj/item/clothing/pants/loincloth/colored/brown
 	mask = /obj/item/clothing/face/facemask/prisoner

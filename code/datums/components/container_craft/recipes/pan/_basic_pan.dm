@@ -122,7 +122,8 @@
 
 /datum/container_craft/pan/roastseeds
 	name = "Roasted Seeds"
-	requirements = list(/obj/item/reagent_containers/food/snacks/produce/sunflower = 1)
+	crafting_time = 15 SECONDS
+	wildcard_requirements = list(/obj/item/neuFarm/seed = 1)
 	output = /obj/item/reagent_containers/food/snacks/roastseeds
 	cooked_smell = /datum/pollutant/food/roasted_seeds
 
@@ -132,6 +133,20 @@
 	requirements = list(/obj/item/reagent_containers/food/snacks/egg = 1)
 	output = /obj/item/reagent_containers/food/snacks/cooked/egg
 	cooked_smell = /datum/pollutant/food/fried_eggs
+
+/datum/container_craft/pan/egg/create_start_callback(crafter, initiator, highest_multiplier)
+	return CALLBACK(src, PROC_REF(on_start_recipe), crafter, initiator, highest_multiplier)
+
+/datum/container_craft/pan/egg/proc/on_start_recipe(atom/crafter, initiator, highest_multiplier)
+	var/list/stored_items = crafter.contents
+	playsound(crafter, 'sound/foley/eggbreak.ogg', 100, TRUE, -1)
+	crafter.visible_message("The [lowertext(name)] starts to cook.")
+	var/count = 0
+	for(var/obj/item/reagent_containers/food/snacks/egg/egg in stored_items)
+		if(count >= highest_multiplier)
+			break
+		egg.icon_state = "rawegg"
+	crafter.update_appearance(UPDATE_OVERLAYS)
 
 /datum/container_craft/pan/fried_potato
 	name = "Fried Potato"
@@ -247,3 +262,15 @@
 	output = /obj/item/reagent_containers/food/snacks/griddlecake/berry_poison
 	cooked_smell = /datum/pollutant/food/griddlecake
 	hides_from_books = TRUE
+
+/datum/container_craft/pan/fried_messenger
+	name = "Fried Messenger"
+	wildcard_requirements = list(/obj/item/reagent_containers/food/snacks/messenger_bird = 1)
+	output = /obj/item/reagent_containers/food/snacks/friedmessenger
+	cooked_smell = /datum/pollutant/food/fried_messenger
+
+/datum/container_craft/pan/fat_render
+	name = "Render Fat"
+	wildcard_requirements = list(/obj/item/reagent_containers/food/snacks/fat= 1)
+	output = /obj/item/reagent_containers/food/snacks/tallow
+	cooked_smell = /datum/pollutant/food/fried_messenger

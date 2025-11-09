@@ -81,18 +81,15 @@
 		last_provided_pressure = 0
 		stop_spray()
 
-/obj/structure/water_pump/return_rotation_chat(atom/movable/screen/movable/mouseover/mouseover)
+/obj/structure/water_pump/return_rotation_chat()
 	if(!rotation_network)
 		return
-	mouseover.maptext_height = 144
 
-	return {"<span style='font-size:8pt;font-family:"Pterra";color:#808000;text-shadow:0 0 1px #fff, 0 0 2px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;' class='center maptext '>
-			Pressure: [last_provided_pressure]
-			Fluid: [pumping_from ? initial(pumping_from.water_reagent.name) : "Nothing"]
-	<span style='font-size:8pt;font-family:"Pterra";color:#e6b120;text-shadow:0 0 1px #fff, 0 0 2px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;' class='center maptext '>
-			RPM: [rotations_per_minute ? rotations_per_minute : "0"]
-			[rotation_network.total_stress ? "[rotation_network.overstressed ? "OVER:" : "STRESS:"][round(((rotation_network?.used_stress / max(1, rotation_network?.total_stress)) * 100), 1)]%" : "Stress: [rotation_network.used_stress]"]
-			DIR: [rotation_direction == 4 ? "CW" : rotation_direction == 8 ? "CCW" : ""]</span>"}
+	return "Pressure: [last_provided_pressure]\n\
+			Fluid: [pumping_from ? initial(pumping_from.water_reagent.name) : "Nothing"]\n\
+			RPM: [rotations_per_minute ? rotations_per_minute : "0"]\n\
+			[rotation_network.total_stress ? "[rotation_network.overstressed ? "OVER:" : "STRESS:"][round(((rotation_network?.used_stress / max(1, rotation_network?.total_stress)) * 100), 1)]%" : "Stress: [rotation_network.used_stress]"]\n\
+			DIR: [rotation_direction == 4 ? "CW" : rotation_direction == 8 ? "CCW" : ""]"
 
 /obj/structure/water_pump/can_connect(obj/structure/connector)
 	if(connector.rotation_direction && rotation_direction && (connector.rotation_direction != rotation_direction))
@@ -129,14 +126,14 @@
 	var/turf/open/pipe_turf = get_step(src, dir)
 	last_provided = pumping_from.water_reagent
 	if(!locate(/obj/structure/water_pipe) in pipe_turf)
-		spray_water()
+		spray_water(pipe_turf)
 		return
 
 	stop_spray()
 	var/obj/structure/water_pipe/pipe  = locate(/obj/structure/water_pipe) in pipe_turf
 
 
-	var/new_pressure = rotations_per_minute
+	var/new_pressure = rotations_per_minute + bonus_pressure
 	// if(last_provided_pressure != new_pressure)
 	pipe.make_provider(pumping_from.water_reagent, new_pressure, src)
 	last_provided_pressure = new_pressure
@@ -144,14 +141,27 @@
 /obj/structure/water_pump/use_water_pressure(pressure)
 	pumping_from.adjust_originate_watervolume(pressure)
 
-/obj/structure/water_pump/proc/spray_water()
+/obj/structure/water_pump/proc/spray_water(turf/pipe_turf)
 	if(!water_spray)
 		water_spray = mutable_appearance(icon, "water_spray")
-		water_spray.pixel_y = -32
+		water_spray.pixel_y = 32
 		water_spray.layer = 5
 	cut_overlay(water_spray)
 	water_spray.color = initial(pumping_from.water_reagent.color)
 	add_overlay(water_spray)
+	if(isopenspace(pipe_turf))
+		while(isopenspace(pipe_turf))
+			pipe_turf = get_step_multiz(pipe_turf, DOWN)
+
+	var/datum/reagent/faux_reagent = new pumping_from.water_reagent
+	faux_reagent.on_aeration(rotations_per_minute, get_turf(src))
+
+	if(istype(pipe_turf, /turf/open/water))
+		var/turf/open/water/water = pipe_turf
+		if(water.mapped)
+			return
+		use_water_pressure(rotations_per_minute)
+		water.water_volume = min(water.water_volume + rotations_per_minute, water.water_maximum)
 
 /obj/structure/water_pump/proc/stop_spray()
 	cut_overlay(water_spray)

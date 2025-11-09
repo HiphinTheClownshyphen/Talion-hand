@@ -11,7 +11,7 @@
 	icon = 'icons/mob/afterlife.dmi'
 	icon_state = "skull"
 	screen_loc = "WEST-4,SOUTH+6"
-	nomouseover = FALSE
+	no_over_text = FALSE
 
 /atom/movable/screen/ghost/orbit/rogue/Click(location, control, params)
 	var/mob/dead/observer/G = usr
@@ -26,10 +26,9 @@
 			if(G.client.holder)
 				if(istype(G, /mob/dead/observer/rogue/arcaneeye))
 					return
-				if(istype(G, /mob/dead/observer/profane)) // Souls trapped by a dagger can return to lobby if they want, at the cost of a triumph.
-					if(alert("Return to the lobby? This will cost a triumph!", "", "Yes", "No") == "Yes")
+				if(istype(G, /mob/dead/observer/profane)) // Souls trapped by a dagger can return to lobby if they want
+					if(alert("Return to the lobby?", "", "Yes", "No") == "Yes")
 						G.returntolobby()
-						G.adjust_triumphs(-1)
 				G.client.descend()
 				return
 
@@ -50,18 +49,15 @@
 	var/atom/movable/screen/using
 
 	if(!GLOB.admin_datums[owner.ckey]) // If you are adminned, you will not get the dead hud obstruction.
-		using =  new /atom/movable/screen/backhudl/ghost()
-		using.hud = src
+		using =  new /atom/movable/screen/backhudl/ghost(null, src)
 		static_inventory += using
 
-	scannies = new /atom/movable/screen/scannies
-	scannies.hud = src
+	scannies = new /atom/movable/screen/scannies(null, src)
 	static_inventory += scannies
 	if(owner.client?.prefs?.crt == TRUE)
 		scannies.alpha = 70
 
-	using = new /atom/movable/screen/ghost/orbit/rogue()
-	using.hud = src
+	using = new /atom/movable/screen/ghost/orbit/rogue(null, src)
 	static_inventory += using
 
 /datum/hud/ghost/show_hud(version = 0, mob/viewmob)
@@ -84,12 +80,10 @@
 	..()
 	var/atom/movable/screen/using
 
-	using =  new /atom/movable/screen/backhudl/ghost()
-	using.hud = src
+	using =  new /atom/movable/screen/backhudl/ghost(null, src)
 	static_inventory += using
 
-	scannies = new /atom/movable/screen/scannies
-	scannies.hud = src
+	scannies = new /atom/movable/screen/scannies(null, src)
 	static_inventory += scannies
 	if(owner.client?.prefs?.crt == TRUE)
 		scannies.alpha = 70
@@ -114,12 +108,10 @@
 	..()
 	var/atom/movable/screen/using
 
-	using =  new /atom/movable/screen/backhudl/obs()
-	using.hud = src
+	using =  new /atom/movable/screen/backhudl/obs(null, src)
 	static_inventory += using
 
-	scannies = new /atom/movable/screen/scannies
-	scannies.hud = src
+	scannies = new /atom/movable/screen/scannies(null, src)
 	static_inventory += scannies
 	if(owner.client?.prefs?.crt == TRUE)
 		scannies.alpha = 70

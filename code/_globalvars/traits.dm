@@ -25,10 +25,12 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"TRAIT_IGNOREDAMAGESLOWDOWN" = TRAIT_IGNOREDAMAGESLOWDOWN,
 		"TRAIT_DEATHCOMA" = TRAIT_DEATHCOMA,
 		"TRAIT_FAKEDEATH" = TRAIT_FAKEDEATH,
+		"TRAIT_NO_TRANSFORM" = TRAIT_NO_TRANSFORM,
 		"TRAIT_STUNIMMUNE" = TRAIT_STUNIMMUNE,
 		"TRAIT_SLEEPIMMUNE" = TRAIT_SLEEPIMMUNE,
 		"TRAIT_PUSHIMMUNE" = TRAIT_PUSHIMMUNE,
 		"TRAIT_STABLEHEART" = TRAIT_STABLEHEART,
+		"TRAIT_STASIS" = TRAIT_STASIS,
 		"TRAIT_RESISTHEAT" = TRAIT_RESISTHEAT,
 		"TRAIT_RESISTHEATHANDS" = TRAIT_RESISTHEATHANDS,
 		"TRAIT_RESISTCOLD" = TRAIT_RESISTCOLD,
@@ -40,6 +42,7 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"TRAIT_NOFIRE" = TRAIT_NOFIRE,
 		"TRAIT_NOGUNS" = TRAIT_NOGUNS,
 		"TRAIT_NOHUNGER" = TRAIT_NOHUNGER,
+		"TRAIT_NOHYGIENE" = TRAIT_NOHYGIENE,
 		"TRAIT_NOMETABOLISM" = TRAIT_NOMETABOLISM,
 		"TRAIT_TOXIMMUNE" = TRAIT_TOXIMMUNE,
 		"TRAIT_EASYDISMEMBER" = TRAIT_EASYDISMEMBER,
@@ -90,13 +93,13 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"Of the Cabal" = TRAIT_CABAL,
 		"Unleechable" = TRAIT_LEECHIMMUNE,
 		"Webwalker" = TRAIT_WEBWALK,
-		"Dead Nose" = TRAIT_NOSTINK,
+		"Brushwalker" = TRAIT_BRUSHWALK,
+		"Dead Nose" = TRAIT_DEADNOSE,
 		"High Jumping" = TRAIT_ZJUMP,
 		"Jesterophobia" = TRAIT_JESTERPHOBIA,
 		"Xenophobia" = TRAIT_XENOPHOBIC,
 		"Tolerant" = TRAIT_TOLERANT,
 		"Nude Sleeper" = TRAIT_NUDE_SLEEPER,
-		"Civilized Barbarian" = TRAIT_CIVILIZEDBARBARIAN,
 		"Intimidating" = TRAIT_NOSEGRAB,
 		"Nutcracker" = TRAIT_NUTCRACKER,
 		"Strong Bite" = TRAIT_STRONGBITE,
@@ -135,6 +138,7 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"Shock Immunity" = TRAIT_SHOCKIMMUNE,
 		"Expert Herb Finder" = TRAIT_LEGENDARY_ALCHEMIST,
 		"Secret Officiant" = TRAIT_SECRET_OFFICIANT,
+		"Addict Recognition" = TRAIT_RECOGNIZE_ADDICTS,
 		"Deceiving Meekness" = TRAIT_DECEIVING_MEEKNESS,
 		"Thieves Guild Member" = TRAIT_THIEVESGUILD,
 		"Engineering Goggles" = TRAIT_ENGINEERING_GOGGLES,
@@ -151,6 +155,7 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"Bad Mood" = TRAIT_BAD_MOOD,
 		"Night Owl" = TRAIT_NIGHT_OWL,
 		"Ugly" = TRAIT_UGLY,
+		"Fishface" = TRAIT_FISHFACE,
 		"Hollow Bones" = TRAIT_HOLLOWBONES,
 		"Light Load" = TRAIT_AMAZING_BACK,
 		"Loved By Kittens" = TRAIT_KITTEN_MOM,
@@ -159,6 +164,13 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"Violator of the Coven" = TRAIT_VIOLATOR,
 		"Endless Slumber" = TRAIT_TORPOR,
 		"Boundless Energy" = TRAIT_NOENERGY,
+		"Keen Ears"	= TRAIT_KEENEARS,
+		"Poison Resilience" = TRAIT_POISON_RESILIENCE,
+		"Expert Forager" = TRAIT_FORAGER,
+		"Seed Finder" = TRAIT_SEED_FINDER,
+		"Recruited" = TRAIT_RECRUITED,
+		"Recognized" = TRAIT_RECOGNIZED,
+		"Member of the Oratorium Throni Vacui" = TRAIT_INQUISITION,
 	),
 	/obj/item/bodypart = list(
 		"TRAIT_PARALYSIS" = TRAIT_PARALYSIS
@@ -168,16 +180,26 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"TRAIT_NO_TELEPORT" = TRAIT_NO_TELEPORT,
 		"TRAIT_WIELDED" = TRAIT_WIELDED,
 		"TRAIT_NEEDS_TWO_HANDS" = TRAIT_NEEDS_TWO_HANDS,
-		)
+		"TRAIT_HARD_TO_STEAL" = TRAIT_HARD_TO_STEAL,
+		),
+	/atom/movable = list(
+		"TRAIT_MOVE_GROUND" = TRAIT_MOVE_GROUND,
+		"TRAIT_MOVE_FLYING" = TRAIT_MOVE_FLYING,
+		"TRAIT_MOVE_VENTCRAWLING" = TRAIT_MOVE_VENTCRAWLING,
+		"TRAIT_MOVE_FLOATING" = TRAIT_MOVE_FLOATING,
+		"TRAIT_MOVE_PHASING" = TRAIT_MOVE_PHASING,
+		"TRAIT_SHAKY_SPEECH" = TRAIT_SHAKY_SPEECH,
+		),
 	))
 
 GLOBAL_LIST_INIT(roguetraits, list(
 	TRAIT_WEBWALK = "I can move freely between webs.",
-	TRAIT_NOSTINK = span_dead("My nose is numb to the smell of decay."),
+	TRAIT_BRUSHWALK = "I can move freely through plain bushes.",
+	TRAIT_DEADNOSE = span_dead("My nose is numb to the smell of unpleasant odors."),
 	TRAIT_ZJUMP = "Time to reach a new height.",
 	TRAIT_JESTERPHOBIA = span_warning("I have a severe irrational fear of Jesters"),
-	TRAIT_XENOPHOBIC = span_warning("Lesser races pollute our land"),
-	TRAIT_TOLERANT = span_info("I dream of an ideal future, one with peace between all races"),
+	TRAIT_XENOPHOBIC = span_warning("Lesser species pollute our land"),
+	TRAIT_TOLERANT = span_info("I dream of an ideal future, one with peace between all species"),
 	TRAIT_NOSEGRAB = "I love to grab idiots by their noses!",
 	TRAIT_NUTCRACKER = "I love kicking idiots on the nuts!",
 	TRAIT_SEEPRICES = "I can tell the prices of things down to the zenny.",
@@ -220,6 +242,7 @@ GLOBAL_LIST_INIT(roguetraits, list(
 	TRAIT_BAD_MOOD = span_warning("Everything just seems to piss me off"),
 	TRAIT_NIGHT_OWL = span_info("I enjoy spending my time in the night"),
 	TRAIT_UGLY = span_necrosis("Do not look in the mirror."),
+	TRAIT_FISHFACE = span_necrosis("Other species find me hideous."),
 	TRAIT_SPELLBLOCK = span_warning("I cannot cast any spells."),
 	TRAIT_ANTIMAGIC = "I am immune to most forms of magic.",
 	TRAIT_ANTISCRYING = "I am immune to most forms of magical divination.",
@@ -241,6 +264,8 @@ GLOBAL_LIST_INIT(roguetraits, list(
 	TRAIT_TUTELAGE = "I am a capable tutor to those who apprentice under me.",
 	TRAIT_APRICITY = "The warmth of the sun rejuvenates me, allowing me to regain my stamina quicker.",
 	TRAIT_BLACKLEG = "I can cheat by rigging coin and dice, and peek at cards.",
+	TRAIT_INQUISITION = span_info("I am a member of the Oratorium Throni Vacui. I can easily identify others of my cadre at a glance."),
+	TRAIT_SILVER_BLESSED = span_info("I am anointed with holy silver, which preserves me from curses that bite, miracles of the false gods hold no sway over me."),
 	TRAIT_MATTHIOS_EYES = span_notice("I have a sense for what the most valuable item someone has is."),
 	TRAIT_CRATEMOVER = "I am able to drag heavy objects without any difficulty.",
 	TRAIT_SEE_LEYLINES = "I can see the lines that make up this world.",
@@ -255,13 +280,27 @@ GLOBAL_LIST_INIT(roguetraits, list(
 	TRAIT_AMAZING_BACK = span_notice("I'm able to carry far more on my back!"),
 	TRAIT_HOLLOWBONES = span_danger("My bones are light as air, Its hard to wear armor."),
 	TRAIT_RECRUITED = "I have been recruited!",
+	TRAIT_RECOGNIZED = span_notice("These people recognize me, my renown has spread from my homeland to this very place."),
 	TRAIT_EARGRAB = span_info("I can keep a tight grip on the ear of unruly children."),
 	TRAIT_KITTEN_MOM = span_info("Kittens love you, they see you are a parent."),
+	TRAIT_INSPIRING_MUSICIAN = span_info("The flow of battle dances to my song!"),
 	TRAIT_FACELESS = span_danger("I am faceless. I am shunned. The others will recognise me for what I am. If I give them the chance."),
 	TRAIT_FLOWERFIELD_IMMUNITY = span_info("I am immune to the effects of flower fields."),
 	TRAIT_SECRET_OFFICIANT = span_love("I am able to conduct secret wedding ceremonies outside of the church. Love cannot be stopped!"),
+	TRAIT_RECOGNIZE_ADDICTS = "I can recognize alcoholics and junkies just by looking at them.",
 	TRAIT_DUALWIELDER = span_info("I am trained in the art of dual wielding."),
-	TRAIT_NOENERGY = span_info("I don't need rest; I won't ever feel fatigue.")
+	TRAIT_NOENERGY = span_info("I don't need rest; I won't ever feel fatigue."),
+	TRAIT_KEENEARS = span_info("I've a good pair of ears, and can tell who is speaking, even when they're out of sight. I can also hear whispers from further away."),
+	TRAIT_POISON_RESILIENCE	= span_info("I'm more resilient to poisons."),
+	TRAIT_FORAGER = span_info("I can tell which jackberries are poisonous."),
+	TRAIT_SEED_FINDER = span_info("I find seeds more easily."),
+	TRAIT_PSYDONITE = span_info("PSYDON LYVES. PSYDON PERSISTS. I can ENDURE and LYVE with wounds better than most."),
+	TRAIT_PSYDONIAN_GRIT = span_info("I can shrug off my wounds and maintain composure under duress. My own mortality is proof that I LYVE, as too does HE."),
+	TRAIT_BLACKBAGGER = span_info("I've been trained to properly abduct individuals through the use of seizing garrotes and blackbags."),
+	TRAIT_NOCSHADES = span_info("The lens I look through allows me to see in the dark clear as dae, at the cost of greater vision."),
+	TRAIT_LYCANRESILENCE = span_info("Dendor's fury flows through my veins, my wounds regenerate over time..."),
+	TRAIT_COIN_ILLITERATE = span_info("I care little for the concept of coins and prefer to barter via other means."),
+	TRAIT_LUCKY_COOK = span_info("Xylix smiles upon my cooking, I often end up with impossible amounts of extra goods..."),
 ))
 
 /// value -> trait name, generated on use from trait_by_type global
@@ -273,3 +312,24 @@ GLOBAL_LIST(trait_name_map)
 		for(var/tname in GLOB.traits_by_type[key])
 			var/val = GLOB.traits_by_type[key][tname]
 			.[val] = tname
+
+GLOBAL_LIST_INIT(movement_type_trait_to_flag, list(
+	TRAIT_MOVE_GROUND = GROUND,
+	TRAIT_MOVE_FLYING = FLYING,
+	TRAIT_MOVE_VENTCRAWLING = VENTCRAWLING,
+	TRAIT_MOVE_FLOATING = FLOATING,
+	TRAIT_MOVE_PHASING = PHASING
+	))
+
+GLOBAL_LIST_INIT(movement_type_addtrait_signals, set_movement_type_addtrait_signals())
+GLOBAL_LIST_INIT(movement_type_removetrait_signals, set_movement_type_removetrait_signals())
+
+/proc/set_movement_type_addtrait_signals(signal_prefix)
+	. = list()
+	for(var/trait in GLOB.movement_type_trait_to_flag)
+		. += SIGNAL_ADDTRAIT(trait)
+
+/proc/set_movement_type_removetrait_signals(signal_prefix)
+	. = list()
+	for(var/trait in GLOB.movement_type_trait_to_flag)
+		. += SIGNAL_REMOVETRAIT(trait)

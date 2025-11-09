@@ -65,6 +65,7 @@
 #include "anchored_mobs.dm"
 #include "component_tests.dm"
 #include "connect_loc.dm"
+#include "container_collision.dm"
 #include "craftable_clothes.dm"
 #include "craftable_turfs.dm"
 #include "create_and_destroy.dm"
@@ -76,6 +77,7 @@
 #include "reagent_id_typos.dm"
 #include "reagent_names.dm"
 #include "reagent_recipe_collisions.dm"
+#include "required_map_items.dm"
 #include "resist.dm"
 #include "rogue_inhands.dm"
 #include "roguetown_clothing.dm"
@@ -86,6 +88,7 @@
 #include "surgeries.dm"
 #include "timer_sanity.dm"
 #include "unit_test.dm"
+#include "weapon_icons.dm"
 // END_INCLUDE
 
 #ifdef REFERENCE_TRACKING_DEBUG //Don't try and parse this file if ref tracking isn't turned on. IE: don't parse ref tracking please mr linter

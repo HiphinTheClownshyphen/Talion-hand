@@ -12,7 +12,12 @@
 	id = "oiled"
 	duration = 5 MINUTES
 	alert_type = /atom/movable/screen/alert/status_effect/oiled
-	var/slip_chance = 8 // chance to slip when moving
+	var/slip_chance = 3 // chance to slip when moving
+
+/atom/movable/screen/alert/status_effect/oiled
+	name = "Oiled"
+	desc = "I'm covered in oil, making me slippery and harder to grab!"
+	icon_state = "debuff"
 
 /datum/status_effect/buff/oiled/on_apply()
 	. = ..()
@@ -23,8 +28,9 @@
 	UnregisterSignal(owner, COMSIG_MOVABLE_MOVED)
 
 /datum/status_effect/buff/oiled/proc/on_move(mob/living/mover, atom/oldloc, direction, forced)
-	if(forced)
+	if(forced || mover.movement_type & (FLYING|FLOATING) || mover.throwing)
 		return
+
 	var/slipping_prob = slip_chance
 	if(iscarbon(mover))
 		var/mob/living/carbon/carbon = mover
@@ -40,47 +46,35 @@
 		else
 			mover.liquid_slip(total_time = 1 SECONDS, stun_duration = 1 SECONDS, height = 12, flip_count = 0)
 
-/atom/movable/screen/alert/status_effect/oiled
-	name = "Oiled"
-	desc = "I'm covered in oil, making me slippery and harder to grab!"
-	icon_state = "oiled"
-
-/atom/proc/liquid_slip(dir=null, total_time = 0.5 SECONDS, height = 16, stun_duration = 1 SECONDS, flip_count = 1)
-	animate(src) // cleanse animations as funny as a ton of stacked flips would be it would be an eye sore
-	var/matrix/M = transform
+/atom/proc/liquid_slip(total_time = 0.5 SECONDS, stun_duration = 0.5 SECONDS, height = 16, flip_count = 1)
 	var/turn = 90
-	if(isnull(dir))
-		if(dir == EAST)
-			turn = 90
-		else if(dir == WEST)
-			turn = -90
-		else
-			if(prob(50))
-				turn = -90
-
-
-	var/flip_anim_step_time = total_time / (1 + 4 * flip_count)
-	animate(src, transform = matrix(M, turn, MATRIX_ROTATE | MATRIX_MODIFY), time = flip_anim_step_time, flags = ANIMATION_PARALLEL)
-	for(var/i in 1 to flip_count)
-		animate(transform = matrix(M, turn, MATRIX_ROTATE | MATRIX_MODIFY), time = flip_anim_step_time)
-		animate(transform = matrix(M, turn, MATRIX_ROTATE | MATRIX_MODIFY), time = flip_anim_step_time)
-		animate(transform = matrix(M, turn, MATRIX_ROTATE | MATRIX_MODIFY), time = flip_anim_step_time)
-		animate(transform = matrix(M, turn, MATRIX_ROTATE | MATRIX_MODIFY), time = flip_anim_step_time)
-	var/matrix/M2 = transform
-	animate(transform = matrix(M, 1.2, 0.7, MATRIX_SCALE | MATRIX_MODIFY), time = total_time * 0.125)
-	animate(transform = M2, time = total_time * 0.125)
-
-	animate(src, pixel_y=height, time= total_time * 0.5, flags=ANIMATION_PARALLEL)
-	animate(pixel_y=-4, time= total_time * 0.5)
+	if(dir == EAST)
+		turn = 90
+	else if(dir == WEST)
+		turn = -90
+	else if(prob(50))
+		turn = -90
 
 	if(isliving(src))
 		var/mob/living/living = src
-		living.Knockdown(stun_duration)
-		living.set_resting(FALSE, silent = TRUE)
-		animate(src, pixel_x = 0, pixel_y = 0, transform = src.transform.Turn(-turn), time = 3, easing = LINEAR_EASING, flags=ANIMATION_PARALLEL)
-	else
-		spawn(stun_duration + total_time)
-			animate(src, pixel_x = 0, pixel_y = 0, transform = src.transform.Turn(-turn), time = 3, easing = LINEAR_EASING, flags=ANIMATION_PARALLEL)
+		living.Immobilize(total_time)
+		addtimer(CALLBACK(src, TYPE_PROC_REF(/mob/living, Knockdown), total_time), stun_duration)
+
+	var/matrix/transform_before = transform
+	var/flip_anim_step_time = total_time / (1 + 4 * flip_count)
+
+	animate(src, transform = transform.Turn(turn), time = flip_anim_step_time, flags = ANIMATION_PARALLEL)
+
+	if(flip_count)
+		do_spin_animation(flip_anim_step_time, flip_count, 4)
+
+	animate(transform = matrix().Scale(1.2, 0.7), time = total_time * 0.3)
+	animate(transform = matrix(), time = total_time * 0.3)
+
+	animate(src, pixel_z = height, time = total_time * 0.5, flags = ANIMATION_PARALLEL|ANIMATION_RELATIVE)
+	animate(pixel_z = -height, time = total_time * 0.5, flags = ANIMATION_RELATIVE)
+
+	animate(src, transform = transform_before, time = 0, flags = ANIMATION_PARALLEL)
 
 ///////////OFFHAND///////////////
 /obj/item/grabbing
@@ -253,9 +247,6 @@
 
 	if(HAS_TRAIT(M, TRAIT_RESTRAINED))
 		combat_modifier += 0.25
-
-	if(M.body_position == LYING_DOWN && user.body_position != LYING_DOWN)
-		combat_modifier += 0.1
 
 	if(user.cmode && !M.cmode)
 		combat_modifier += 0.3
@@ -540,55 +531,37 @@
 	update_grab_intents()
 	return TRUE
 
-/obj/item/grabbing/attack_turf(turf/T, mob/living/user)
+/obj/item/grabbing/attack_atom(atom/attacked_atom, mob/living/user)
+	. = TRUE
 	if(!valid_check())
 		return
 	user.changeNext_move(CLICK_CD_MELEE)
 	switch(user.used_intent.type)
 		if(/datum/intent/grab/move)
-			if(isturf(T))
-				user.Move_Pulled(T)
+			user.Move_Pulled(get_turf(attacked_atom))
 		if(/datum/intent/grab/smash)
+			if(!iscarbon(grabbed))
+				return
 			if(user.body_position == LYING_DOWN)
 				to_chat(user, span_warning("I must stand."))
 				return
-			if(limb_grabbed && grab_state > 0) //this implies a carbon victim
-				if(isopenturf(T))
-					if(iscarbon(grabbed))
-						var/mob/living/carbon/C = grabbed
-						if(!C.Adjacent(T))
-							return FALSE
-						if(C.body_position != LYING_DOWN)
-							return
-						playsound(C.loc, T.attacked_sound, 100, FALSE, -1)
-						smashlimb(T, user)
-				else if(isclosedturf(T))
-					if(iscarbon(grabbed))
-						var/mob/living/carbon/C = grabbed
-						if(!C.Adjacent(T))
-							return FALSE
-						if(!(C.body_position != LYING_DOWN))
-							return
-						playsound(C.loc, T.attacked_sound, 100, FALSE, -1)
-						smashlimb(T, user)
-
-/obj/item/grabbing/attack_obj(obj/O, mob/living/user)
-	if(!valid_check())
-		return
-	user.changeNext_move(CLICK_CD_MELEE)
-	if(user.used_intent.type == /datum/intent/grab/smash)
-		if(isstructure(O) && O.blade_dulling != DULLING_CUT)
-			if(user.body_position == LYING_DOWN)
-				to_chat(user, span_warning("I must stand."))
+			var/mob/living/carbon/C = grabbed
+			if(!C.Adjacent(attacked_atom))
 				return
 			if(limb_grabbed && grab_state > 0) //this implies a carbon victim
-				if(iscarbon(grabbed))
-					var/mob/living/carbon/C = grabbed
-					if(!C.Adjacent(O))
-						return FALSE
-					playsound(C.loc, O.attacked_sound, 100, FALSE, -1)
-					smashlimb(O, user)
-
+				if(isopenturf(attacked_atom))
+					if(C.body_position != LYING_DOWN)
+						return
+					playsound(C, attacked_atom.attacked_sound, 100, FALSE, -1)
+					smashlimb(attacked_atom, user)
+				else if(isclosedturf(attacked_atom))
+					if(C.body_position == LYING_DOWN)
+						return
+					playsound(C, attacked_atom.attacked_sound, 100, FALSE, -1)
+					smashlimb(attacked_atom, user)
+				else if(isstructure(attacked_atom) && attacked_atom.blade_dulling != DULLING_CUT)
+					playsound(C, attacked_atom.attacked_sound, 100, FALSE, -1)
+					smashlimb(attacked_atom, user)
 
 /obj/item/grabbing/proc/smashlimb(atom/A, mob/living/user) //implies limb_grabbed and sublimb are things
 	var/mob/living/carbon/C = grabbed
@@ -745,15 +718,15 @@
 	var/damage = user.get_punch_dmg()
 	if(HAS_TRAIT(user, TRAIT_STRONGBITE))
 		damage = damage*2
-	user.do_attack_animation(C, ATTACK_EFFECT_BITE)
+	user.do_attack_animation(C, ATTACK_EFFECT_BITE, used_item = FALSE)
 	C.next_attack_msg.Cut()
 	if(C.apply_damage(damage, BRUTE, limb_grabbed, armor_block))
 		playsound(C.loc, "smallslash", 100, FALSE, -1)
-		limb_grabbed.bodypart_attacked_by(BCLASS_BITE, damage, user, sublimb_grabbed, crit_message = TRUE)
 		var/datum/wound/caused_wound = limb_grabbed.bodypart_attacked_by(BCLASS_BITE, damage, user, sublimb_grabbed, crit_message = TRUE)
 		if(user.mind)
 			//TODO: Werewolf Signal
-			if(user.mind.has_antag_datum(/datum/antagonist/werewolf))
+			var/datum/antagonist/werewolf/werewolf_antag = user.mind.has_antag_datum(/datum/antagonist/werewolf)
+			if(werewolf_antag && werewolf_antag.transformed)
 				var/mob/living/carbon/human/human = user
 				if(istype(caused_wound))
 					caused_wound?.werewolf_infect_attempt()
@@ -808,115 +781,4 @@
 	if(!limb_grabbed.get_bleed_rate())
 		to_chat(user, span_warning("Sigh. It's not bleeding."))
 		return
-	var/mob/living/carbon/C = grabbed
-	if(C.dna?.species && (NOBLOOD in C.dna.species.species_traits))
-		to_chat(user, span_warning("Sigh. No blood."))
-		return
-	if(C.blood_volume <= 0)
-		to_chat(user, span_warning("Sigh. No blood."))
-		return
-	if(ishuman(C))
-		var/mob/living/carbon/human/H = C
-		if(istype(H.wear_neck, /obj/item/clothing/neck/psycross/silver))
-			to_chat(user, span_userdanger("SILVER! HISSS!!!"))
-			return
-		// Add bite animation to the victim
-		H.add_bite_animation()
-
-	last_drink = world.time
-	user.changeNext_move(CLICK_CD_MELEE)
-
-	if(user.mind && C.mind)
-		var/datum/antagonist/vampire/VDrinker = user.mind.has_antag_datum(/datum/antagonist/vampire)
-		var/datum/antagonist/vampire/VVictim = C.mind.has_antag_datum(/datum/antagonist/vampire)
-		var/zomwerewolf = C.mind.has_antag_datum(/datum/antagonist/werewolf)
-		if(!zomwerewolf)
-			if(C.stat != DEAD)
-				zomwerewolf = C.mind.has_antag_datum(/datum/antagonist/zombie)
-		if(VDrinker)
-			if(zomwerewolf)
-				to_chat(user, span_danger("I'm going to puke..."))
-				addtimer(CALLBACK(user, TYPE_PROC_REF(/mob/living/carbon, vomit), 0, TRUE), rand(8 SECONDS, 15 SECONDS))
-			else
-				var/blood_handle
-				if(C.stat == DEAD)
-					blood_handle |= BLOOD_PREFERENCE_DEAD
-				else
-					blood_handle |= BLOOD_PREFERENCE_LIVING
-
-				if(C.job in list("Priest", "Priestess", "Cleric", "Acolyte", "Templar", "Churchling", "Crusader", "Inquisitor"))
-					blood_handle |= BLOOD_PREFERENCE_HOLY
-				if(VVictim)
-					blood_handle |= BLOOD_PREFERENCE_KIN
-					blood_handle  &= ~BLOOD_PREFERENCE_LIVING
-
-				if(C.bloodpool > 0)
-					C.blood_volume = max(C.blood_volume-45, 0)
-					if(ishuman(C))
-						var/mob/living/carbon/human/H = C
-						if(H.virginity)
-							to_chat(user, span_love("Virgin blood, delicious!"))
-							var/mob/living/carbon/V = user
-							V.add_stress(/datum/stressevent/vblood)
-							var/used_vitae = 150
-
-							if(C.bloodpool >= 750)
-								to_chat(user, "<span class='love'>...And empowering!</span>")
-							else if(C.bloodpool < used_vitae)
-								used_vitae = C.bloodpool // We assume they're left with 250 vitae or less, so we take it all
-								to_chat(user, "<span class='warning'>...But alas, only leftovers...</span>")
-							user.adjust_bloodpool(used_vitae)
-							user.adjust_hydration(used_vitae * 0.1)
-							if(VVictim)
-								C.adjust_bloodpool(used_vitae)
-							C.bloodpool -= used_vitae
-
-						else
-							var/used_vitae = 150
-							if(C.bloodpool < used_vitae)
-								used_vitae = C.bloodpool // We assume they're left with 250 vitae or less, so we take it all
-								to_chat(user, "<span class='warning'>...But alas, only leftovers...</span>")
-							user.adjust_bloodpool(used_vitae)
-							user.adjust_hydration(used_vitae * 0.1)
-							if(VVictim)
-								C.adjust_bloodpool(-used_vitae) //twice the loss
-							C.adjust_bloodpool(-used_vitae)
-					user.clan.handle_bloodsuck(user, blood_handle)
-				else
-					to_chat(user, span_warning("No more vitae from this blood..."))
-		else // Don't larp as a vampire, kids.
-			to_chat(user, span_warning("I'm going to puke..."))
-			addtimer(CALLBACK(user, TYPE_PROC_REF(/mob/living/carbon, vomit), 0, TRUE), rand(8 SECONDS, 15 SECONDS))
-	else
-		if(user.mind) // We're drinking from a mob or a person who disconnected from the game
-			if(user.mind.has_antag_datum(/datum/antagonist/vampire))
-				C.blood_volume = max(C.blood_volume-45, 0)
-				if(C.bloodpool >= 250)
-					user.adjust_bloodpool(250, 250)
-				else
-					to_chat(user, span_warning("And yet, not enough vitae can be extracted from them... Tsk."))
-
-	C.blood_volume = max(C.blood_volume-5, 0)
-	C.handle_blood()
-
-	playsound(user.loc, 'sound/misc/drink_blood.ogg', 100, FALSE, -4)
-
-	C.visible_message(span_danger("[user] drinks from [C]'s [parse_zone(sublimb_grabbed)]!"), \
-					span_userdanger("[user] drinks from my [parse_zone(sublimb_grabbed)]!"), span_hear("..."), COMBAT_MESSAGE_RANGE, user)
-	to_chat(user, span_warning("I drink from [C]'s [parse_zone(sublimb_grabbed)]."))
-	log_combat(user, C, "drank blood from ")
-
-	if(ishuman(C) && C.mind)
-		if(user.clan_position?.can_assign_positions && C.bloodpool <= 150)
-			if(browser_alert(user, "Would you like to sire a new spawn?", "THE CURSE OF KAIN", DEFAULT_INPUT_CHOICES) != CHOICE_YES)
-				to_chat(user, span_warning("I decide [C] is unworthy."))
-			else
-				user.visible_message(span_danger("Some dark energy begins to flow from [user] into [C]..."), span_userdanger("I begin siring [C]..."))
-				if(do_after(user, 3 SECONDS, C))
-					C.visible_message(span_red("[C] rises as a new spawn!"))
-					var/datum/antagonist/vampire/new_antag = new /datum/antagonist/vampire(user.clan, TRUE)
-					C.mind.add_antag_datum(new_antag)
-					C.adjust_bloodpool(500)
-					// this is bad, should give them a healing buff instead
-					sleep(2 SECONDS)
-					C.fully_heal()
+	user.drinksomeblood(grabbed, sublimb_grabbed)

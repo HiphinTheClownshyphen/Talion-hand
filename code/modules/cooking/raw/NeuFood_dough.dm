@@ -128,7 +128,7 @@
 
 /obj/item/reagent_containers/food/snacks/hardtack
 	name = "hardtack"
-	desc = "Very, very hard and dry."
+	desc = "Very, very hard and dry. Keeps well."
 	icon_state = "tack"
 	base_icon_state = "tack"
 	biting = TRUE
@@ -180,16 +180,17 @@
 /obj/item/reagent_containers/food/snacks/bread/on_consume(mob/living/eater)
 	..()
 	if(slices_num)
-		if(bitecount == 1)
-			slices_num = 5
-		if(bitecount == 2)
-			slices_num = 4
-		if(bitecount == 3)
-			slices_num = 3
-		if(bitecount == 4)
-			slices_num = 2
-		if(bitecount == 5)
-			changefood(slice_path, eater)
+		switch(bitecount)
+			if(1)
+				slices_num = 5
+			if(2)
+				slices_num = 4
+			if(3)
+				slices_num = 3
+			if(4)
+				slices_num = 2
+			if(5)
+				changefood(slice_path, eater)
 
 /*	.................   Breadslice & Toast   ................... */
 /obj/item/reagent_containers/food/snacks/breadslice
@@ -286,14 +287,14 @@
 /obj/item/reagent_containers/food/snacks/stale_bread
 	name = "stale bread"
 	desc = "Old. Is that mold? Not fit for slicing, just eating in sullen silence."
-	icon_state = "loaf6"
+	icon_state = "loaf"
 	color = "#92908a"
 	dropshrink = 0.8
 	list_reagents = list(/datum/reagent/consumable/nutriment = SNACK_DECENT)
 	drop_sound = 'sound/foley/dropsound/gen_drop.ogg'
 	w_class = WEIGHT_CLASS_NORMAL
 	tastes = list("stale bread" = 1)
-	faretype = FARE_NEUTRAL
+	faretype = FARE_POOR
 
 /obj/item/reagent_containers/food/snacks/stale_bread/raisin
 	icon_state = "raisinbread6"
@@ -375,8 +376,6 @@
 	base_icon_state = "grenzbun"
 	faretype = FARE_NEUTRAL
 	foodtype = GRAIN | MEAT
-	plateable = TRUE
-	foodbuff_skillcheck = TRUE
 	rotprocess = SHELFLIFE_DECENT
 	bitesize = 5
 
@@ -605,7 +604,6 @@
 	tastes = list("cake"=1, "pear" = 1, "delicious honeyfrosting"=1)
 	eat_effect = /datum/status_effect/buff/foodbuff
 	rotprocess = SHELFLIFE_DECENT
-	plateable = TRUE
 	faretype = FARE_FINE
 
 // -------------- CHEESECAKE -----------------
@@ -656,7 +654,6 @@
 	foodtype = GRAIN | DAIRY | SUGAR
 	eat_effect = /datum/status_effect/buff/foodbuff
 	rotprocess = SHELFLIFE_DECENT
-	plateable = TRUE
 	faretype = FARE_FINE
 
 /obj/item/reagent_containers/food/snacks/cheesecake_poison_cooked
@@ -690,7 +687,6 @@
 	w_class = WEIGHT_CLASS_NORMAL
 	foodtype = GRAIN | DAIRY | SUGAR
 	rotprocess = SHELFLIFE_DECENT
-	plateable = TRUE
 	faretype = FARE_FINE
 
 /*	.................   STRAWBERRY CAKE   ................... */

@@ -61,7 +61,9 @@
 /obj/projectile/bullet/reusable/bolt/on_hit(atom/target, blocked = FALSE)
 	if(can_inject && iscarbon(target))
 		var/mob/living/carbon/M = target
-		if(blocked != 100) // not completely blocked
+		var/armor = M.run_armor_check(def_zone, flag, "", "",armor_penetration, damage)
+		var/armor_real_check = max(0, armor - damage)
+		if(armor_real_check == 0)
 			if(M.can_inject(null, FALSE, def_zone, piercing)) // Pass the hit zone to see if it can inject by whether it hit the head or the body.
 				..()
 				reagents.reaction(M, INJECT)
@@ -224,6 +226,38 @@
 	chem_splash(target_loc, 3, list(reagents))
 	return ..()
 
+
+/obj/item/ammo_casing/caseless/bolt/holy
+	name = "sunderbolt"
+	desc = "A silver-tipped bolt, containing a small vial of holy water. Though it inflicts lesser wounds on living flesh, it exceeds when employed against the unholy; a snap and a crack, followed by a fiery surprise. </br>'One baptism for the remission of sins.'"
+	projectile_type = /obj/projectile/bullet/reusable/bolt/holy
+	possible_item_intents = list(/datum/intent/dagger/cut, /datum/intent/dagger/thrust)
+	caliber = "regbolt"
+	icon = 'icons/roguetown/weapons/ammo.dmi'
+	icon_state = "bolt_holywater"
+	dropshrink = 0.6
+	max_integrity = 10
+	force = 10
+/obj/item/ammo_casing/caseless/bolt/holy/Initialize()
+	. = ..()
+	reagents.add_reagent(/datum/reagent/water/blessed, 5)
+
+/obj/projectile/bullet/reusable/bolt/holy
+	name = "sunderbolt"
+	damage = 35 //Halved damage, but same penetration.
+	damage_type = BRUTE
+	armor_penetration = 50
+	icon = 'icons/roguetown/weapons/ammo.dmi'
+	icon_state = "bolthwater_proj"
+	ammo_type = /obj/item/ammo_casing/caseless/bolt/holy
+	range = 15
+	hitsound = 'sound/combat/hits/hi_arrow2.ogg'
+	embedchance = 100
+	woundclass = BCLASS_PIERCE
+	flag = "piercing"
+	speed = 0.5
+
+
 /*-------\
 | Arrows |
 \-------*/
@@ -272,7 +306,9 @@
 /obj/projectile/bullet/reusable/arrow/on_hit(atom/target, blocked = FALSE)
 	if(can_inject && iscarbon(target))
 		var/mob/living/carbon/M = target
-		if(blocked != 100) // not completely blocked
+		var/armor = M.run_armor_check(def_zone, flag, "", "",armor_penetration, damage)
+		var/armor_real_check = max(0, armor - damage)
+		if(armor_real_check == 0)
 			if(M.can_inject(null, FALSE, def_zone, piercing)) // Pass the hit zone to see if it can inject by whether it hit the head or the body.
 				..()
 				reagents.reaction(M, INJECT)
@@ -300,6 +336,7 @@
 	embedchance = 80
 	armor_penetration = 0
 	damage = ARROW_DAMAGE-2
+	woundclass = BCLASS_STAB
 
 //................ Poison Arrow ............... //
 /obj/item/ammo_casing/caseless/arrow/poison
@@ -474,6 +511,8 @@
 	armor_penetration = BULLET_PENETRATION
 	speed = 0.3
 	accuracy = 50 //Lower accuracy than an arrow.
+	reduce_crit_chance = 5 //Reduces crit chance
+	dismemberment = 0 //Can't dismember
 
 /obj/projectile/bullet/fragment
 	name = "smaller lead ball"
@@ -502,54 +541,61 @@
 	icon_state = "musketball"
 	dropshrink = 0.5
 	possible_item_intents = list(/datum/intent/use)
-	max_integrity = 0
 	force = 3
 
 //................ Cannon Ball ............... //
 /obj/projectile/bullet/reusable/cannonball
 	name = "large lead ball"
 	desc = "A round lead ball. Complex and still spherical."
-	damage = 300
+	damage = 9999
 	damage_type = BRUTE
 	icon = 'icons/roguetown/weapons/ammo.dmi'
-	icon_state = "musketball_proj" // No one sees it anyway. I think.
+	icon_state = "cannonball"
 	ammo_type = /obj/item/ammo_casing/caseless/cball
-	range = 999
+	range = 50
 	jitter = 5
 	stun = 1
 	hitsound = 'sound/combat/hits/hi_bolt (2).ogg'
 	embedchance = 0
-	dismemberment = 300
+	dismemberment = 500
 	spread = 0
 	woundclass = BCLASS_SMASH
 	impact_effect_type = /obj/effect/temp_visual/impact_effect
 	flag =  "piercing"
 	hitscan = FALSE
 	armor_penetration = BULLET_PENETRATION
-	speed = 0.8
+	speed = 2
+	resistance_flags = EVERYTHING_PROOF
 
-/obj/projectile/bullet/reusable/cannonball/on_hit(atom/target,blocked = FALSE)
+/obj/projectile/bullet/reusable/cannonball/on_hit(atom/target, blocked = FALSE)
+	var/turf/explosion_place = get_turf(target)
+	if(isindestructiblewall(target))
+		explosion_place = get_step(target, get_dir(target, fired_from))
+	. = ..()
 	if(iscarbon(target))
 		var/mob/living/carbon/M = target
-		M.visible_message("<span class='danger'>[M] explodes into a shower of gibs!</span>")
 		M.gib()
-	explosion(get_turf(target), heavy_impact_range = 2, light_impact_range = 4, flame_range = 0, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
-	..(target, blocked)
+	explosion(explosion_place, devastation_range = 2, heavy_impact_range = 4, light_impact_range = 12, flame_range = 7, smoke = TRUE, soundin = pick('sound/misc/explode/bottlebomb (1).ogg','sound/misc/explode/bottlebomb (2).ogg'))
 
 //................ Grapeshot ............... //
 /obj/item/ammo_casing/caseless/cball
-	name = "large lead ball"
+	name = "large cannonball"
 	desc = "A round lead ball. Complex and still spherical."
 	icon = 'icons/roguetown/weapons/ammo.dmi'
+	icon_state = "cannonball"
 	projectile_type = /obj/projectile/bullet/reusable/cannonball
-	dropshrink = 0.5
-	icon_state = "cball"
 	caliber = "cannoball"
 	possible_item_intents = list(/datum/intent/use)
 	max_integrity = 1
 	randomspread = 0
 	variance = 0
 	force = 10
+	item_weight = 70
+	grid_width = 96
+	grid_height = 96
+	w_class = WEIGHT_CLASS_HUGE
+	resistance_flags = EVERYTHING_PROOF | EXPLOSION_MOVE_PROOF
+	throw_range = 1
 
 /obj/item/ammo_casing/caseless/cball/grapeshot
 	name = "berryshot"
@@ -600,7 +646,9 @@
 /obj/projectile/bullet/reusable/dart/on_hit(atom/target, blocked = FALSE)
 	if(iscarbon(target))
 		var/mob/living/carbon/M = target
-		if(blocked != 100) // not completely blocked
+		var/armor = M.run_armor_check(def_zone, flag, "", "",armor_penetration, damage)
+		var/armor_real_check = max(0, armor - damage)
+		if(armor_real_check == 0)
 			if(M.can_inject(null, FALSE, def_zone, piercing)) // Pass the hit zone to see if it can inject by whether it hit the head or the body.
 				..()
 				reagents.reaction(M, INJECT)

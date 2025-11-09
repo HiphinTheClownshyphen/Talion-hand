@@ -80,6 +80,13 @@
 #define SFX_JINGLE_BELLS	"jingle_bells"
 #define SFX_INQUIS_BOOT_STEP	"inquis_boot_step"
 #define SFX_POWER_ARMOR_STEP	"power_armor_step"
+#define SFX_WATCH_BOOT_STEP	"watch_boot_step"
+#define SFX_CAT_MEOW "cat_meow"
+#define SFX_CAT_PURR "cat_purr"
+#define SFX_EGG_HATCHING "egg_hatching"
+#define SFX_DEFAULT_FISH_SLAP "default_fish_slap"
+#define SFX_ALT_FISH_SLAP "alt_fish_slap"
+#define SFX_REEL "reel"
 
 #define INTERACTION_SOUND_RANGE_MODIFIER 0
 #define EQUIP_SOUND_VOLUME 100

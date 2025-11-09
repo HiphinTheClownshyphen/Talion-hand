@@ -40,10 +40,20 @@ GLOBAL_VAR_INIT(mobids, 1)
 	for(var/cc in client_colours)
 		qdel(cc)
 	client_colours = null
-	offered_item = null
 	ghostize(drawskip=TRUE)
 	..()
 	return QDEL_HINT_HARDDEL
+
+/// Assigns a (c)key to this mob.
+/mob/proc/PossessByPlayer(ckey)
+	SHOULD_NOT_OVERRIDE(TRUE)
+	if(isnull(ckey))
+		return
+
+	if(!istext(ckey))
+		CRASH("Tried to assign a mob a non-text ckey, wtf?!")
+
+	src.ckey = ckey(ckey)
 
 /**
  * Intialize a mob
@@ -286,15 +296,11 @@ GLOBAL_VAR_INIT(mobids, 1)
 	if(!W.mob_can_equip(src, null, slot, disable_warning, bypass_equip_delay_self))
 		if(qdel_on_fail)
 			qdel(W)
-		else
-			if(!disable_warning)
-				to_chat(src, "<span class='warning'>I couldn't equip that.</span>")
+		else if(!disable_warning)
+			to_chat(src, span_warning("I can't equip that!"))
 		return FALSE
-	equip_to_slot(W, slot, redraw_mob, initial) //This proc should not ever fail.
+	equip_to_slot(W, slot, initial, redraw_mob) //This proc should not ever fail.
 	update_a_intents()
-	if(isliving(src))
-		var/mob/living/L = src
-		L.update_reflection()
 	return TRUE
 
 /**
@@ -305,7 +311,7 @@ GLOBAL_VAR_INIT(mobids, 1)
  *
  *In most cases you will want to use equip_to_slot_if_possible()
  */
-/mob/proc/equip_to_slot(obj/item/W, slot, initial)
+/mob/proc/equip_to_slot(obj/item/equipping, slot, initial = FALSE, redraw_mob = FALSE)
 	return
 
 /**
@@ -327,17 +333,21 @@ GLOBAL_VAR_INIT(mobids, 1)
  *
  * returns 0 if it cannot, 1 if successful
  */
-/mob/proc/equip_to_appropriate_slot(obj/item/W)
-	if(!istype(W))
+/mob/proc/equip_to_appropriate_slot(obj/item/equipping, delete_on_fail = FALSE)
+	if(!istype(equipping))
 		return FALSE
-	var/slot_priority = W.slot_equipment_priority
+
+	var/slot_priority = equipping.slot_equipment_priority
 
 	if(!slot_priority)
 		slot_priority = DEFAULT_SLOT_PRIORITY
 
 	for(var/slot as anything in slot_priority)
-		if(equip_to_slot_if_possible(W, slot, FALSE, TRUE, TRUE)) //qdel_on_fail = 0; disable_warning = 1; redraw_mob = 1
+		if(equip_to_slot_if_possible(equipping, slot, FALSE, TRUE, TRUE)) //qdel_on_fail = 0; disable_warning = 1; redraw_mob = 1
 			return TRUE
+
+	if(delete_on_fail)
+		qdel(equipping)
 
 	return FALSE
 /**
@@ -346,36 +356,37 @@ GLOBAL_VAR_INIT(mobids, 1)
  * reset_perspective() set eye to common default : mob on turf, loc otherwise
  * reset_perspective(thing) set the eye to the thing (if it's equal to current default reset to mob perspective)
  */
-/mob/proc/reset_perspective(atom/A,atom/B)
-	if(client)
-		if(A)
-			if(ismovableatom(A))
-				//Set the the thing unless it's us
-				if(A != src)
-					client.perspective = EYE_PERSPECTIVE
-					client.eye = A
-				else
-					client.eye = client.mob
-					client.perspective = MOB_PERSPECTIVE
-			else if(isturf(A))
-				//Set to the turf unless it's our current turf
-				if(A != loc)
-					client.perspective = EYE_PERSPECTIVE
-					client.eye = A
-				else
-					client.eye = client.mob
-					client.perspective = MOB_PERSPECTIVE
-			else
-				//Do nothing
+/mob/proc/reset_perspective(atom/new_perspective)
+	if(!client)
+		return
+
+	if(!new_perspective)
+		if(isturf(loc))
+			client.eye = client.mob
+			client.perspective = MOB_PERSPECTIVE
 		else
-			//Reset to common defaults: mob if on turf, otherwise current loc
-			if(isturf(loc))
-				client.eye = client.mob
-				client.perspective = MOB_PERSPECTIVE
-			else
-				client.perspective = EYE_PERSPECTIVE
-				client.eye = loc
-		return 1
+			client.perspective = EYE_PERSPECTIVE
+			client.eye = loc
+		return
+
+	if(ismovableatom(new_perspective))
+		//Set the the thing unless it's us
+		if(new_perspective != src)
+			client.perspective = EYE_PERSPECTIVE
+			client.eye = new_perspective
+		else
+			client.eye = client.mob
+			client.perspective = MOB_PERSPECTIVE
+		return
+
+	if(isturf(new_perspective))
+		//Set to the turf unless it's our current turf
+		if(new_perspective != loc)
+			client.perspective = EYE_PERSPECTIVE
+			client.eye = new_perspective
+		else
+			client.eye = client.mob
+			client.perspective = MOB_PERSPECTIVE
 
 /// Show the mob's inventory to another mob
 /mob/proc/show_inv(mob/user)
@@ -399,90 +410,58 @@ GLOBAL_VAR_INIT(mobids, 1)
 		// shift-click catcher may issue examinate() calls for out-of-sight turfs
 		return
 
-	if(is_blind(src))
+	if(is_blind())
 		to_chat(src, "<span class='warning'>Something is there but I can't see it!</span>")
 		return
 
 	if(isturf(A.loc) && isliving(src))
 		face_atom(A)
-		visible_message("<span class='emote'>[src] looks at [A].</span>")
+		if(src.m_intent != MOVE_INTENT_SNEAK)
+			visible_message("<span class='emote'>[src] looks at [A].</span>")
+		else
+			if(isliving(A))
+				var/mob/living/observer = src
+				var/mob/living/target = A
+				var/observer_skill = observer.get_skill_level(/datum/skill/misc/sneaking)
+				if(observer_skill <= 0)
+					observer_skill = 1
+				if(observer.rogue_sneaking)
+					observer_skill += 1
+
+				// determine PER multiplier based on the target PER
+				var/multiplier = 5
+				if(target.STAPER < 5)
+					multiplier = 4
+				else if(target.STAPER >= 5 && target.STAPER < 10)
+					multiplier = 5
+				else if(target.STAPER >= 10 && target.STAPER < 15)
+					multiplier = 6
+				else if(target.STAPER >= 15 && target.STAPER <= 20)
+					multiplier = 7
+
+				// calculate probability to fail
+				var/probby = (target.STAPER * multiplier) - (observer_skill * 10)
+
+				// clamp probability
+				probby = max(probby, 5)
+				probby = min(probby, 95)
+
+				if(prob(probby))
+					to_chat(src, span_warning("[A] noticed me peeking!"))
+					to_chat(A, span_warning("[src] peeks at you!"))
+					if(target.client) // only if they have a client to see it
+						found_ping(get_turf(observer), target.client, "hidden")
+				else
+					if(observer.client?.prefs.showrolls)
+						to_chat(src, span_info("[probby]%... my peeking went unnoticed.."))
+					else
+						to_chat(src, span_info("My peeking went unnoticed.."))
 	var/list/result = A.examine(src)
 	if(LAZYLEN(result))
 		for(var/i in 1 to (length(result) - 1))
 			result[i] += "\n"
 		to_chat(src, examine_block("<span class='infoplain'>[result.Join()]</span>"))
 	SEND_SIGNAL(src, COMSIG_MOB_EXAMINATE, A)
-
-/**
- * Point at an atom
- *
- * mob verbs are faster than object verbs. See
- * [this byond forum post](https://secure.byond.com/forum/?post=1326139&page=2#comment8198716)
- * for why this isn't atom/verb/pointed()
- *
- * note: ghosts can point, this is intended
- *
- * visible_message will handle invisibility properly
- *
- * overridden here and in /mob/dead/observer for different point span classes and sanity checks
- */
-/mob/verb/pointed(atom/A as mob|obj|turf in view())
-	set name = "Point To"
-	set category = "IC"
-
-	if(istype(A, /obj/effect/temp_visual/point))
-		return FALSE
-
-	DEFAULT_QUEUE_OR_CALL_VERB(VERB_CALLBACK(src, PROC_REF(_pointed), A))
-
-/// possibly delayed verb that finishes the pointing process starting in [/mob/verb/pointed()].
-/// either called immediately or in the tick after pointed() was called, as per the [DEFAULT_QUEUE_OR_CALL_VERB()] macro
-/mob/proc/_pointed(atom/A)
-	if(!src || !isturf(src.loc))
-		return FALSE
-	if(client && !(A in view(client.view, src)))
-		return FALSE
-
-	if(istype(A, /obj/effect/temp_visual/point))
-		return FALSE
-
-	var/tile = get_turf(A)
-	if (!tile)
-		return FALSE
-
-	new /obj/effect/temp_visual/point(src,invisibility)
-	SEND_SIGNAL(src, COMSIG_MOB_POINTED, A)
-
-	return TRUE
-
-/mob/proc/linepoint(atom/A as mob|obj|turf in view(), params)
-	if(world.time < lastpoint + 50)
-		return FALSE
-
-	if(stat)
-		return FALSE
-
-	if(client)
-		if(!src || !isturf(src.loc) || !(A in view(client.view, src)))
-			return FALSE
-
-	var/turf/tile = get_turf(A)
-	if (!tile)
-		return FALSE
-
-	var/turf/our_tile = get_turf(src)
-	var/obj/visual = new /obj/effect/temp_visual/point/still(our_tile, invisibility)
-	SEND_SIGNAL(src, COMSIG_MOB_POINTED, A)
-	animate(visual, pixel_x = (tile.x - our_tile.x) * world.icon_size + A.pixel_x, pixel_y = (tile.y - our_tile.y) * world.icon_size + A.pixel_y, time = 2, easing = EASE_OUT)
-
-	lastpoint = world.time
-	var/obj/I = get_active_held_item()
-	if(I)
-		src.visible_message("<span class='info'>[src] points [I] at [A].</span>", "<span class='info'>I point [I] at [A].</span>")
-	else
-		src.visible_message("<span class='info'>[src] points at [A].</span>", "<span class='info'>I point at [A].</span>")
-
-	return TRUE
 
 ///Can this mob resist (default FALSE)
 /mob/proc/can_resist()
@@ -813,7 +792,7 @@ GLOBAL_VAR_INIT(mobids, 1)
 		return FALSE
 	if(anchored)
 		return FALSE
-	if(notransform)
+	if(HAS_TRAIT(src, TRAIT_NO_TRANSFORM))
 		return FALSE
 	if(HAS_TRAIT(src, TRAIT_RESTRAINED))
 		return FALSE
@@ -987,13 +966,13 @@ GLOBAL_VAR_INIT(mobids, 1)
 ///Call back post buckle to a mob to offset your visual height
 /mob/post_buckle_mob(mob/living/M)
 	var/height = M.get_mob_buckling_height(src)
-	M.pixel_y = initial(M.pixel_y) + height
+	M.pixel_y = M.base_pixel_y + height
 	if(M.layer < layer)
 		M.layer = layer + 0.1
 ///Call back post unbuckle from a mob, (reset your visual height here)
 /mob/post_unbuckle_mob(mob/living/M)
 	M.layer = initial(M.layer)
-	M.pixel_y = initial(M.pixel_y)
+	M.pixel_y = M.base_pixel_y
 
 ///returns the height in pixel the mob should have when buckled to another mob.
 /mob/proc/get_mob_buckling_height(mob/seat)
@@ -1186,7 +1165,7 @@ GLOBAL_VAR_INIT(mobids, 1)
 /mob/proc/can_read(obj/O, silent = FALSE)
 	if(isobserver(src))
 		return TRUE
-	if(is_blind(src) || eye_blurry)
+	if(is_blind() || eye_blurry)
 		if(!silent)
 			to_chat(src, span_warning("I'm too blind to read."))
 		return
@@ -1307,24 +1286,17 @@ GLOBAL_VAR_INIT(mobids, 1)
 
 /mob/proc/adjust_hydration(change)
 	if(HAS_TRAIT(src, TRAIT_NOHUNGER))
-		nutrition = HYDRATION_LEVEL_FULL
+		hydration = HYDRATION_LEVEL_FULL
 	hydration = max(0, hydration + change)
 	if(hydration > HYDRATION_LEVEL_FULL)
 		hydration = HYDRATION_LEVEL_FULL
 
 /mob/proc/set_hydration(change)
 	if(HAS_TRAIT(src, TRAIT_NOHUNGER))
-		nutrition = HYDRATION_LEVEL_FULL
+		hydration = HYDRATION_LEVEL_FULL
 	hydration = max(0, change)
 	if(hydration > HYDRATION_LEVEL_FULL)
 		hydration = HYDRATION_LEVEL_FULL
-
-///Set the movement type of the mob and update it's movespeed
-/mob/setMovetype(newval)
-	. = ..()
-	if(isnull(.))
-		return
-	update_movespeed(FALSE)
 
 /mob/proc/update_equipment_speed_mods()
 	var/speedies = equipped_speed_mods()
@@ -1365,17 +1337,27 @@ GLOBAL_VAR_INIT(mobids, 1)
 	return TRUE
 
 /// Send a menu that allows for the selection of an item. Randomly selects one after time_limit. selection_list should be an associative list of string and typepath
-/mob/proc/select_equippable(user_client, list/selection_list, time_limit = 20 SECONDS, message = "", title = "")
-	if(QDELETED(src) || !mind)
-		return
+/mob/living/proc/select_equippable(user_client, list/selection_list, time_limit = 20 SECONDS, message = "", title = "")
 	if(!LAZYLEN(selection_list))
 		return
+
 	var/to_send = user_client ? user_client : src
+
 	var/choice = browser_input_list(to_send, message, title, selection_list, timeout = time_limit)
+	if(QDELETED(src))
+		return
+
 	if(!choice)
 		choice = pick(selection_list)
-	var/spawn_item = LAZYACCESS(selection_list, choice)
-	if(!spawn_item)
+
+	var/list/spawn_items = LAZYACCESS(selection_list, choice)
+	if(!islist(spawn_items))
+		spawn_items = list(spawn_items)
+
+	if(!length(spawn_items))
 		return choice
-	equip_to_appropriate_slot(new spawn_item(get_turf(src)))
+
+	for(var/obj/item/spawn_item as anything in spawn_items)
+		equip_to_appropriate_slot(new spawn_item(), TRUE)
+
 	return choice

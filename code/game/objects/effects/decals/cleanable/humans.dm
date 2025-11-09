@@ -8,9 +8,9 @@
 	bloodiness = BLOOD_AMOUNT_PER_DECAL
 	beauty = -100
 	alpha = 200
-	nomouseover = TRUE
+	no_over_text = TRUE
 	appearance_flags = NO_CLIENT_COLOR
-	nomouseover = TRUE
+	no_over_text = TRUE
 	clean_type = CLEAN_TYPE_BLOOD
 
 	var/blood_timer
@@ -65,8 +65,8 @@
 		return .
 	create_reagents(20)
 	reagents.add_reagent(/datum/reagent/blood, 20)
-	pixel_x = rand(-5,5)
-	pixel_y = rand(5,5)
+	pixel_x = base_pixel_x + rand(-5,5)
+	pixel_y = base_pixel_y + rand(5,5)
 	blood_timer = addtimer(CALLBACK(src, PROC_REF(become_dry)), rand(5 MINUTES,15 MINUTES), TIMER_STOPPABLE)
 	GLOB.weather_act_upon_list += src
 
@@ -187,12 +187,6 @@
 	mergeable_decal = FALSE
 
 	var/already_rotting = FALSE
-
-
-/obj/effect/decal/cleanable/blood/gibs/Crossed(mob/living/L)
-	if(istype(L) && has_gravity(loc))
-		playsound(loc, 'sound/blank.ogg', 50, TRUE)
-	. = ..()
 
 /obj/effect/decal/cleanable/blood/gibs/proc/streak(list/directions)
 	set waitfor = FALSE

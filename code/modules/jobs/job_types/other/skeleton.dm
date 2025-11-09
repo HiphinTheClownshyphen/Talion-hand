@@ -7,7 +7,6 @@
 /datum/job/skeleton
 	title = "Skeleton"
 	tutorial = null
-	flag = SKELETON
 	department_flag = UNDEAD
 	job_flags = (JOB_EQUIP_RANK)
 	faction = FACTION_TOWN //this seems wrong?
@@ -18,7 +17,7 @@
 	allowed_races = RACES_PLAYER_ALL
 	cmode_music = 'sound/music/cmode/antag/combatskeleton.ogg'
 
-	outfit = /datum/outfit/job/skeleton
+	outfit = /datum/outfit/skeleton
 	give_bank_account = FALSE
 
 /datum/job/skeleton/after_spawn(mob/living/spawned, client/player_client)
@@ -64,18 +63,19 @@
 	ADD_TRAIT(H, TRAIT_NOSLEEP, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_SHOCKIMMUNE, TRAIT_GENERIC)
 
-/datum/outfit/job/skeleton/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/skeleton/pre_equip(mob/living/carbon/human/H)
 	..()
 
 	H.base_strength = rand(8,10)
 	H.base_speed = rand(7,10)
 	H.base_intelligence = 1
 	H.base_constitution = 3
+	H.recalculate_stats(FALSE)
 
 /* RAIDER SKELETONS */
 /datum/job/skeleton/raider
 	title = "Skeleton Raider"
-	outfit = /datum/outfit/job/skeleton/raider
+	outfit = /datum/outfit/skeleton/raider
 
 /datum/job/skeleton/raider/after_spawn(mob/living/carbon/spawned, client/player_client)
 	..()
@@ -93,7 +93,7 @@
 	spawned.mind.add_antag_datum(new_antag)
 
 
-/datum/outfit/job/skeleton/raider/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/skeleton/raider/pre_equip(mob/living/carbon/human/H)
 	..()
 	wrists = /obj/item/clothing/wrists/bracers/leather
 	if(prob(50))
@@ -137,7 +137,7 @@
 
 	switch(pick(1,6))
 		if (1)
-			var/obj/item/weapon/sword/short/P = new()
+			var/obj/item/weapon/sword/short/iron/P = new()
 			H.put_in_hands(P, forced = TRUE)
 		if (2)
 			var/obj/item/weapon/axe/copper/P = new()
@@ -159,7 +159,7 @@
 /* CULT SUMMONS */
 /datum/job/skeleton/zizoid
 	title = "Cult Summon"
-	outfit = /datum/outfit/job/skeleton/zizoid
+	outfit = /datum/outfit/skeleton/zizoid
 	cmode_music = 'sound/music/cmode/antag/combat_cult.ogg'
 
 /datum/job/skeleton/zizoid/after_spawn(mob/living/spawned, client/player_client)
@@ -170,12 +170,17 @@
 	H.mind?.current.job = null
 	H.set_patron(/datum/patron/inhumen/zizo)
 
-/datum/outfit/job/skeleton/zizoid/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/skeleton/zizoid/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.base_strength = rand(8,17)
 	H.base_speed = rand(7,10)
 	H.base_intelligence = 1
 	H.base_constitution = 3
+	H.recalculate_stats(FALSE)
+	H.grant_language(/datum/language/undead)
+	if(H.dna?.species)
+		H.dna.species.native_language = "Zizo Chant"
+		H.dna.species.accent_language = H.dna.species.get_accent(H.dna.species.native_language)
 
 	H.verbs |= /mob/living/carbon/human/proc/praise
 	H.verbs |= /mob/living/carbon/human/proc/communicate

@@ -1,4 +1,5 @@
 #define ROUND_START_MUSIC_LIST "strings/round_start_sounds.txt"
+#define SS_TICKER_TRAIT "SS_Ticker"
 
 /proc/low_memory_force_start()
 	for(var/i in GLOB.new_player_list)
@@ -45,9 +46,6 @@ SUBSYSTEM_DEF(ticker)
 	//376000 day
 	var/gametime_offset = 288001		//Deciseconds to add to world.time for station time.
 	var/station_time_rate_multiplier = 40		//factor of station time progressal vs real time.
-	var/time_until_vote = 135 MINUTES
-	var/last_vote_time = null
-	var/firstvote = TRUE
 
 	var/totalPlayers = 0					//used for pregame stats on statpanel
 	var/totalPlayersReady = 0				//used for pregame stats on statpanel
@@ -171,8 +169,6 @@ SUBSYSTEM_DEF(ticker)
 		gametime_offset = world.timeofday
 	return ..()
 
-#undef ROUND_START_MUSIC_LIST
-
 /datum/controller/subsystem/ticker/fire()
 	if(reboot_anyway)
 		if(world.time > reboot_anyway)
@@ -183,8 +179,6 @@ SUBSYSTEM_DEF(ticker)
 			for(var/client/C in GLOB.clients)
 				window_flash(C, ignorepref = TRUE) //let them know lobby has opened up.
 			current_state = GAME_STATE_PREGAME
-			//Everyone who wants to be an observer is now spawned
-			create_observers()
 			SEND_SIGNAL(src, COMSIG_TICKER_ENTER_PREGAME)
 			fire()
 		if(GAME_STATE_PREGAME)
@@ -198,6 +192,7 @@ SUBSYSTEM_DEF(ticker)
 				if(player.ready == PLAYER_READY_TO_PLAY)
 					++totalPlayersReady
 
+			readying_update_scale_job()
 			if(start_immediately)
 				timeLeft = 0
 
@@ -245,15 +240,50 @@ SUBSYSTEM_DEF(ticker)
 				toggle_dooc(TRUE)
 				declare_completion(force_ending)
 				Master.SetRunLevel(RUNLEVEL_POSTGAME)
-			if(firstvote)
-				if(world.time > round_start_time + time_until_vote)
-					SSvote.initiate_vote("endround", "The Gods")
-					time_until_vote = 40 MINUTES
-					last_vote_time = world.time
-					firstvote = FALSE
-			else
-				if(world.time > last_vote_time + time_until_vote)
-					SSvote.initiate_vote("endround", "The Gods")
+			if(SSgamemode.roundvoteend)
+				return
+
+/datum/controller/subsystem/ticker/proc/readying_update_scale_job()
+
+	//Get ALL town jobs
+	var/list/town_jobs = list()
+	for(var/datum/job/J as anything in SSjob.joinable_occupations)
+		if (J.faction == FACTION_TOWN)
+			town_jobs += J.title
+
+	//Now find players who readied with HIGH preference on those town jobs
+	var/list/town_ready = list()
+
+	for(var/mob/dead/new_player/player in GLOB.player_list)
+		if(!player || !player.client)
+			continue
+
+		if(player.ready != PLAYER_READY_TO_PLAY)
+			continue
+
+		//Loop through each job the player has set to HIGH
+		for(var/job_name in player.client.prefs.job_preferences)
+			if(player.client.prefs.job_preferences[job_name] != JP_HIGH)
+				continue
+
+			//Only count if it is a town job
+			if(!(job_name in town_jobs))
+				continue
+
+			//Check job availability rules
+			if(player.client.prefs.lastclass == job_name)
+				if (player.IsJobUnavailable(job_name) != JOB_AVAILABLE)
+					continue
+
+			//Add to the list
+			town_ready += job_name
+
+	var/ready_town_count = length(town_ready)
+
+	for(var/datum/job/job_to_set in SSjob.joinable_occupations)
+		if(job_to_set.enabled && job_to_set.scales)
+			job_to_set.set_spawn_and_total_positions(ready_town_count)
+
 
 /datum/controller/subsystem/ticker/proc/checkreqroles()
 	var/list/readied_jobs = list()
@@ -275,9 +305,10 @@ SUBSYSTEM_DEF(ticker)
 							continue
 					readied_jobs.Add(V)
 
-	if(!(("Monarch" in readied_jobs) || (start_immediately == TRUE))) //start_immediately triggers when the world is doing a test run or an admin hits start now, we don't need to check for king
-		to_chat(world, span_purple("[pick(no_ruler_lines)]"))
-		return FALSE
+	if(CONFIG_GET(flag/ruler_required))
+		if(!(("Monarch" in readied_jobs) || (start_immediately == TRUE))) //start_immediately triggers when the world is doing a test run or an admin hits start now, we don't need to check for king
+			to_chat(world, span_purple("[pick(no_ruler_lines)]"))
+			return FALSE
 
 	job_change_locked = TRUE
 	return TRUE
@@ -385,7 +416,7 @@ SUBSYSTEM_DEF(ticker)
 			S.after_round_start()
 		else
 			stack_trace("[S] [S.type] found in start landmarks list, which isn't a start landmark!")
-
+	SSgamemode.refresh_alive_stats(first_post_roundstart_check = TRUE)
 
 //These callbacks will fire after roundstart key transfer
 /datum/controller/subsystem/ticker/proc/OnRoundstart(datum/callback/cb)
@@ -443,7 +474,7 @@ SUBSYSTEM_DEF(ticker)
 		var/mob/living = player.transfer_character()
 		if(living)
 			qdel(player)
-			living.notransform = TRUE
+			ADD_TRAIT(living, TRAIT_NO_TRANSFORM, SS_TICKER_TRAIT)
 			livings += living
 			GLOB.character_ckey_list[living.real_name] = living.ckey
 		if(ishuman(living))
@@ -454,7 +485,7 @@ SUBSYSTEM_DEF(ticker)
 
 /datum/controller/subsystem/ticker/proc/release_characters(list/livings)
 	for(var/mob/living/L as anything in livings)
-		L.notransform = FALSE
+		REMOVE_TRAIT(L, TRAIT_NO_TRANSFORM, SS_TICKER_TRAIT)
 
 
 /datum/controller/subsystem/ticker/proc/send_tip_of_the_round()
@@ -572,14 +603,6 @@ SUBSYSTEM_DEF(ticker)
 	else
 		timeLeft = newtime
 
-//Everyone who wanted to be an observer gets made one now
-/datum/controller/subsystem/ticker/proc/create_observers()
-	for(var/i in GLOB.new_player_list)
-		var/mob/dead/new_player/player = i
-		if(player.ready == PLAYER_READY_TO_OBSERVE && player.mind)
-			//Break chain since this has a sleep input in it
-			addtimer(CALLBACK(player, TYPE_PROC_REF(/mob/dead/new_player, make_me_an_observer)), 1)
-
 /datum/controller/subsystem/ticker/proc/load_mode()
 	var/mode = trim(file2text("data/mode.txt"))
 	if(mode)
@@ -652,3 +675,6 @@ SUBSYSTEM_DEF(ticker)
 	update_everything_flag_in_db()
 
 	text2file(login_music, "data/last_round_lobby_music.txt")
+
+#undef ROUND_START_MUSIC_LIST
+#undef SS_TICKER_TRAIT

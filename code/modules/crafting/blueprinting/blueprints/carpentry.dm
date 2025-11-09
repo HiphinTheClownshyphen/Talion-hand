@@ -100,6 +100,17 @@
 	supports_directions = TRUE
 	craftdiff = 0
 
+/datum/blueprint_recipe/carpentry/stool/bar
+	name = "barstool"
+	desc = "Stool with a cloth cushion."
+	result_type = /obj/structure/chair/stool/bar
+	required_materials = list(
+		/obj/item/grown/log/tree/small = 1,
+		/obj/item/natural/cloth = 1
+	)
+	supports_directions = TRUE
+	craftdiff = 2
+
 /datum/blueprint_recipe/carpentry/loom
 	name = "loom"
 	desc = "A weaving loom for creating textiles."
@@ -142,7 +153,17 @@
 	)
 	craftdiff = 1
 
-/datum/blueprint_recipe/carpentry/wooden_stairs
+/datum/blueprint_recipe/carpentry/psydon_wooden_cross
+	name = "wooden psycross"
+	desc = "A wooden psycross dedicated to Psydon."
+	required_materials = list(
+		/obj/item/grown/log/tree/small = 1,
+		/obj/item/grown/log/tree/stake = 3
+	)
+	result_type = /obj/structure/fluff/psycross/psydon
+	craftdiff = 1
+
+/datum/blueprint_recipe/carpentry/wooden_stairs_down
 	name = "wooden stairs (down)"
 	desc = "Wooden stairs leading downward."
 	result_type = /obj/structure/stairs/d
@@ -153,6 +174,14 @@
 	supports_directions = TRUE
 	craftdiff = 1
 
+/datum/blueprint_recipe/carpentry/wooden_stairs_down/check_craft_requirements(mob/user, turf/T, obj/structure/blueprint/blueprint)
+	var/turf/partner = get_step_multiz(get_turf(blueprint), DOWN)
+	partner = get_step(partner, turn(blueprint.blueprint_dir, 180))
+	if(!isopenturf(partner))
+		to_chat(user, span_warning("Need an openspace at the turf below!"))
+		return FALSE
+	. = ..()
+
 /datum/blueprint_recipe/carpentry/railing
 	name = "railing"
 	desc = "A wooden safety railing."
@@ -161,11 +190,19 @@
 	supports_directions = TRUE
 	craftdiff = 0
 
-/datum/blueprint_recipe/carpentry/fence
+/datum/blueprint_recipe/carpentry/palisade
 	name = "palisade"
 	desc = "A wooden defensive palisade."
-	result_type = /obj/structure/fluff/railing/fence
+	result_type = /obj/structure/fluff/railing/tall/palisade
 	required_materials = list(/obj/item/grown/log/tree/stake = 2)
+	supports_directions = TRUE
+	craftdiff = 0
+
+/datum/blueprint_recipe/carpentry/fence
+	name = "fence"
+	desc = "A tall wooden fence."
+	result_type = /obj/structure/fluff/railing/tall
+	required_materials = list(/obj/item/grown/log/tree/small = 1, /obj/item/natural/wood/plank = 2)
 	supports_directions = TRUE
 	craftdiff = 0
 
@@ -411,7 +448,7 @@
 	required_materials = list(/obj/item/grown/log/tree/small = 1)
 	craftdiff = 0
 
-/datum/blueprint_recipe/carpentry/structure/plough
+/datum/blueprint_recipe/carpentry/plough
 	name = "plough"
 	desc = "A plough."
 	result_type = /obj/structure/plough
@@ -438,5 +475,16 @@
 	required_materials = list(
 		/obj/item/rope = 1
 	)
-	craftdiff = 1
+	build_time = 4 SECONDS
 	requires_ceiling = TRUE
+
+/datum/blueprint_recipe/carpentry/apiary
+	name = "Apiary"
+	desc = "A home for bees."
+	result_type = /obj/structure/apiary
+	required_materials = list(
+		/obj/item/grown/log/tree/small = 2,
+		/obj/item/natural/wood/plank = 2,
+		/obj/item/natural/fibers = 2
+	)
+	craftdiff = 1

@@ -1,16 +1,16 @@
-/datum/advclass/carpenter
-	name = "Carpenter"
+/datum/job/advclass/carpenter
+	title = "Carpenter"
 	tutorial = "As a woodsmen or women, you have dedicated your life to both felling \
 	trees and bending wood to your will. With enough practice, your only limit is your imagination."
 	allowed_sexes = list(MALE, FEMALE)
 
-	outfit = /datum/outfit/job/adventurer/carpenter
+	outfit = /datum/outfit/adventurer/carpenter
 
 	category_tags = list(CTAG_PILGRIM)
 	apprentice_name = "Carpenter Apprentice"
-	cmode_music = 'sound/music/cmode/towner/CombatTowner.ogg'
+	cmode_music = 'sound/music/cmode/towner/CombatBeggar.ogg' // pilgrims aren't towners, this fits them more for a combat on the woods
 
-/datum/outfit/job/adventurer/carpenter/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/carpenter/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_skillrank(/datum/skill/misc/medicine, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/axesmaces, 2, TRUE)
@@ -30,7 +30,7 @@
 	neck = /obj/item/clothing/neck/coif
 	armor = /obj/item/clothing/armor/gambeson/light/striped
 	pants = /obj/item/clothing/pants/trou
-	shirt = /obj/item/clothing/shirt/undershirt/colored/random
+	shirt = pick(/obj/item/clothing/shirt/undershirt/colored/random, /obj/item/clothing/shirt/tunic/colored/random)
 	wrists = /obj/item/clothing/wrists/bracers/leather
 	shoes = /obj/item/clothing/shoes/boots/leather
 	belt = /obj/item/storage/belt/leather

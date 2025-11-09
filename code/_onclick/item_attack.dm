@@ -39,7 +39,7 @@
 			if(SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
 				return TRUE
 			if(SECONDARY_ATTACK_CONTINUE_CHAIN)
-				// Normal behavior
+				EMPTY_BLOCK_GUARD // Normal behavior
 			else
 				CRASH("pre_attack_secondary must return an SECONDARY_ATTACK_* define, please consult code/__DEFINES/combat.dm")
 	else
@@ -57,7 +57,7 @@
 			if(SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
 				return TRUE
 			if(SECONDARY_ATTACK_CONTINUE_CHAIN)
-				// Normal behavior
+				EMPTY_BLOCK_GUARD // Normal behavior
 			else
 				CRASH("attackby_secondary must return an SECONDARY_ATTACK_* define, please consult code/__DEFINES/combat.dm")
 	else
@@ -174,22 +174,24 @@
 			user.changeNext_move(CLICK_CD_FAST)
 			return TRUE
 	if(I.obj_flags_ignore)
-		return I.attack_obj(src, user)
-	return ..() || ((obj_flags & CAN_BE_HIT) && I.attack_obj(src, user))
+		return I.attack_atom(src, user)
+	return ..() || ((obj_flags & CAN_BE_HIT) && I.attack_atom(src, user))
 
 /turf/attackby(obj/item/I, mob/living/user, params)
 	if(liquids && I.heat)
 		hotspot_expose(I.heat)
-	return ..() || (max_integrity && I.attack_turf(src, user))
+	return ..() || (uses_integrity && I.attack_atom(src, user))
 
 /mob/living/attackby(obj/item/I, mob/living/user, params)
 	if(..())
 		return TRUE
-	var/adf = user.used_intent.clickcd
-	if(istype(user.rmb_intent, /datum/rmb_intent/aimed))
-		adf = round(adf * 1.4)
-	if(istype(user.rmb_intent, /datum/rmb_intent/swift))
-		adf = round(adf * 0.6)
+	var/adf = user.used_intent?.clickcd
+	if(I.force && user.used_intent && !user.used_intent.tranged && !user.used_intent.tshield && !user.used_intent.noaa)
+		if(istype(user.rmb_intent, /datum/rmb_intent/aimed))
+			adf = round(adf * 1.4)
+		if(istype(user.rmb_intent, /datum/rmb_intent/swift))
+			adf = round(adf * 0.6)
+	user.changeNext_move(adf)
 
 	for(var/obj/item/clothing/worn_thing in get_equipped_items(include_pockets = TRUE))//checks clothing worn by src.
 	// Things that are supposed to be worn, being held = cannot block
@@ -201,7 +203,6 @@
 			continue
 		worn_thing.hit_response(src, user) //checks if clothing has hit response. Refer to Items.dm
 
-	user.changeNext_move(adf)
 	return I.attack(src, user, params)
 
 
@@ -229,29 +230,28 @@
 		return
 	. = SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 	if(src == user)
-		if(offered_item)
-			offered_item = null
-			user.visible_message(
-				span_notice("[user] puts their hand back down."),
-				span_notice("I stop offering the item."),
-			)
+		if(offered_item_ref)
+			cancel_offering_item()
 		else
 			to_chat(user, span_warning("I can't offer myself an item!"))
 		return
-	var/obj/item/offer_attempt = user.get_active_held_item()
-	if(HAS_TRAIT(offer_attempt, TRAIT_NODROP))
+
+	var/obj/offered_item
+	if(user.offered_item_ref)
+		offered_item = user.offered_item_ref.resolve()
+		if(offered_item == weapon)
+			user.cancel_offering_item()
+			return
+		else
+			to_chat(user, span_notice("I'm already offering [offered_item]!"))
+			return
+
+	offered_item = user.get_active_held_item()
+
+	if(HAS_TRAIT(offered_item, TRAIT_NODROP))
 		to_chat(user, span_warning("I can't offer this."))
 		return
-	user.offered_item = WEAKREF(offer_attempt)
-	user.visible_message(
-		span_notice("[user] offers [offer_attempt] to [src] with an outstreched hand."),
-		span_notice("I offer [offer_attempt] to [src] with an outstreched hand."), ignored_mobs = list(src), vision_distance = COMBAT_MESSAGE_RANGE
-	)
-	to_chat(user, span_smallnotice("I will hold [offer_attempt] out for 10 seconds. \
-	If I switch hands or take it out my hand it will not be able to be taken.\n \
-	I can stop offering the item by using the same hand on myself."))
-	to_chat(src, span_notice("[user] offers [offer_attempt] to me..."))
-	addtimer(VARSET_CALLBACK(user, offered_item, null), 10 SECONDS)
+	user.offer_item(src, offered_item)
 
 /**
  * Called from [/mob/living/proc/attackby]
@@ -326,11 +326,11 @@
 				log_combat(user, M, "attacked", src.name, "(INTENT: [uppertext(user.used_intent.name)]) (DAMTYPE: [uppertext(damtype)])")
 				add_fingerprint(user)
 		if(M.d_intent == INTENT_DODGE)
-			if(!user.used_intent.swingdelay)
-				if(get_dist(get_turf(user), get_turf(M)) <= user.used_intent.reach)
-					user.do_attack_animation(turf_before, visual_effect_icon = user.used_intent.animname, used_item = src, used_intent = user.used_intent)
-				else
-					user.do_attack_animation(get_ranged_target_turf(user, get_dir(user, M), 1), visual_effect_icon = user.used_intent.animname, used_item = src, used_intent = user.used_intent)
+			// if(!user.used_intent.swingdelay)
+			if(get_dist(get_turf(user), get_turf(M)) <= user.used_intent.reach)
+				user.do_attack_animation(turf_before, visual_effect_icon = user.used_intent.animname, used_item = src, used_intent = user.used_intent)
+			else
+				user.do_attack_animation(get_ranged_target_turf(user, get_dir(user, M), 1), visual_effect_icon = user.used_intent.animname, used_item = src, used_intent = user.used_intent)
 		return
 	if(!user.used_intent.noaa)
 		if(get_dist(get_turf(user), get_turf(M)) <= user.used_intent.reach)
@@ -385,25 +385,44 @@
 
 	return SECONDARY_ATTACK_CALL_NORMAL
 
-/// The equivalent of the standard version of [/obj/item/proc/attack] but for object targets.
-/obj/item/proc/attack_obj(obj/O, mob/living/user)
-	if(SEND_SIGNAL(src, COMSIG_ITEM_ATTACK_OBJ, O, user) & COMPONENT_NO_ATTACK_OBJ)
-		return
-	if(item_flags & NOBLUDGEON)
-		return
-	if(O.attacked_by(src, user))
-		user.do_attack_animation(O, used_intent = user.used_intent, used_item = src,)
+/// The equivalent of the standard version of [/obj/item/proc/attack] but for non-mob targets. Return TRUE to end the attack chain.
+/obj/item/proc/attack_atom(atom/attacked_atom, mob/living/user)
+	if(SEND_SIGNAL(src, COMSIG_ITEM_ATTACK_OBJ, attacked_atom, user) & COMPONENT_CANCEL_ATTACK_CHAIN)
 		return TRUE
+	if(item_flags & NOBLUDGEON)
+		return TRUE
+	user.changeNext_move(CLICK_CD_MELEE)
+	if(attacked_atom.attacked_by(src, user) && !isopenturf(attacked_atom)) // this check is due to attack animations in /obj/item/proc/afterattack()
+		user.do_attack_animation(attacked_atom, used_item = src, used_intent = user.used_intent)
 
-/obj/item/proc/attack_turf(turf/T, mob/living/user)
-	if(T.max_integrity)
-		if(T.attacked_by(src, user))
-			user.do_attack_animation(T, used_intent = user.used_intent, used_item = src,)
-			return TRUE
+/// Called from [/obj/item/proc/attack_obj] and [/obj/item/proc/attack] if the attack succeeds.
+/atom/proc/attacked_by(obj/item/attacking_item, mob/living/user)
+	if(!uses_integrity)
+		CRASH("attacked_by() was called on [type], which doesn't use integrity!")
 
-/// Called from [/obj/item/proc/attack_obj] and [/obj/item/proc/attack] if the attack succeeds
-/atom/movable/proc/attacked_by()
-	return FALSE
+	if(user.used_intent.no_attack)
+		return
+
+	var/newforce = get_complex_damage(attacking_item, user, blade_dulling)
+	if(!newforce)
+		return
+
+	var/damage_verb = "hits"
+
+	damage_verb = pick(user.used_intent.attack_verb)
+	if(newforce > 1)
+		attacking_item.take_damage(1, BRUTE, "blunt")
+		if(!user.adjust_stamina(5))
+			damage_verb = "ineffectively hits"
+			newforce = 1
+
+	user.visible_message(span_danger("[user] [damage_verb] [src] with [attacking_item]!"))
+	take_damage(newforce, attacking_item.damtype, attacking_item.damage_type, TRUE)
+	log_combat(user, src, "attacked", attacking_item)
+	return TRUE
+
+/area/attacked_by(obj/item/attacking_item, mob/living/user)
+	CRASH("areas are NOT supposed to have attacked_by() called on them!")
 
 /*
 * I didnt code this but this is what ive deciphered.
@@ -412,7 +431,7 @@
 * This proc is also not overridable due to having no root.
 * -IP
 */
-/proc/get_complex_damage(obj/item/I, mob/living/user, blade_dulling, turf/closed/mineral/T)
+/proc/get_complex_damage(obj/item/I, mob/living/user, blade_dulling)
 	var/dullfactor = 1
 	if(!I?.force)
 		return 0
@@ -433,13 +452,21 @@
 		*/
 		if(C.domhand)
 			used_str = C.get_str_arms(C.used_hand)
-	//STR is +1 from STRONG stance and -1 from WEAK stance
+	//STR is +1 from STRONG stance and -1 from SWIFT stance
 	if(istype(user.rmb_intent, /datum/rmb_intent/strong))
 		used_str++
+	if(istype(user.rmb_intent, /datum/rmb_intent/swift))
+		used_str--
 	if(istype(user.rmb_intent, /datum/rmb_intent/weak))
 		used_str /= 2
 	//Your max STR is 20.
 	used_str = CLAMP(used_str, 1, 20)
+	//Vampire checks for Potence
+	if(ishuman(user))
+		var/mob/living/carbon/human/user_human = user
+		if(user_human.clan)
+			used_str += floor(0.5 * user_human.potence_weapon_buff)
+			// For each level of potence user gains 0.5 STR, at 5 Potence their STR buff is 2.5
 	if(used_str >= 11)
 		newforce = newforce + (newforce * ((used_str - 10) * 0.1))
 	else if(used_str <= 9)
@@ -448,7 +475,7 @@
 	if(I.minstr)
 		var/effective = I.minstr
 		if(HAS_TRAIT(I, TRAIT_WIELDED))
-			effective = I.minstr * 0.75
+			effective *= 0.75
 		//Strength influence is reduced to 30%
 		if(effective > user.STASTR)
 			newforce = max(newforce*0.3, 1)
@@ -563,57 +590,6 @@
 	newforce = max(newforce, 1)
 	return newforce
 
-/obj/attacked_by(obj/item/I, mob/living/user)
-	user.changeNext_move(CLICK_CD_MELEE)
-	var/newforce = get_complex_damage(I, user, blade_dulling)
-	if(!newforce)
-		return 0
-	if(newforce < damage_deflection)
-		return 0
-	if(user.used_intent.no_attack)
-		return 0
-	log_combat(user, src, "attacked", I)
-	var/verbu = "hits"
-	verbu = pick(user.used_intent.attack_verb)
-	if(newforce > 1)
-		if(user.adjust_stamina(5))
-			user.visible_message("<span class='danger'>[user] [verbu] [src] with [I]!</span>")
-		else
-			user.visible_message("<span class='warning'>[user] [verbu] [src] with [I]!</span>")
-			newforce = 1
-	else
-		user.visible_message("<span class='warning'>[user] [verbu] [src] with [I]!</span>")
-	take_damage(newforce, I.damtype, I.damage_type, 1)
-	if(newforce > 1)
-		I.take_damage(1, BRUTE, "blunt")
-	return TRUE
-
-/turf/proc/attacked_by(obj/item/I, mob/living/user)
-	var/newforce = get_complex_damage(I, user, blade_dulling)
-	if(!newforce)
-		return 0
-	if(newforce < damage_deflection)
-		return 0
-	if(user.used_intent.no_attack)
-		return 0
-	user.changeNext_move(CLICK_CD_MELEE)
-	log_combat(user, src, "attacked", I)
-	var/verbu = "hits"
-	verbu = pick(user.used_intent.attack_verb)
-	if(newforce > 1)
-		if(user.adjust_stamina(5))
-			user.visible_message("<span class='danger'>[user] [verbu] [src] with [I]!</span>")
-		else
-			user.visible_message("<span class='warning'>[user] [verbu] [src] with [I]!</span>")
-			newforce = 1
-	else
-		user.visible_message("<span class='warning'>[user] [verbu] [src] with [I]!</span>")
-
-	take_damage(newforce, I.damtype, I.damage_type, 1)
-	if(newforce > 1)
-		I.take_damage(1, BRUTE, "blunt")
-	return TRUE
-
 /mob/living/proc/simple_limb_hit(zone)
 	if(!zone)
 		return ""
@@ -635,7 +611,7 @@
 			next_attack_msg.Cut()
 			if(HAS_TRAIT(src, TRAIT_SIMPLE_WOUNDS))
 				var/datum/wound/crit_wound  = simple_woundcritroll(user.used_intent.blade_class, newforce, user, hitlim)
-				if(should_embed_weapon(crit_wound, I))
+				if(crit_wound?.should_embed(I))
 					// throw_alert("embeddedobject", /atom/movable/screen/alert/embeddedobject)
 					simple_add_embedded_object(I, silent = FALSE, crit_message = TRUE)
 					src.grabbedby(user, 1, item_override = I)
@@ -647,6 +623,7 @@
 					add_splatter_floor(location)
 					if(get_dist(user, src) <= 1)	//people with TK won't get smeared with blood
 						user.add_mob_blood(src)
+						user.adjust_hygiene(-10)
 			if(newforce > 15)
 				if(haha == BCLASS_BLUNT)
 					I.add_mob_blood(src)
@@ -654,6 +631,7 @@
 					add_splatter_floor(location)
 					if(get_dist(user, src) <= 1)	//people with TK won't get smeared with blood
 						user.add_mob_blood(src)
+						user.adjust_hygiene(-10)
 	send_item_attack_message(I, user, hitlim)
 	if(I.force)
 		return TRUE
@@ -662,7 +640,8 @@
 	if(I.force < force_threshold || I.damtype == STAMINA)
 		playsound(loc, 'sound/blank.ogg', I.get_clamped_volume(), TRUE, -1)
 	else
-		return ..()
+		. = ..()
+		I.do_special_attack_effect(user, null, null, src, null)
 
 /**
  * Last proc in the [/obj/item/proc/melee_attack_chain]
@@ -674,6 +653,7 @@
  * * click_parameters - is the params string from byond [/atom/proc/Click] code, see that documentation.
  */
 /obj/item/proc/afterattack(atom/target, mob/living/user, proximity_flag, click_parameters)
+	SHOULD_CALL_PARENT(TRUE)
 	SEND_SIGNAL(src, COMSIG_ITEM_AFTERATTACK, target, user, proximity_flag, click_parameters)
 	SEND_SIGNAL(user, COMSIG_MOB_ITEM_AFTERATTACK, target, user, proximity_flag, click_parameters)
 	if(force && !user.used_intent.tranged && !user.used_intent.tshield)
@@ -691,16 +671,6 @@
 			playsound(get_turf(src), pick(swingsound), 100, FALSE, -1)
 			user.aftermiss()
 		if(!proximity_flag && ismob(target) && !user.used_intent?.noaa) //this block invokes miss cost clicking on seomone who isn't adjacent to you
-			var/adf = user.used_intent.clickcd
-			if(istype(user.rmb_intent, /datum/rmb_intent/aimed))
-				adf = round(adf * 1.4)
-			if(istype(user.rmb_intent, /datum/rmb_intent/swift))
-				adf = round(adf * 0.6)
-			user.changeNext_move(adf)
-			if(get_dist(get_turf(user), get_turf(target)) <= user.used_intent.reach)
-				user.do_attack_animation(target, visual_effect_icon = user.used_intent.animname, used_item = src, used_intent = user.used_intent)
-			else
-				user.do_attack_animation(get_ranged_target_turf(user, get_dir(user, target), 1), visual_effect_icon = user.used_intent.animname, used_item = src, used_intent = user.used_intent)
 			playsound(get_turf(src), pick(swingsound), 100, FALSE, -1)
 			user.aftermiss()
 
@@ -730,6 +700,11 @@
 /obj/item/proc/attack_qdeleted(atom/target, mob/user, proximity_flag, click_parameters)
 	SEND_SIGNAL(src, COMSIG_ITEM_ATTACK_QDELETED, target, user, proximity_flag, click_parameters)
 	SEND_SIGNAL(user, COMSIG_MOB_ITEM_ATTACK_QDELETED, target, user, proximity_flag, click_parameters)
+
+/obj/item/proc/do_special_attack_effect(user, obj/item/bodypart/affecting, intent, mob/living/victim, selzone, thrown = FALSE)
+	SHOULD_CALL_PARENT(TRUE)
+	SEND_SIGNAL(victim, COMSIG_ITEM_ATTACK_EFFECT, user, affecting, intent, selzone, src)
+	SEND_SIGNAL(src, COMSIG_ITEM_ATTACK_EFFECT, user, affecting, intent, victim, selzone)
 
 /obj/item/proc/get_clamped_volume()
 	if(w_class)

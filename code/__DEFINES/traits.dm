@@ -11,7 +11,7 @@
 			target.status_traits = list(); \
 			_L = target.status_traits; \
 			_L[trait] = list(source); \
-			SEND_SIGNAL(target, SIGNAL_ADDTRAIT(trait)); \
+			SEND_SIGNAL(target, SIGNAL_ADDTRAIT(trait), trait); \
 			SEND_GLOBAL_SIGNAL(COMSIG_ATOM_ADD_TRAIT, target, trait); \
 		} else { \
 			_L = target.status_traits; \
@@ -19,7 +19,7 @@
 				_L[trait] |= list(source); \
 			} else { \
 				_L[trait] = list(source); \
-				SEND_SIGNAL(target, SIGNAL_ADDTRAIT(trait)); \
+				SEND_SIGNAL(target, SIGNAL_ADDTRAIT(trait), trait); \
 				SEND_GLOBAL_SIGNAL(COMSIG_ATOM_ADD_TRAIT, target, trait); \
 			}; \
 		} \
@@ -41,7 +41,7 @@
 			};\
 			if (!length(_L[trait])) { \
 				_L -= trait; \
-				SEND_SIGNAL(target, SIGNAL_REMOVETRAIT(trait)); \
+				SEND_SIGNAL(target, SIGNAL_REMOVETRAIT(trait), trait); \
 				SEND_GLOBAL_SIGNAL(COMSIG_ATOM_REMOVE_TRAIT, target, trait); \
 			}; \
 			if (!length(_L)) { \
@@ -58,7 +58,7 @@
 				_L[_T] &= _S; \
 				if (!length(_L[_T])) { \
 					_L -= _T; \
-					SEND_SIGNAL(target, SIGNAL_REMOVETRAIT(_T)); \
+					SEND_SIGNAL(target, SIGNAL_REMOVETRAIT(_T), _T); \
 					SEND_GLOBAL_SIGNAL(COMSIG_ATOM_REMOVE_TRAIT, target, trait); \
 				}; \
 			};\
@@ -72,9 +72,26 @@
 #define HAS_TRAIT_FROM(target, trait, source) (target.status_traits ? (target.status_traits[trait] ? (source in target.status_traits[trait]) : FALSE) : FALSE)
 #define HAS_TRAIT_NOT_FROM(target, trait, source) (HAS_TRAIT(target, trait) && (length(target.status_traits[trait] - source) > 0))
 
+/// Returns a list of trait sources for this trait. Only useful for wacko cases and internal futzing
+/// You should not be using this
+#define GET_TRAIT_SOURCES(target, trait) (target.status_traits?[trait] || list())
+/// Returns the amount of sources for a trait. useful if you don't want to have a "thing counter" stuck around all the time
+#define COUNT_TRAIT_SOURCES(target, trait) length(GET_TRAIT_SOURCES(target, trait))
+/// A simple helper for checking traits in a mob's mind
+#define HAS_MIND_TRAIT(target, trait) (HAS_TRAIT(target, trait) || (target.mind ? HAS_TRAIT(target.mind, trait) : FALSE))
+
 /*
 Remember to update _globalvars/traits.dm if you're adding/removing/renaming traits.
 */
+
+///Movement type traits for movables. See elements/movetype_handler.dm
+#define TRAIT_MOVE_GROUND		"move_ground"
+#define TRAIT_MOVE_FLYING		"move_flying"
+#define TRAIT_MOVE_VENTCRAWLING	"move_ventcrawling"
+#define TRAIT_MOVE_FLOATING		"move_floating"
+#define TRAIT_MOVE_PHASING "move_phasing"
+/// Disables the floating animation. See above.
+#define TRAIT_NO_FLOATING_ANIM		"no-floating-animation"
 
 //mob traits
 #define TRAIT_IMMOBILIZED		"immobilized" //! Prevents voluntary movement.
@@ -105,7 +122,13 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_IGNORESLOWDOWN	"ignoreslow"
 #define TRAIT_IGNOREDAMAGESLOWDOWN "ignoredamageslowdown"
 #define TRAIT_DEATHCOMA			"deathcoma" //Causes death-like unconsciousness
+/// The mob has the stasis effect.
+/// Does nothing on its own, applied via status effect.
+#define TRAIT_STASIS "in_stasis"
 #define TRAIT_FAKEDEATH			"fakedeath" //Makes the owner appear as dead to most forms of medical examination
+/// "Magic" trait that blocks the mob from moving or interacting with anything. Used for transient stuff like mob transformations or incorporality in special cases.
+/// Will block movement, `Life()` (!!!), and other stuff based on the mob.
+#define TRAIT_NO_TRANSFORM "block_transformations"
 #define TRAIT_STUNIMMUNE		"stun_immunity"
 #define TRAIT_STUNRESISTANCE    "stun_resistance"
 #define TRAIT_SLEEPIMMUNE		"sleep_immunity"
@@ -123,6 +146,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_NOFIRE			"nonflammable"
 #define TRAIT_NOGUNS			"no_guns"
 #define TRAIT_NOHUNGER			"no_hunger"
+#define TRAIT_NOHYGIENE			"no_hygiene"
 #define TRAIT_NOMETABOLISM		"no_metabolism"
 #define TRAIT_TOXIMMUNE			"toxin_immune"
 #define TRAIT_EASYDISMEMBER		"easy_dismember"
@@ -176,13 +200,14 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_NOAMBUSH "no_ambush" //! mob cannot be ambushed for any reason
 #define TRAIT_CLAN_LEADER "clan_leader"
 #define TRAIT_BLUEPRINT_VISION "blueprint_vision"
+#define TRAIT_WEREWOLF_RAGE "ww_rage"
 /// Receives echolocation images.
 #define TRAIT_ECHOLOCATION_RECEIVER "echolocation_receiver"
 /// Echolocation has a higher range.
 #define TRAIT_ECHOLOCATION_EXTRA_RANGE "echolocation_extra_range"
 
 /// Can swim ignoring water flow and slowdown
-#define TRAIT_GOOD_SWIM "good_swim"
+#define TRAIT_GOOD_SWIM "Good Swim"
 ///trait determines if this mob can breed given by /datum/component/breeding
 #define TRAIT_MOB_BREEDER "mob_breeder"
 #define TRAIT_IMPERCEPTIBLE "imperceptible" // can't be perceived in any way, likely due to invisibility
@@ -196,6 +221,14 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_NODROP            "nodrop"
 #define TRAIT_NOEMBED			"noembed"
 #define TRAIT_NO_TELEPORT		"no-teleport" //you just can't
+#define TRAIT_HAS_CONFESSED "has_confessed"
+#define TRAIT_CONFESSED_FOR	"confessed_for"
+#define TRAIT_RECENTLY_TORTURED "recently_tortured"
+
+/// this object has been frozen
+#define TRAIT_FROZEN "frozen"
+/// Trait applied by element
+#define ELEMENT_TRAIT(source) "element_trait_[source]"
 
 // Debug traits
 /// This object has sound debugging tools attached to it
@@ -234,6 +267,9 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define OXYLOSS_TRAIT "oxyloss"
 #define BLOODLOSS_TRAIT "bloodloss"
 #define TRAIT_PROFANE "profane"
+#define SPECIES_FLIGHT_TRAIT "species-flight"
+#define LIFECANDLE_TRAIT "lifecandle"
+#define LEAPER_BUBBLE_TRAIT "leaper-bubble"
 /// Trait associated to being buckled
 #define BUCKLED_TRAIT "buckled"
 /// Trait associated to being held in a chokehold
@@ -248,9 +284,16 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 /// trait associated to a stat value or range of
 #define STAT_TRAIT "stat"
 
+#define TRAIT_NOTIGHTGRABMESSAGE "notightgrabmessage" // Hides grab tightening messages.
+#define TRAIT_NOSSDINDICATOR "nossdindicator" // Hides the SSD indicator. Used with scrying.
+#define TRAIT_NOSTRUGGLE "nostruggle" // Instant grabs on someone else.
+#define TRAIT_GARROTED "garroted" // Garrote-wired. Used for a snowflaked grab with item relevant tracking.
+#define TRAIT_BAGGED "bagged" // Black-bagged. More snowflaking.
+
 // unique trait sources, still defines
 #define TRAIT_BESTIALSENSE "bestial-sense"
 #define TRAIT_DARKVISION "darkvision"
+#define TRAIT_NOCSHADES "Nocshaded"
 #define CLONING_POD_TRAIT "cloning-pod"
 #define STATUE_MUTE "statue"
 #define CHANGELING_DRAIN "drain"
@@ -291,9 +334,17 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define ADVENTURER_TRAIT "adventurer"
 #define TRAIT_LONGSTRIDER "longstrider"
 #define TRAIT_GUIDANCE "guidance"
+#define DEVOTION_TRAIT "devotion_trait"
+#define RAGE_TRAIT "rage_trait"
+#define TRAIT_PSYDONIAN_GRIT "Psydonian Grit" // Pain Tolerance. Through faith, ENDURE.
+#define TRAIT_PSYDONITE "Psydonite's Devotion" // Anti-Miracles on a selective basis, anastasis / cure rot still apply. Slow passive wound healing while you have blood.
+#define TRAIT_BLACKBAGGER "Apprehension Techniques" // Capable of using Garrotes and Blackbags. Apprehension techniques.
+#define TRAIT_LYCANRESILENCE "Werewolf Resilence"
 
 #define TRAIT_WEBWALK 					"Webwalker"
-#define TRAIT_NOSTINK 					"Dead Nose"
+#define TRAIT_BRUSHWALK					"Brushwalker"
+#define TRAIT_DEADNOSE 					"Dead Nose"
+#define TRAIT_STINKY					"Natural Stench"
 #define TRAIT_ZJUMP 					"High Jumping"
 #define TRAIT_JESTERPHOBIA 				"Jesterphobic"
 #define TRAIT_XENOPHOBIC 				"Xenophobic"
@@ -343,7 +394,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_SEEPRICES				    "Golden Blood" //See prices
 #define TRAIT_SEE_LEYLINES				"Magical Visions"
 #define TRAIT_POISONBITE				"Poison Bite"
-#define TRAIT_FORAGER					"Foraging Knowledge" //Can tell which berries are good to eat when examining
+#define TRAIT_FORAGER					"Expert Forager"
 #define TRAIT_TINY 						"Tiny"
 #define TRAIT_DREAM_WATCHER				"Noc Blessed" //Unique Trait of the Dream Watcher Town Elder Class, they have a chance to know about antags or gods influences.
 #define TRAIT_HOLLOWBONES				"Hollow Bones"
@@ -353,10 +404,19 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_MOONWATER_ELIXIR			"Moonwater Elixir"
 #define TRAIT_FLOWERFIELD_IMMUNITY		"Flower Strider"
 #define TRAIT_SECRET_OFFICIANT			"Secret Officiant"
+#define TRAIT_RECOGNIZE_ADDICTS			"Addict Recognition"
 #define TRAIT_NOENERGY 					"Boundless Energy" //Specifically, You don't lose fatigue, but you do continue losing stamina.
+#define TRAIT_KEENEARS					"Keen Ears"
+#define TRAIT_POISON_RESILIENCE			"Poison Resilience"
+#define TRAIT_SEED_FINDER				"Seed Finder"
+#define TRAIT_COIN_ILLITERATE "Barterer"
+#define TRAIT_LUCKY_COOK "Lucky Cook"
+
 /// applied to orphans
 #define TRAIT_ORPHAN 					"Orphan"
 #define TRAIT_RECRUITED					"Recruit" //Trait used to give foreigners their new title
+#define TRAIT_RECOGNIZED				"Recognized" // Given to famous migrants, pilgrims and adventurers, enable their title.
+#define TRAIT_FANATICAL					"Fanatical" //Trait used for fanatical mobs who can bypass the excommunication(not the curses though.)
 
 // Divine patron trait bonuses:
 #define TRAIT_SOUL_EXAMINE				"Blessing of Necra"  //can check bodies to see if they have departed
@@ -369,12 +429,16 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_TUTELAGE					"Tutelage" //Slightly more sleep xp to you and xp to apprentices
 #define TRAIT_APRICITY					"Apricity" //Decreased stamina regen time during "day"
 #define TRAIT_BLACKLEG					"Blackleg" //Rig coin, dice, cards in your favor
+#define TRAIT_INQUISITION 				"Member of the Oratorium Throni Vacui"
+#define TRAIT_PURITAN					"Puritan"
+#define TRAIT_SILVER_BLESSED 			"Silver Blessed"
 
 // Inhumen patron trait bonuses:
 #define TRAIT_ORGAN_EATER				"Blessing of Graggar"//Can eat organs (duh.) and raw meat
 #define TRAIT_CRACKHEAD					"Blessing of Baotha" //No overdose on drugs.
 #define TRAIT_CABAL                     "Of the Cabal" //Zizo cultists recognize each other too
 #define TRAIT_MATTHIOS_EYES				"Eyes of Matthios" //Examine to see the most expensive item someone has
+#define INSPIRING_MUSICIAN 				"Inspiring Musician" // unlocks bardic inspiration stuff
 
 #define TRAIT_BASHDOORS "bashdoors"
 #define TRAIT_NOMOOD "no_mood"
@@ -397,12 +461,14 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_ZIZOID_HUNTED "zizoidhunted" // Used to signal character has been marked by death by the Zizoid cult
 #define TRAIT_LEPROSY "Leprosy"
 #define TRAIT_NUDE_SLEEPER "Nude Sleeper"
-#define TRAIT_CIVILIZEDBARBARIAN "Civilized Barbarian"
 #define TRAIT_BEAUTIFUL "Beautiful"
 #define TRAIT_UGLY "Ugly"
+#define TRAIT_FISHFACE "Fishface"
 #define TRAIT_SCHIZO_FLAW "Schizophrenic"
 #define TRAIT_VIOLATOR					"Violator of the Coven"
 #define TRAIT_TORPOR					"Endless Slumber"
+#define TRAIT_SATE "SATE"
+#define TRAIT_NODE_EXTRACTED "Chimeric Node Extracted"
 
 // JOB RELATED TRAITS
 
@@ -413,6 +479,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_OLDPARTY "Old Party"
 #define TRAIT_EARGRAB "Ear Grab"
 #define TRAIT_FACELESS "Faceless One"
+#define TRAIT_ROYALSERVANT "Household Insight" // Let's you see the royals liked/hated food/drink
 
 // PATRON CURSE TRAITS
 #define TRAIT_CURSE "Curse" //source
@@ -506,11 +573,29 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 /// makes your footsteps completely silent
 #define TRAIT_SILENT_FOOTSTEPS "silent_footsteps"
 
+/// Trait from mob/living/update_transform()
+#define UPDATE_TRANSFORM_TRAIT "update_transform"
+
+/// Trait from ai attacks
+#define AI_ATTACK_TRAIT "ai_attack_trait"
+
 #define TRAIT_DUALWIELDER "Dual Wielder"
 
 /// Properly wielded two handed item
 #define TRAIT_WIELDED "wielded"
 /// The items needs two hands to be carried
 #define TRAIT_NEEDS_TWO_HANDS "needstwohands"
+/// This item can't be pickpocketed
+#define TRAIT_HARD_TO_STEAL "hard_to_steal"
 /// Trait given by echolocation component.
 #define ECHOLOCATION_TRAIT "echolocation"
+/// trait that makes you bounce when speaking
+#define TRAIT_SHAKY_SPEECH "Shaky Speech"
+#define TRAIT_NEEDS_QUENCH "Needs Quenching"
+
+/// Dendor Path Traits
+#define TRAIT_DENDOR_GROWING "trait_dendor_growing"
+#define TRAIT_DENDOR_STINGING "trait_dendor_stinging"
+#define TRAIT_DENDOR_DEVOURING "trait_dendor_devouring"
+#define TRAIT_DENDOR_LORDING "trait_dendor_lording"
+

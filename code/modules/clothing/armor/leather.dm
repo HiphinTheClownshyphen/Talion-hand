@@ -22,19 +22,21 @@
 	item_weight = 3.2
 	madeof = LEATHER
 
+//THE ARMOUR VALUES OF ADVANCED AND MASTERWORK ARMOUR ARE INTENDED
+//KEEP THIS IN MIND
+
 /obj/item/clothing/armor/leather/advanced
-	name = "hardened leather coat"
-	desc = "Sturdy, durable, flexible. Will keep you alive in style."
-	max_integrity = 350
+	name = "hardened leather armor"
+	desc = "Sturdy, durable, flexible. Will keep you alive."
+	max_integrity = INTEGRITY_STANDARD + 50
 	body_parts_covered = CHEST|GROIN|VITALS|LEGS|ARMS
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST)
 	armor = list("blunt" = 75, "slash" = 60, "stab" = 30, "piercing" = 10, "fire" = 0, "acid" = 0)
 
 /obj/item/clothing/armor/leather/masterwork
-	name = "masterwork leather coat"
-	desc = "This coat is a craftsmanship marvel. Made with the finest leather. Strong, nimible, reliable."
-	icon_state = "leather"
-	max_integrity = 400
+	name = "masterwork leather armor"
+	desc = "This leather armor is a craftsmanship marvel. Made with the finest leather. Strong, nimible, reliable."
+	max_integrity = INTEGRITY_STANDARD + 100
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST, BCLASS_CHOP) //we're adding chop here!
 	armor = list("blunt" = 100, "slash" = 70, "stab" = 40, "piercing" = 10, "fire" = 0, "acid" = 0)
 
@@ -53,6 +55,17 @@
 	salvage_result = /obj/item/natural/hide/cured
 	madeof = HIDE
 
+/obj/item/clothing/armor/leather/hide/steppe
+	name = "steppe hide armor"
+	desc = "Worn by riders of the steppe, this leather armor is padded with beast fur for warmth and comfort"
+	icon_state = "hatangafur"
+	sellprice = VALUE_LEATHER_ARMOR_FUR
+
+	armor = ARMOR_LEATHER_GOOD
+	body_parts_covered = COVERAGE_FULL
+	max_integrity = INTEGRITY_STRONG
+	item_weight = 6.7
+
 //................ Splint Mail ............... //
 /obj/item/clothing/armor/leather/splint
 	name = "splint armor"
@@ -65,7 +78,6 @@
 	max_integrity = INTEGRITY_STRONG
 	item_weight = 6.7
 	madeof = null
-
 
 //................ Leather Vest ............... //	- has no sleeves.  - can be worn in armor OR shirt slot
 /obj/item/clothing/armor/leather/vest
@@ -148,6 +160,11 @@
 	name = "artificer jacket"
 	icon_state = "artijacket"
 	desc = "A thick leather jacket adorned with fur and cog decals. The height of Heartfelt fashion."
+
+/obj/item/clothing/armor/leather/jacket/artijacket/porter
+	name = "leather jacket"
+	desc = "A thick leather jacket adorned with fur."
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/jacket/gatemaster_jacket
 	name = "gatemaster's coat"
@@ -238,6 +255,19 @@
 	armor = ARMOR_LEATHER
 	body_parts_covered = COVERAGE_ALL_BUT_LEGS
 
+/obj/item/clothing/armor/leather/jacket/leathercoat/confessor
+	name = "confessional coat"
+	desc = "A sturdy raincoat draped atop of a tightly-fastened boiled leather cuirass. The Ordo Venatari trainees often fashion little pieces of memorabilia and stitch it into the lower pockets of the coat to remind the confessors that their cause is virtuous, and that they mustn’t lose sight of what matters."
+	icon_state = "confessorcoat"
+	item_state = "confessorcoat"
+	icon = 'icons/roguetown/clothing/armor.dmi'
+	mob_overlay_icon = 'icons/roguetown/clothing/onmob/armor.dmi'
+	body_parts_covered = COVERAGE_FULL
+	sleeved = 'icons/roguetown/clothing/onmob/helpers/sleeves_armor.dmi'
+	armor = ARMOR_LEATHER
+	prevent_crits = list(BCLASS_CUT, BCLASS_STAB, BCLASS_BLUNT, BCLASS_CHOP, BCLASS_SMASH)
+	max_integrity = 250
+
 /obj/item/clothing/armor/leather/jacket/leathercoat/black
 	name = "black leather coat"
 	desc = "A black and purple leather coat."
@@ -262,3 +292,28 @@
 	name = "renegade's coat"
 	desc = "An insulated leather coat with capelets. It protects you well from the elements, a useful thing for those who like to wait in ambush."
 	icon_state = "renegadecoat"
+
+/obj/item/clothing/armor/leather/jacket/leathercoat/colored
+	misc_flags = CRAFTING_TEST_EXCLUDE
+
+/obj/item/clothing/armor/leather/jacket/leathercoat/colored/wretchrenegade
+	name = "renegade's coat"
+	desc = "An insulated leather coat with capelets. It protects you well from the elements, a useful thing for those who like to wait in ambush."
+	color = CLOTHING_ASH_GREY
+
+/obj/item/clothing/armor/leather/studded/psyaltrist
+	name = "cuir-bouilli armor"
+	desc = "Treated, water-boiled and composite-layered leather armor of fine Grenzelhoftian make."
+	icon_state = "cuirbouilli"
+	item_state = "cuirbouilli"
+
+/obj/item/clothing/armor/leather/heavy
+	name = "hardened leather armor"
+	desc = "A heavy steerhide jerkin with enough body to stand on its own. It forms a stiff, protective mantle \
+	for its wearer, shielding from blows and weather alike."
+	icon_state = "roguearmor_belt"
+	item_state = "roguearmor_belt"
+	armor = ARMOR_LEATHER_GOOD
+	prevent_crits = list(BCLASS_CUT, BCLASS_STAB, BCLASS_BLUNT, BCLASS_CHOP, BCLASS_SMASH)
+	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
+	sellprice = 20

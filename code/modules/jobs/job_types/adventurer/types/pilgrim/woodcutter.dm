@@ -1,13 +1,12 @@
-/datum/advclass/pilgrim/woodcutter
-	name = "Woodcutter"
+/datum/job/advclass/pilgrim/woodcutter
+	title = "Woodcutter"
 	allowed_races = RACES_PLAYER_NONEXOTIC
 
-	outfit = /datum/outfit/job/adventurer/woodcutter
-	category_tags = list(CTAG_DISABLED)
+	outfit = /datum/outfit/adventurer/woodcutter
 	apprentice_name = "Woodcutter"
-	cmode_music = 'sound/music/cmode/towner/CombatTowner.ogg'
+	cmode_music = 'sound/music/cmode/towner/CombatBeggar.ogg' // pilgrims aren't towners, this fits them more for a combat on the woods
 
-/datum/outfit/job/adventurer/woodcutter/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer/woodcutter/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_skillrank(/datum/skill/combat/axesmaces, 2, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/wrestling, 2, TRUE)
@@ -24,7 +23,7 @@
 	belt = /obj/item/storage/belt/leather
 	shirt = /obj/item/clothing/shirt/shortshirt/colored/random
 	pants = /obj/item/clothing/pants/trou
-	head = /obj/item/clothing/head/brimmed
+	head =  pick(/obj/item/clothing/head/hatfur, /obj/item/clothing/head/hatblu, /obj/item/clothing/head/brimmed)
 	neck = /obj/item/clothing/neck/coif
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = /obj/item/storage/backpack/satchel
@@ -33,6 +32,6 @@
 	armor = /obj/item/clothing/armor/gambeson/light/striped
 	beltr = /obj/item/weapon/axe/iron
 	beltl = /obj/item/weapon/knife/villager
-	backpack_contents = list(/obj/item/flint = 1, /obj/item/key/artificer = 1)
+	backpack_contents = list(/obj/item/flint = 1)
 	H.change_stat(STATKEY_STR, 1)
 	H.change_stat(STATKEY_END, 1) // Tree chopping builds endurance

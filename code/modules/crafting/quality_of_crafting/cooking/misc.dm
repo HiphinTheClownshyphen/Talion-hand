@@ -27,7 +27,7 @@
 	requirements = list(
 		/obj/item/fertilizer/ash = 1,
 		/obj/item/reagent_containers/food/snacks/fat = 1,
-		/obj/item/alch/mentha = 1,
+		/obj/item/alch/herb/mentha = 1,
 	)
 	output = /obj/item/soap/bath
 
@@ -129,11 +129,11 @@
 	name = "Pestran Stick"
 
 	requirements = list(
-		/obj/item/reagent_containers/food/snacks/butter = 1,
+		/obj/item/reagent_containers/food/snacks/butterslice = 1,
 		/obj/item/grown/log/tree/stick = 1,
 	)
 	required_table = TRUE
-	attacked_atom = /obj/item/reagent_containers/food/snacks/butter
+	attacked_atom = /obj/item/reagent_containers/food/snacks/butterslice
 	starting_atom = /obj/item/grown/log/tree/stick
 	output = /obj/item/reagent_containers/food/snacks/pestranstick
 	craft_time = 5 SECONDS
@@ -202,4 +202,35 @@
 	output = /obj/item/reagent_containers/food/snacks/cooked/royal_truffle/toxin
 	craft_time = 2 SECONDS
 	crafting_sound = 'sound/foley/dropsound/food_drop.ogg'
+	extra_chance = 100
+
+/datum/repeatable_crafting_recipe/cooking/herbs
+	name = "herbs and spices"
+	tool_usage = list(
+		/obj/item/pestle = list("starts to grind and mix herbs in the mortar", "start to grind and mix herbs in the mortar", 'sound/foley/mortarpestle.ogg'),
+	)
+	requirements = list(
+		/obj/item/alch/herb = 4,
+	)
+	subtypes_allowed = TRUE
+	output = /obj/item/reagent_containers/powder/herbs
+	output_amount = 3
+	starting_atom = /obj/item/pestle
+	attacked_atom = /obj/item/reagent_containers/glass/mortar
+
+/datum/repeatable_crafting_recipe/cooking/saltedseeds
+	name = "Salted Seeds"
+
+	requirements = list(
+		/obj/item/reagent_containers/food/snacks/roastseeds = 3,
+		/obj/item/reagent_containers/powder/salt = 1,
+	)
+	required_table = TRUE
+	attacked_atom = /obj/item/reagent_containers/powder/salt
+	starting_atom = /obj/item/reagent_containers/food/snacks/roastseeds
+	output = /obj/item/reagent_containers/food/snacks/roastseeds
+	output_amount = 3
+	craft_time = 8 SECONDS
+	crafting_sound = 'sound/foley/dropsound/food_drop.ogg'
+	crafting_message = "mix the salt and seeds"
 	extra_chance = 100

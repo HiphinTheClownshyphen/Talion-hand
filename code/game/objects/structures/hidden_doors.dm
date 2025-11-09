@@ -21,11 +21,13 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 	can_knock = FALSE
 	redstone_structure = TRUE
 
-	repairable = FALSE
-	repair_cost_first = null
-	repair_cost_second = null
+	repair_thresholds = null
+	broken_repair = null
 	repair_skill = null
 	metalizer_result = null
+
+	//the perception DC to use this door
+	var/hidden_dc = 10
 
 	var/open_phrase = "open sesame"
 
@@ -87,6 +89,15 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 		return
 	..()
 
+/obj/structure/door/secret/examine(mob/user)
+	. = ..()
+	if(isliving(user))
+		var/mob/living/L = user
+		// they're trained at this
+		var/bonuses = (HAS_TRAIT(user, TRAIT_THIEVESGUILD) || HAS_TRAIT(user, TRAIT_ASSASSIN)) ? 2 : 0
+		if(L.stat_roll(STATKEY_PER, 25, hidden_dc - bonuses - 1))
+			. += span_purple("Something's not right about this wall...")
+
 /obj/structure/door/secret/Hear(message, atom/movable/speaker, message_language, raw_message, radio_freq, list/spans, list/message_mods = list(), original_message)
 	var/mob/living/carbon/human/H = speaker
 	if(speaker == src) //door speaking to itself
@@ -99,7 +110,7 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 	if(!ishuman(speaker))
 		return FALSE
 
-	var/message2recognize = sanitize_hear_message(original_message)
+	var/message2recognize = SANITIZE_HEAR_MESSAGE(original_message)
 
 	if(is_type_in_list(H.mind?.assigned_role, vip)) //are they a VIP?
 		var/list/mods = list(WHISPER_MODE = MODE_WHISPER)
@@ -228,7 +239,7 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 		"wind",
 		"earth",
 		"shadow",
-		"night",
+		"nite",
 		"oblivion",
 		"void",
 		"time",
@@ -248,7 +259,7 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 		"bargain",
 		"ritual",
 		"dream",
-		"nightmare",
+		"nitemare",
 		"vision",
 		"hunger",
 		"lust",
@@ -281,6 +292,7 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 
 ///// KEEP DOORS /////
 /obj/structure/door/secret/keep
+	hidden_dc = 14
 	vip = list(
 		/datum/job/lord,
 		/datum/job/consort,
@@ -305,7 +317,7 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 		return FALSE
 	var/mob/living/carbon/human/H = speaker
 
-	var/message2recognize = sanitize_hear_message(raw_message)
+	var/message2recognize = SANITIZE_HEAR_MESSAGE(raw_message)
 	if(is_type_in_list(H.mind?.assigned_role, vip) && findtext(message2recognize, "set phrase"))
 		for(var/obj/structure/door/secret/D in GLOB.keep_doors)
 			D.set_phrase(open_phrase)
@@ -314,15 +326,22 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 /obj/structure/door/secret/keep/examine(mob/user)
 	. = ..()
 	if(HAS_TRAIT(user, TRAIT_KNOWKEEPPLANS))
-		. += span_purple("There's a hidden wall here...")
+		. += span_purple("There's a hidden door here...")
 
-/obj/structure/lever/hidden/keep/feel_button(mob/living/user)
-	if(HAS_TRAIT(user, TRAIT_KNOWKEEPPLANS))
-		..()
+/obj/structure/lever/hidden/keep
+	hidden_dc = 14
+
+/obj/structure/lever/hidden/keep/feel_button(mob/living/user, ignore_dc = FALSE)
+	// they're trained at this
+	var/bonuses = (HAS_TRAIT(user, TRAIT_THIEVESGUILD) || HAS_TRAIT(user, TRAIT_ASSASSIN)) ? 2 : 0
+	if(HAS_TRAIT(user, TRAIT_KNOWKEEPPLANS) || (user.STAPER + bonuses) >= hidden_dc || ignore_dc)
+		..(user, ignore_dc = TRUE)// passes onto parent dc check, otherwise someone who knows the keep plans would still need perception
 
 /proc/know_keep_door_password(mob/living/carbon/human/H)
 	var/obj/structure/door/secret/D = GLOB.keep_doors[1]
-	to_chat(H, span_notice("The keep's secret doors answer to: '[D.open_phrase]'"))
+	var/msg = "The keep's secret doors answer to: '[D.open_phrase]'"
+	to_chat(H, span_notice(msg))
+	H.mind?.store_memory(msg)
 
 ///// THIEVES GUILD DOORS /////
 /obj/structure/door/secret/thieves_guild
@@ -347,7 +366,7 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 		return FALSE
 	var/mob/living/carbon/human/H = speaker
 
-	var/message2recognize = sanitize_hear_message(raw_message)
+	var/message2recognize = SANITIZE_HEAR_MESSAGE(raw_message)
 	if((is_type_in_list(H.mind?.assigned_role, vip)) && findtext(message2recognize, "set phrase"))
 		for(var/obj/structure/door/secret/D in GLOB.keep_doors)
 			D.set_phrase(open_phrase)
@@ -381,8 +400,7 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 	new_door.icon = source_turf.icon
 	new_door.icon_state = source_turf.icon_state
 
-	var/smooth = source_turf.smoothing_flags
-
+	var/smooth = source_turf.smoothing_flags & ~SMOOTH_QUEUED
 	if(smooth)
 		new_door.smoothing_flags |= smooth
 		new_door.smoothing_icon = initial(source_turf.icon_state)

@@ -2,7 +2,6 @@
 	title = "Carpenter"
 	tutorial = "Others may regard your work as crude and demeaning, but you understand deep in your soul the beauty of woodchopping. \
 	For it is by your axe that the great trees of forests are felled, and it is by your hands from which the shining beacon of civilization is built."
-	flag = LUMBERJACK
 	department_flag = PEASANTS
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_CARPENTER
@@ -13,13 +12,13 @@
 
 	allowed_races = RACES_PLAYER_ALL
 
-	outfit = /datum/outfit/job/carpenter
+	outfit = /datum/outfit/carpenter
+	give_bank_account = 8
 	cmode_music = 'sound/music/cmode/towner/CombatTowner.ogg'
 
-/datum/outfit/job/carpenter
 	job_bitflag = BITFLAG_CONSTRUCTOR
 
-/datum/outfit/job/carpenter/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/carpenter/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_skillrank(/datum/skill/misc/medicine, 1, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/axesmaces, 2, TRUE)

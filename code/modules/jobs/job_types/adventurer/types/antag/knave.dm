@@ -1,11 +1,11 @@
-/datum/advclass/knave //sneaky bastards - ranged classes of two flavors archers and rogues
-	name = "Knave"
+/datum/job/advclass/knave //sneaky bastards - ranged classes of two flavors archers and rogues
+	title = "Knave"
 	tutorial = "Not all followers of Matthios take by force. Thieves, poachers, and ne'er-do-wells of all forms steal from others from the shadows, long gone before their marks realize their misfortune."
-	outfit = /datum/outfit/job/bandit/knave
+	outfit = /datum/outfit/bandit/knave
 	category_tags = list(CTAG_BANDIT)
 	cmode_music = 'sound/music/cmode/antag/CombatBandit1.ogg'
 
-/datum/outfit/job/bandit/knave/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/bandit/knave/pre_equip(mob/living/carbon/human/H)
 	..()
 	H.adjust_skillrank(/datum/skill/combat/polearms, 3, TRUE)
 	H.adjust_skillrank(/datum/skill/combat/axesmaces, 3, TRUE)
@@ -55,7 +55,7 @@
 			H.adjust_skillrank(/datum/skill/combat/knives, 1, TRUE)
 		if("Bow & Sword") //Poacher
 			backl= /obj/item/gun/ballistic/revolver/grenadelauncher/bow
-			beltr = /obj/item/weapon/sword/short //steel sword like literally every adventurer gets
+			beltr = /obj/item/weapon/sword/short/iron //steel sword like literally every adventurer gets
 			beltl = /obj/item/ammo_holder/quiver/arrows
 			head = /obj/item/clothing/head/helmet/leather/volfhelm //cool hat
 			backr = /obj/item/storage/backpack/satchel
@@ -63,3 +63,4 @@
 			H.adjust_skillrank(/datum/skill/combat/bows, 1, TRUE)
 			H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
 			ADD_TRAIT(H, TRAIT_FORAGER, TRAIT_GENERIC)
+			ADD_TRAIT(H, TRAIT_BRUSHWALK, TRAIT_GENERIC)

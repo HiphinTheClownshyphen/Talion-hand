@@ -108,8 +108,8 @@
 
 /obj/item/paper/Initialize()
 	. = ..()
-	pixel_y = rand(-8, 8)
-	pixel_x = rand(-9, 9)
+	pixel_x = base_pixel_x + rand(-9, 9)
+	pixel_y = base_pixel_y + rand(-8, 8)
 	update_appearance(UPDATE_ICON_STATE | UPDATE_NAME)
 	updateinfolinks()
 
@@ -446,7 +446,7 @@
 			trapped = TRUE
 
 	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
-		if(is_blind(user))
+		if(user.is_blind())
 			to_chat(user, span_warning("I want to write on [src], but I cannot."))
 			return
 

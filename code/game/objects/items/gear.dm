@@ -11,16 +11,22 @@
 /obj/item/gear/metal
 	desc = "A gear with teeth meticulously crafted for tight interlocking."
 	icon_state = "gear"
+	melt_amount = 25
 
 // To prevent metal transmutation
 /obj/item/gear/metal/bronze
-	smeltresult = /obj/item/ingot/bronze
+	melting_material = /datum/material/bronze
 
 /obj/item/gear/metal/iron
-	smeltresult = /obj/item/ingot/iron
+	icon = 'icons/roguetown/items/new_gears.dmi'
+	icon_state = "iron_gear"
+	melting_material = /datum/material/iron
+	melt_amount = 35
 
 /obj/item/gear/metal/steel
-	smeltresult = /obj/item/ingot/steel
+	icon = 'icons/roguetown/items/new_gears.dmi'
+	icon_state = "steel_gear"
+	melting_material = /datum/material/steel
 
 /obj/item/gear/wood
 	var/cart_capacity = 0
@@ -34,6 +40,7 @@
 	desc = "A very simple wooden gear. Used in carts and machinery."
 	icon_state = "upgrade"
 	metalizer_result = /obj/item/gear/metal
+	smeltresult = /obj/item/fertilizer/ash
 	cart_capacity = 90
 	misfire_modification = -5
 

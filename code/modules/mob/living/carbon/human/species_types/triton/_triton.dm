@@ -4,6 +4,7 @@
 /datum/species/triton
 	name = "Triton"
 	id = SPEC_ID_TRITON
+	native_language = "Deepspeak"
 	changesource_flags = WABBAJACK
 
 	desc = "The Children of Abyssor, also known as Tritons or their colloquial name, \"Deep Folk,\" \
@@ -36,7 +37,7 @@
 	use_skintones = TRUE
 
 	species_traits = list(NO_UNDERWEAR, HAIR, OLDGREY)
-	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_WATER_BREATHING, TRAIT_GOOD_SWIM)
+	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_WATER_BREATHING, TRAIT_GOOD_SWIM, TRAIT_FISHFACE)
 	inherent_traits_f = list(TRAIT_STRONGBITE)
 	inherent_skills = list(
 		/datum/skill/labor/fishing = 3,
@@ -148,9 +149,6 @@
 	UnregisterSignal(C, COMSIG_MOB_SAY)
 	C.remove_language(/datum/language/deepspeak)
 
-/datum/species/triton/get_accent_list()
-	return strings("accents/triton_replacement.json", "triton")
-
 /datum/species/triton/check_roundstart_eligible()
 	return TRUE
 
@@ -188,5 +186,3 @@
 		"Turtle Egg" = HAIR_COLOR_TURTLE,
 	)
 
-/datum/species/triton/get_native_language()
-	return "Deepspeak"

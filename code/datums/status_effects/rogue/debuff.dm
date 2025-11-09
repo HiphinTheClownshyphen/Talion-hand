@@ -18,13 +18,13 @@
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/peckish)
+		C.add_stress(/datum/stress_event/peckish)
 
 /datum/status_effect/debuff/hungryt1/on_remove()
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stressevent/peckish)
+		C.remove_stress(/datum/stress_event/peckish)
 
 /datum/status_effect/debuff/hungryt2
 	id = "hungryt2"
@@ -41,13 +41,13 @@
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/hungry)
+		C.add_stress(/datum/stress_event/hungry)
 
 /datum/status_effect/debuff/hungryt2/on_remove()
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stressevent/hungry)
+		C.remove_stress(/datum/stress_event/hungry)
 
 /datum/status_effect/debuff/hungryt3
 	id = "hungryt3"
@@ -64,13 +64,33 @@
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/starving)
+		C.add_stress(/datum/stress_event/starving)
 
 /datum/status_effect/debuff/hungryt3/on_remove()
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stressevent/starving)
+		C.remove_stress(/datum/stress_event/starving)
+
+/datum/status_effect/debuff/hungryt4
+	id = "hungryt4"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/hungryt4
+	duration = 100
+
+
+//Used only when starvation damage is enabled
+/atom/movable/screen/alert/status_effect/debuff/hungryt4
+	name = "Dying of Starvation"
+	desc = "<span class='boldwarning'>I am dying of starvation! I need to find food, quick!</span>\n"
+	icon_state = "hunger4"
+
+/datum/status_effect/debuff/hungryt4/tick()
+	owner.adjustToxLoss(CONFIG_GET(number/starvation_damage_per_tick))
+
+/datum/status_effect/debuff/hungryt4/on_apply()
+	. = ..()
+	to_chat(owner, "<span class='danger'>I am starving to death! I need to eat something before it's too late!</span>")
+
 
 //SILVER DAGGER EFFECT
 
@@ -118,13 +138,13 @@
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/drym)
+		C.add_stress(/datum/stress_event/drym)
 
 /datum/status_effect/debuff/thirstyt1/on_remove()
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stressevent/drym)
+		C.remove_stress(/datum/stress_event/drym)
 
 /datum/status_effect/debuff/thirstyt2
 	id = "thirsty2"
@@ -141,13 +161,13 @@
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/thirst)
+		C.add_stress(/datum/stress_event/thirst)
 
 /datum/status_effect/debuff/thirstyt2/on_remove()
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stressevent/thirst)
+		C.remove_stress(/datum/stress_event/thirst)
 
 /datum/status_effect/debuff/thirstyt3
 	id = "thirsty3"
@@ -164,13 +184,32 @@
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/parched)
+		C.add_stress(/datum/stress_event/parched)
 
 /datum/status_effect/debuff/thirstyt3/on_remove()
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stressevent/parched)
+		C.remove_stress(/datum/stress_event/parched)
+
+/datum/status_effect/debuff/thirstyt4
+	id = "thirstyt4"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/thirstyt4
+	duration = 100
+
+
+//Used only when starvation damage is enabled
+/atom/movable/screen/alert/status_effect/debuff/thirstyt4
+	name = "Dying of Thirst"
+	desc = "<span class='boldwarning'>I am dying of thirst! I need to find water, quick!</span>\n"
+	icon_state = "thirst4"
+
+/datum/status_effect/debuff/thirstyt4/tick()
+	owner.adjustToxLoss(CONFIG_GET(number/dehydration_damage_per_tick))
+
+/datum/status_effect/debuff/thirstyt4/on_apply()
+	. = ..()
+	to_chat(owner, "<span class='danger'>I am dying of thirst! I need to find water before it's too late!</span>")
 
 /////////
 
@@ -192,7 +231,7 @@
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
 		C.add_nausea(100)
-		C.add_stress(/datum/stressevent/uncookedfood)
+		C.add_stress(/datum/stress_event/uncookedfood)
 
 /datum/status_effect/debuff/badmeal
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/badmeal
@@ -209,7 +248,7 @@
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/badmeal)
+		C.add_stress(/datum/stress_event/badmeal)
 
 /datum/status_effect/debuff/burnedfood
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/burntmeal
@@ -221,7 +260,7 @@
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/burntmeal)
+		C.add_stress(/datum/stress_event/burntmeal)
 		C.add_nausea(100)
 
 /atom/movable/screen/alert/status_effect/debuff/burntmeal
@@ -247,7 +286,7 @@
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
 		C.add_nausea(200)
-		C.add_stress(/datum/stressevent/rotfood)
+		C.add_stress(/datum/stress_event/rotfood)
 
 /datum/status_effect/debuff/bleeding
 	id = "bleedingt1"
@@ -291,13 +330,13 @@
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stressevent/sleepytime)
+		C.add_stress(/datum/stress_event/sleepytime)
 
 /datum/status_effect/debuff/sleepytime/on_remove()
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stressevent/sleepytime)
+		C.remove_stress(/datum/stress_event/sleepytime)
 
 // We use this to not have triumph gain and dreaming tied to tiredness
 /datum/status_effect/debuff/dreamytime
@@ -426,11 +465,22 @@
 	desc = span_warning("I am intoxicated from ambromsia not meant for mortal mouths.\n")
 	icon_state = "drunk"
 
+/datum/status_effect/debuff/mesmerised
+	id = "mesmerised"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/mesmerised
+	effectedstats = list(STATKEY_STR = -2, STATKEY_LCK = -2, STATKEY_PER = -2, STATKEY_SPD = -2) //
+	duration = 30 SECONDS
+
+/atom/movable/screen/alert/status_effect/debuff/mesmerised
+	name = "Mesmerised"
+	desc = span_warning("Their beauty is otherwordly..")
+	icon_state = "acid"
+
 
 /datum/status_effect/debuff/call_to_slaughter
 	id = "call_to_slaughter"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/call_to_slaughter
-	effectedstats = list("endurance" = -2, "constitution" = -2)
+	effectedstats = list(STATKEY_END = -2, STATKEY_CON = -2)
 	duration = 2.5 MINUTES
 
 /atom/movable/screen/alert/status_effect/debuff/call_to_slaughter
@@ -471,3 +521,95 @@
 	desc = span_danger("Oh- \n I don't... have it anymore.\n")
 
 
+/datum/status_effect/debuff/stinky_person
+	id = "stinky_person"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/stinky_person
+	duration = -1
+
+/atom/movable/screen/alert/status_effect/debuff/stinky_person
+	name = "Stinky Person"
+	desc = "<span class='warning'>I smell HORRID.</span>\n"
+	icon_state = "stinky" //TODO add icon
+
+/datum/status_effect/debuff/stinky_person/on_apply()
+	. = ..()
+	owner.AddComponent(/datum/component/rot/stinky_person)
+
+/datum/status_effect/debuff/stinky_person/on_remove()
+	. = ..()
+	var/datum/component/stinky_component = GetComponent(/datum/component/rot/stinky_person)
+	stinky_component?.RemoveComponent()
+
+/datum/status_effect/debuff/tainted_lux
+	id = "tainted_lux"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/tainted_lux
+	effectedstats = list(STATKEY_LCK = -2)
+	duration = -1
+
+/atom/movable/screen/alert/status_effect/debuff/tainted_lux
+	name = "Tainted Lux"
+	desc = span_danger("Something within me is broken... what was once bright now writhes with a poisoned pulse...")
+
+/datum/status_effect/debuff/received_tainted_lux
+	id = "received_tainted_lux"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/received_tainted_lux
+	effectedstats = list(STATKEY_LCK = -2)
+	duration = -1
+
+/atom/movable/screen/alert/status_effect/debuff/received_tainted_lux
+	name = "Received Tainted Lux"
+	desc = span_danger("It stirs inside me... but it is wrong, twisted... if this is a soul, then it has been corrupted long before it reached me...")
+
+/datum/status_effect/debuff/corrupted_by_tainted_lux
+	id = "corrupted_by_tainted_lux"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/corrupted_by_tainted_lux
+	effectedstats = list(STATKEY_LCK = -4)
+	duration = -1
+
+/atom/movable/screen/alert/status_effect/debuff/corrupted_by_tainted_lux
+	name = "Corrupted..."
+	desc = span_danger("It filled my veins with light and rot alike... I can feel it crawling under my skin, whispering that I should never have done it...")
+
+/datum/status_effect/debuff/electrified
+	id = "electrified"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/electrified
+	duration = 20 SECONDS
+	status_type = STATUS_EFFECT_UNIQUE
+	var/shock_strength = 30
+	var/static/mutable_appearance/electric = mutable_appearance('icons/effects/effects.dmi', "electricity")
+
+/datum/status_effect/debuff/electrified/on_apply()
+	. = ..()
+	to_chat(owner, span_warning("Your body crackles with electricity!"))
+	if(isliving(owner))
+		var/mob/living/L = owner
+		RegisterSignal(L, COMSIG_MOVABLE_MOVED, PROC_REF(check_conductive_surface))
+		L.add_overlay(electric)
+
+/datum/status_effect/debuff/electrified/on_remove()
+	. = ..()
+	if(isliving(owner))
+		var/mob/living/L = owner
+		UnregisterSignal(L, COMSIG_MOVABLE_MOVED)
+		L.cut_overlay(electric)
+
+/datum/status_effect/debuff/electrified/proc/check_conductive_surface()
+	SIGNAL_HANDLER
+	var/mob/living/L = owner
+	if(!L)
+		return
+
+	var/turf/T = get_turf(L)
+	if(!T)
+		return
+
+	for(var/atom/A in list(T) + T.contents)
+		if(A.flags_1 & CONDUCT_1)
+			L.visible_message(span_warning("[L] gets shocked!"), span_danger("Electricity courses through your body!"))
+			L.electrocute_act(shock_strength, src)
+			return
+
+/atom/movable/screen/alert/status_effect/debuff/electrified
+	name = "Electrified"
+	desc = "Your body is charged with unstable electricity!"
+	icon_state = "dazed"

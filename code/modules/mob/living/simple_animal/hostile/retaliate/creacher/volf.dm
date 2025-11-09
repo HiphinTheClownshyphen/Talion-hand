@@ -1,7 +1,7 @@
 /mob/living/simple_animal/hostile/retaliate/wolf
 	icon = 'icons/roguetown/mob/monster/vol.dmi'
 	name = "volf"
-	desc = "Usually content to leave menfolk alone if well-fed, but something in the wilds around Enigma turns them hungry, persistent, and vicious."
+	desc = "Usually content to leave menfolk alone if well-fed, but something in the wilds turns them hungry, persistent, and vicious."
 	icon_state = "vv"
 	icon_living = "vv"
 	icon_dead = "vvd"
@@ -17,17 +17,17 @@
 	botched_butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/steak = 1,
 						/obj/item/natural/fur/volf = 1,
 						/obj/item/alch/bone = 1)
-	butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/steak = 1,
+	butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/steak = 2,
 						/obj/item/natural/hide = 1,
 						/obj/item/natural/fur/volf = 2,
 						/obj/item/alch/sinew = 2,
 						/obj/item/alch/bone = 1)
 	perfect_butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/steak = 2,
-						/obj/item/natural/hide = 1,
+						/obj/item/natural/hide = 2,
 						/obj/item/natural/fur/volf = 3,
 						/obj/item/alch/sinew = 2,
-						/obj/item/alch/bone = 1,
-						/obj/item/natural/head/volf = 1)
+						/obj/item/alch/bone = 2)
+	head_butcher = /obj/item/natural/head/volf
 
 	health = VOLF_HEALTH
 	maxHealth = VOLF_HEALTH
@@ -52,7 +52,7 @@
 	defdrain = 5
 	del_on_deaggro = 999 SECONDS
 	retreat_health = 0.4
-	food = 0
+
 	dodgetime = 17
 	aggressive = 1
 //	stat_attack = UNCONSCIOUS

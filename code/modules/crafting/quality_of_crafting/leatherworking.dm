@@ -160,6 +160,7 @@
 	name = "leather gloves"
 	output_amount = 2
 	output = /obj/item/clothing/gloves/leather
+	craftdiff = 2
 
 /datum/repeatable_crafting_recipe/leather/gloves/feld_gloves
 	name = "feldsher gloves"
@@ -184,6 +185,22 @@
 		/obj/item/natural/fibers = 1
 	)
 	output = /obj/item/clothing/gloves/leather/apothecary
+
+/datum/repeatable_crafting_recipe/leather/gloves/otavan_gloves
+	name = "grenzelhoftian gloves"
+	requirements = list(
+		/obj/item/natural/hide/cured = 2,
+		/obj/item/natural/fibers = 1
+	)
+	output = /obj/item/clothing/gloves/leather/otavan
+
+/datum/repeatable_crafting_recipe/leather/gloves/inquisitor_gloves
+	name = "inquisitor gloves"
+	requirements = list(
+		/obj/item/natural/hide/cured = 2,
+		/obj/item/natural/fibers = 1
+	)
+	output = /obj/item/clothing/gloves/leather/otavan/inqgloves
 
 /datum/repeatable_crafting_recipe/leather/gloves/apothecary_pants
 	name = "apothecary trou"
@@ -288,6 +305,26 @@
 		/obj/item/natural/fur = 1,
 	)
 	output = /obj/item/clothing/cloak/raincloak/furcloak
+	craftdiff = 2
+
+/datum/repeatable_crafting_recipe/leather/battlenun_cloak
+	name = "battlenun cloak"
+	requirements = list(
+		/obj/item/natural/hide/cured = 2,
+		/obj/item/natural/silk = 1,
+	)
+	output = /obj/item/clothing/cloak/battlenun
+	craftdiff = 3
+
+/datum/repeatable_crafting_recipe/leather/graggar_cloak
+	name = "vicious cloak"
+	requirements = list(
+		/obj/item/natural/hide/cured = 2,
+		/obj/item/natural/silk = 1,
+	)
+	output = /obj/item/clothing/cloak/graggar
+	craftdiff = 4
+
 
 /datum/repeatable_crafting_recipe/leather/cloakfur_black
 	name = "fur lined black cloak"
@@ -296,6 +333,7 @@
 		/obj/item/natural/fur = 2,
 	)
 	output = /obj/item/clothing/cloak/black_cloak
+	craftdiff = 4
 
 /datum/repeatable_crafting_recipe/leather/belt
 	name = "leather belt"
@@ -304,6 +342,7 @@
 		/obj/item/natural/fibers = 1,
 	)
 	output = /obj/item/storage/belt/leather
+	craftdiff = 2
 
 /datum/repeatable_crafting_recipe/leather/vest
 	name = "leather vest"
@@ -404,6 +443,15 @@
 	output = /obj/item/clothing/armor/leather/hide
 	craftdiff = 2
 
+/datum/repeatable_crafting_recipe/leather/hidearmor/steppe
+	name = "frontier fur lined leather armor"
+	requirements = list(
+		/obj/item/natural/hide/cured = 2,
+		/obj/item/natural/fur = 2,
+	)
+	output = /obj/item/clothing/armor/leather/hide/steppe
+	craftdiff = 2
+
 /datum/repeatable_crafting_recipe/leather/whip
 	name = "leather whip"
 	requirements = list(
@@ -462,6 +510,31 @@
 				/obj/item/natural/fibers = 2)
 	craftdiff = 3
 
+/datum/repeatable_crafting_recipe/leather/ominous_hood
+	name = "ominous hood"
+	requirements = list(
+		/obj/item/natural/hide/cured = 2,
+	)
+	output = /obj/item/clothing/head/helmet/leather/hood_ominous
+	craftdiff = 3
+
+/datum/repeatable_crafting_recipe/leather/adept_cowl
+	name = "adept cowl"
+	requirements = list(
+		/obj/item/natural/hide/cured = 1,
+	)
+	output = /obj/item/clothing/head/adeptcowl
+	craftdiff = 3
+
+/datum/repeatable_crafting_recipe/leather/inquisitor_hat
+	name = "inquisitorial hat"
+	requirements = list(
+		/obj/item/natural/hide/cured = 2,
+		/obj/item/natural/feather = 1,
+	)
+	output = /obj/item/clothing/head/leather/inqhat
+	craftdiff = 4
+
 /datum/repeatable_crafting_recipe/leather/nobleboots
 	name = "noble boots"
 	output = /obj/item/clothing/shoes/nobleboot
@@ -471,6 +544,48 @@
 		/obj/item/natural/cloth = 2,
 	)
 	craftdiff = 4
+
+/datum/repeatable_crafting_recipe/leather/forrestercloak
+	name = "forrester cloak"
+	output = /obj/item/clothing/cloak/forrestercloak
+	requirements = list(/obj/item/natural/silk = 1,
+				/obj/item/natural/hide/cured = 2)
+	craftdiff = 4
+
+/datum/repeatable_crafting_recipe/leather/forrestercloak_snow
+	name = "forrester cloak (snow)"
+	output = /obj/item/clothing/cloak/forrestercloak/snow
+	requirements = list(/obj/item/natural/silk = 1,
+				/obj/item/natural/hide/cured = 2)
+	craftdiff = 4
+
+/datum/repeatable_crafting_recipe/leather/wardencloak
+	name = "warden cloak"
+	output = /obj/item/clothing/cloak/wardencloak
+	requirements = list(/obj/item/natural/silk = 2,
+				/obj/item/natural/hide/cured = 2)
+	craftdiff = 5
+
+/datum/repeatable_crafting_recipe/leather/red_cloak
+	name = "red cloak"
+	output = /obj/item/clothing/cloak/heartfelt
+	requirements = list(/obj/item/natural/silk = 2,
+				/obj/item/natural/hide/cured = 2)
+	craftdiff = 5
+
+/datum/repeatable_crafting_recipe/leather/captaincloak
+	name = "captain cloak"
+	output = /obj/item/clothing/cloak/captain
+	requirements = list(/obj/item/natural/silk = 3,
+				/obj/item/natural/hide/cured = 2)
+	craftdiff = 6
+
+/datum/repeatable_crafting_recipe/leather/matroncloak
+	name = "matron cloak"
+	output = /obj/item/clothing/cloak/matron
+	requirements = list(/obj/item/natural/silk = 1,
+				/obj/item/natural/hide/cured = 2)
+	craftdiff = 6
 
 /datum/repeatable_crafting_recipe/leather/lordcloak
 	name = "lordly cloak"
@@ -491,7 +606,6 @@
 	requirements = list(
 		/obj/item/natural/hide/cured = 1,
 	)
-	output_amount = 2
 	output = /obj/item/clothing/head/brimmed
 	craftdiff = 1
 
@@ -538,7 +652,7 @@
 	craftdiff = 3
 
 /datum/repeatable_crafting_recipe/leather/top_hat
-	name = "top hat"
+	name = "steampunk top hat"
 	requirements = list(
 		/obj/item/natural/hide/cured = 2,
 	)
@@ -580,6 +694,13 @@
 	output = /obj/item/clothing/shoes/boots/leather/advanced
 	requirements = list(/obj/item/natural/hide/cured = 1,
 				/obj/item/natural/fibers = 1)
+	craftdiff = 4
+
+/datum/repeatable_crafting_recipe/leather/standalone/boots/watch
+	name = "watch boots"
+	output = /obj/item/clothing/shoes/boots/leather/advanced/watch
+	requirements = list(/obj/item/natural/hide/cured = 1,
+				/obj/item/natural/fibers = 1, /obj/item/ingot/iron)
 	craftdiff = 4
 
 /datum/repeatable_crafting_recipe/leather/standalone/gatemaster_coat
@@ -633,11 +754,18 @@
 	craftdiff = 4
 
 /datum/repeatable_crafting_recipe/leather/standalone/otavan_shoes
-	name = "otavan shoes"
+	name = "grenzelhoftian shoes"
 	output = /obj/item/clothing/shoes/otavan
 	requirements = list(/obj/item/natural/hide/cured = 3,
 				/obj/item/natural/fibers = 1)
 	craftdiff = 4
+
+/datum/repeatable_crafting_recipe/leather/standalone/inqboots
+	name = "inquisitorial shoes"
+	output = /obj/item/clothing/shoes/otavan/inqboots
+	requirements = list(/obj/item/natural/hide/cured = 3,
+				/obj/item/natural/fibers = 1)
+	craftdiff = 5
 
 /datum/repeatable_crafting_recipe/leather/standalone/leather_duelcoat
 	name = "leather duelist coat"
@@ -674,6 +802,22 @@
 				/obj/item/natural/fibers = 1)
 	craftdiff = 4
 
+/datum/repeatable_crafting_recipe/leather/standalone/grenzelhoft_leather_boots
+	name = "grenzelhoftian leather boots"
+	output = /obj/item/clothing/shoes/rare/grenzelhoft
+	requirements = list(/obj/item/natural/hide/cured = 2,
+				/obj/item/natural/fibers = 1)
+	craftdiff = 4
+
+/datum/repeatable_crafting_recipe/leather/grenzelhoft_heavy_leather_gloves
+	name = "grenzelhoftian heavy leather gloves"
+	requirements = list(
+		/obj/item/natural/hide/cured = 2,
+		/obj/item/natural/fur = 1,
+	)
+	output = /obj/item/clothing/gloves/angle/grenzel
+	craftdiff = 4
+
 /datum/repeatable_crafting_recipe/leather/standalone/apothecary_overcoat
 	name = "apothecary overcoat"
 	output = /obj/item/clothing/armor/gambeson/apothecary
@@ -701,6 +845,20 @@
 	requirements = list(/obj/item/natural/hide/cured = 2,
 				/obj/item/natural/fibers = 1)
 	craftdiff = 4
+
+/datum/repeatable_crafting_recipe/leather/standalone/inquisitor_duster
+	name = "inquisitorial duster"
+	output = /obj/item/clothing/armor/medium/scale/inqcoat
+	requirements = list(/obj/item/natural/hide/cured = 2,
+				/obj/item/clothing/armor/medium/scale = 1)
+	craftdiff = 4
+
+/datum/repeatable_crafting_recipe/leather/standalone/coat/forest
+	name = "forrester leather armor"
+	output = /obj/item/clothing/armor/leather/advanced/forrester
+	requirements = list(/obj/item/natural/hide/cured = 3,
+				/obj/item/natural/fibers = 1)
+	craftdiff = 5
 
 /datum/repeatable_crafting_recipe/leather/standalone/helmet
 	name = "hardened leather helmet"
@@ -774,3 +932,82 @@
 				/obj/item/natural/cured/essence = 1,
 				/obj/item/natural/fibers = 1)
 	craftdiff = 5
+
+/datum/repeatable_crafting_recipe/leather/rumaclan
+	name = "raised sandals"
+	output = /obj/item/clothing/shoes/rumaclan
+	requirements = list(
+		/obj/item/natural/hide/cured = 1,
+		/obj/item/grown/log/tree/small = 1
+	)
+	craftdiff = 1
+	category = "Shoes"
+
+/datum/repeatable_crafting_recipe/leather/atgervi_coat
+	name = "shamanic coat"
+	output = /obj/item/clothing/armor/leather/heavy/atgervi
+	requirements = list(
+		/obj/item/natural/hide/cured = 2,
+		/obj/item/natural/fur = 2
+	)
+	craftdiff = 2
+	category = "Armor"
+
+/datum/repeatable_crafting_recipe/leather/atgervi_pants
+	name = "fur pants"
+	output = /obj/item/clothing/pants/trou/leather/atgervi
+	requirements = list(
+		/obj/item/natural/fur = 2,
+		/obj/item/natural/hide/cured = 1,
+	)
+	craftdiff = 1
+	category = "Pants"
+
+/datum/repeatable_crafting_recipe/leather/atgervi_gloves
+	name = "fur-lined leather gloves"
+	output = /obj/item/clothing/gloves/angle/atgervi
+	requirements = list(
+		/obj/item/natural/hide/cured = 1,
+		/obj/item/natural/fur = 1
+	)
+	craftdiff = 1
+	category = "Gloves"
+
+/datum/repeatable_crafting_recipe/leather/atgervi_moose_hood
+	name = "moose hood"
+	output = /obj/item/clothing/head/helmet/leather/saiga/atgervi
+	requirements = list(
+		/obj/item/natural/hide/cured = 2,
+		/obj/item/alch/bone = 2 // For antlers
+	)
+	craftdiff = 3
+	category = "Hat"
+
+/datum/repeatable_crafting_recipe/leather/atgervi_boots
+	name = "atgervi leather boots"
+	output = /obj/item/clothing/shoes/boots/leather/atgervi
+	requirements = list(
+		/obj/item/natural/hide/cured = 1
+	)
+	craftdiff = 1
+	category = "Shoes"
+
+/datum/repeatable_crafting_recipe/leather/psydonboots
+	name = "enduring boots"
+	output = /obj/item/clothing/shoes/psydonboots
+	requirements = list(
+		/obj/item/natural/hide/cured = 3,
+		/obj/item/natural/fibers = 1,
+	)
+	craftdiff = 3
+	category = "Shoes"
+
+/datum/repeatable_crafting_recipe/leather/psyaltrist
+	name = "cuir-bouilli armor"
+	requirements = list(
+		/obj/item/natural/hide/cured = 3,
+		/obj/item/ingot/iron = 1,
+	)
+	output = /obj/item/clothing/armor/leather/studded/psyaltrist
+	craftdiff = 3
+	category = "Armor"

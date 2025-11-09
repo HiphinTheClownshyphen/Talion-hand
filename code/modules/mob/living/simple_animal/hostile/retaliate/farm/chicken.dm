@@ -46,6 +46,7 @@
 	melee_damage_upper = 5
 
 	pooptype = /obj/item/natural/poo/horse
+	happy_funtime_mob = TRUE
 
 	var/eggsFertile = TRUE
 	var/body_color
@@ -115,15 +116,12 @@
 
 /mob/living/simple_animal/hostile/retaliate/chicken/Initialize()
 	. = ..()
-
 	if(chicken_init)
 		if(!body_color)
 			body_color = pick(validColors)
 		icon_state = "[icon_prefix]_[body_color]"
 		icon_living = "[icon_prefix]_[body_color]"
 		icon_dead = "[icon_prefix]_[body_color]_dead"
-	pixel_x = rand(-6, 6)
-	pixel_y = rand(0, 10)
 	++chicken_count
 
 /mob/living/simple_animal/hostile/retaliate/chicken/Destroy()
@@ -132,7 +130,7 @@
 
 /mob/living/simple_animal/hostile/retaliate/chicken/Life()
 	..()
-	if(food > 0)
+	if(SEND_SIGNAL(src, COMSIG_MOB_RETURN_HUNGER) > 0)
 		production = min(production + 1, 100)
 
 /mob/living/simple_animal/hostile/retaliate/chicken/proc/hatch_eggs()

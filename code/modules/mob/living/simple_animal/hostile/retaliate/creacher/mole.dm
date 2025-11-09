@@ -27,8 +27,8 @@
 						/obj/item/natural/hide = 2,
 						/obj/item/natural/fur/mole = 3,
 						/obj/item/alch/sinew = 2,
-						/obj/item/alch/bone = 1,
-						/obj/item/natural/head/mole = 1)
+						/obj/item/alch/bone = 1)
+	head_butcher = /obj/item/natural/head/mole
 
 	health = MOLE_HEALTH
 	maxHealth = MOLE_HEALTH
@@ -58,10 +58,12 @@
 	defdrain = 10
 	del_on_deaggro = 60 SECONDS
 	retreat_health = 0.4
-	food = 0
+
 
 	dodgetime = 20
 	aggressive = TRUE
+
+	dendor_taming_chance = DENDOR_TAME_PROB_HIGH
 //	stat_attack = UNCONSCIOUS
 	remains_type = /obj/effect/decal/remains/mole
 	body_eater = TRUE

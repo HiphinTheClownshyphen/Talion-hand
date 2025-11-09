@@ -6,7 +6,6 @@
 	You are as free as any bird in the sky, \
 	and you may revel in your debauchery for as long as your parents remain upon the throne: \
 	But someday you’ll have to grow up, and that will be the day your carelessness will cost you more than a few mammons."
-	flag = PRINCE
 	department_flag = APPRENTICES
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE )
 	faction = FACTION_TOWN
@@ -32,21 +31,23 @@
 /datum/job/prince/after_spawn(mob/living/carbon/spawned, client/player_client)
 	. = ..()
 	var/mob/living/carbon/human/H = spawned
-	addtimer(CALLBACK(SSfamilytree, TYPE_PROC_REF(/datum/controller/subsystem/familytree, AddRoyal), H, FAMILY_PROGENY), 5 SECONDS)
+	addtimer(CALLBACK(SSfamilytree, TYPE_PROC_REF(/datum/controller/subsystem/familytree, AddRoyal), H, FAMILY_PROGENY), 10 SECONDS)
 	if(GLOB.keep_doors.len > 0)
 		addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(know_keep_door_password), H), 5 SECONDS)
 	ADD_TRAIT(H, TRAIT_KNOWKEEPPLANS, TRAIT_GENERIC)
 
-/datum/advclass/heir
-	displays_adv_job = FALSE
+/datum/job/advclass/heir
+	inherit_parent_title = TRUE
+	allowed_ages = list(AGE_ADULT, AGE_CHILD)
+	allowed_races = RACES_PLAYER_ROYALTY
 
-/datum/advclass/heir/daring
-	name = "Daring Twit"
+/datum/job/advclass/heir/daring
+	title = "Daring Twit"
 	tutorial = "You're a somebody, someone important. It only makes sense you want to make a name for yourself, to gain your own glory so people see how great you really are beyond your bloodline. Plus, if you're beloved by the people for your exploits you'll be chosen! Probably. Shame you're as useful and talented as a squire, despite your delusions to the contrary."
-	outfit = /datum/outfit/job/heir/daring
+	outfit = /datum/outfit/heir/daring
 	category_tags = list(CTAG_HEIR)
 
-/datum/outfit/job/heir/daring/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/heir/daring/pre_equip(mob/living/carbon/human/H)
 	..()
 	pants = /obj/item/clothing/pants/tights
 	shirt = /obj/item/clothing/shirt/undershirt/colored/guard
@@ -78,13 +79,13 @@
 	ADD_TRAIT(H, TRAIT_NOBLE, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
 
-/datum/advclass/heir/aristocrat
-	name = "Sheltered Aristocrat"
+/datum/job/advclass/heir/aristocrat
+	title = "Sheltered Aristocrat"
 	tutorial = "Life has been kind to you; you've an entire keep at your disposal, servants to wait on you, and a whole retinue of guards to guard you. You've nothing to prove; just live the good life and you'll be a lord someday, too. A lack of ambition translates into a lacking skillset beyond schooling, though, and your breaks from boredom consist of being a damsel or court gossip."
-	outfit = /datum/outfit/job/heir/aristocrat
+	outfit = /datum/outfit/heir/aristocrat
 	category_tags = list(CTAG_HEIR)
 
-/datum/outfit/job/heir/aristocrat/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/heir/aristocrat/pre_equip(mob/living/carbon/human/H)
 	..()
 	ADD_TRAIT(H, TRAIT_NOBLE, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_MEDIUMARMOR, TRAIT_GENERIC)
@@ -123,13 +124,13 @@
 	H.change_stat(STATKEY_LCK, 1)
 	H.change_stat(STATKEY_SPD, 1)
 
-/datum/advclass/heir/inbred
-	name = "Inbred Wastrel"
+/datum/job/advclass/heir/inbred
+	title = "Inbred Wastrel"
 	tutorial = "Your bloodline ensures Psydon smiles upon you by divine right, the blessing of nobility... until you were born, anyway. You are a child forsaken, and even though your body boils as you go about your day, your spine creaks, and your drooling form needs to be waited on tirelessly you are still considered more important then the peasant that keeps the town fed and warm. Remind them of that fact when your lungs are particularly pus free."
-	outfit = /datum/outfit/job/heir/inbred
+	outfit = /datum/outfit/heir/inbred
 	category_tags = list(CTAG_HEIR)
 
-/datum/outfit/job/heir/inbred/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/heir/inbred/pre_equip(mob/living/carbon/human/H)
 	..()
 	ADD_TRAIT(H, TRAIT_NOBLE, TRAIT_GENERIC)
 	ADD_TRAIT(H, TRAIT_CRITICAL_WEAKNESS, TRAIT_GENERIC)

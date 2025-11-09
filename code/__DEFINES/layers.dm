@@ -62,10 +62,12 @@
 #define ABOVE_ALL_MOB_LAYER 4.5
 
 #define SPACEVINE_LAYER 4.8
+#define FLORA_LAYER 4.81
 #define SPACEVINE_MOB_LAYER 4.9
 //#define FLY_LAYER 5 //For easy recordkeeping; this is a byond define
 #define GASFIRE_LAYER 5.05
 #define RIPPLE_LAYER 5.1
+#define GOD_HAND_LAYER 10
 #define AREA_LAYER	12
 
 #define OPENSPACE_LAYER 600 //! Openspace layer over all
@@ -91,17 +93,19 @@
 #define WEATHER_OVERLAY_PLANE -80
 #define WEATHER_RENDER_TARGET "*WEATHER_RENDER_TARGET"
 
-#define OPENSPACE_PLANE -11 //! Openspace plane below all turfs
-#define OPENSPACE_BACKDROP_PLANE -10 //! Black square just over openspace plane to guaranteed cover all in openspace turf
+#define OPENSPACE_PLANE -12 //! Openspace plane below all turfs
+#define OPENSPACE_BACKDROP_PLANE -11 //! Black square just over openspace plane to guaranteed cover all in openspace turf
 
-#define FLOOR_PLANE -9
+#define FLOOR_PLANE -10
 #define FLOOR_PLANE_RENDER_TARGET "FLOOR_PLANE_RENDER_TARGET"
-#define REFLECTION_PLANE -8
+#define REFLECTION_PLANE -9
 
-#define GAME_PLANE -7
+#define GAME_PLANE -8
 #define GAME_PLANE_RENDER_TARGET "GAME_PLANE_RENDER_TARGET"
-#define GAME_PLANE_FOV_HIDDEN -6
-#define GAME_PLANE_UPPER -5
+#define GAME_PLANE_FOV_HIDDEN -7
+#define GAME_PLANE_UPPER -6
+
+#define SEETHROUGH_PLANE -5
 
 #define WEATHER_EFFECT_PLANE -4
 #define STRATEGY_PLANE -3
@@ -171,6 +175,9 @@
 
 // Floating chat messages
 #define RUNECHAT_PLANE 250
+
+/// Plane for balloon text (text that fades up)
+#define BALLOON_CHAT_PLANE 251
 
 ///--------------- FULLSCREEN IMAGES ------------
 #define FULLSCREEN_PLANE 500

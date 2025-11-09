@@ -35,7 +35,7 @@
 	move_to_delay = 12
 	base_intents = list(/datum/intent/simple/elementalt2_unarmed)
 	butcher_results = list()
-	faction = list("fae")
+	faction = list("fae", FACTION_PLANTS)
 	mob_biotypes = MOB_ORGANIC|MOB_BEAST
 	health = 650
 	maxHealth = 650
@@ -60,7 +60,7 @@
 	defdrain = 10
 	del_on_deaggro = 44 SECONDS
 	retreat_health = 0.3
-	food = 0
+
 	attack_sound = list('sound/foley/plantcross1.ogg','sound/foley/plantcross2.ogg','sound/foley/plantcross3.ogg','sound/foley/plantcross4.ogg')
 	dodgetime = 30
 	aggressive = 1
