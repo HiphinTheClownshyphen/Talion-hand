@@ -691,3 +691,8 @@
 	timer = 10 MINUTES
 	stress_change = 8
 	desc = span_warning("Foul, disgusting thing!!")
+
+/datum/stress_event/paperwork_dread
+	timer = 12 MINUTES
+	stress_change = 2
+	desc = span_warning("OHgh nogogogogog")

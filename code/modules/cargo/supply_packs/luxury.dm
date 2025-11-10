@@ -12,11 +12,6 @@
 	/obj/item/kitchen/spoon/pewter,
 	/obj/item/kitchen/fork/pewter)
 
-/datum/supply_pack/luxury/merctoken
-	name = "Mercenary Commendation Writ"
-	cost = 100
-	contains = /obj/item/merctoken
-
 /datum/supply_pack/luxury/silver_plaque_belt
 	name = "Silver Plaque Belt"
 	cost = 60

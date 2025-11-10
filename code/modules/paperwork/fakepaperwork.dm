@@ -1,11 +1,13 @@
 //N/A write for this shit.
 //N/A most of these need checks for reading, even if they don't understand it, it should at least point out they can't
 
+GLOBAL_LIST_EMPTY(Beucratic_triumps)
+
 /obj/item/gold_prick
 	name = "GOLDEN PRICK"
 	desc = ""
-	icon_state = ""
-	icon = ""
+	icon_state = "feather"
+	icon = 'icons/roguetown/items/natural.dmi'
 	w_class = WEIGHT_CLASS_TINY
 	slot_flags = ITEM_SLOT_MOUTH //putting pricks in your mouth might be fun for a bit, just don't go on that second date.
 	var/mob/living/blood
@@ -13,18 +15,17 @@
 /obj/item/gold_prick/update_icon_state()
 	. = ..()
 	if(blood)
-		icon_state = ""
+		icon_state = "feather"
 		return
-	icon_state = ""
+	icon_state = "feather"
 
 /obj/item/gold_prick/attack_self(mob/living/user)
 	user.flash_fullscreen("redflash3")
 	playsound(user, 'sound/combat/hits/bladed/genstab (1).ogg', 100, FALSE, -1)
 	visible_message(span_warning("[user] draws blood with the [src]"))
-	if(HAS_TRAIT(user, TRAIT_NOBLE))
-		if(!HAS_TRAIT(user, TRAIT_NOPAIN))
-			user.emote("painscream")
-			to_chat(user, span_warning("THAT BURNS!!"))
+	if(HAS_TRAIT(user, TRAIT_NOBLE) && !HAS_TRAIT(user, TRAIT_NOPAIN))
+		user.emote("painscream")
+		to_chat(user, span_warning("THAT BURNS!!"))
 	blood = user
 	addtimer(CALLBACK(src, PROC_REF(clear_blood)), 1 MINUTES)
 
@@ -40,7 +41,7 @@
 			playsound(src, 'sound/magic/enter_blood.ogg', 30, FALSE, ignore_walls = FALSE)
 			user.add_stress(/datum/stress_event/ring_madness)
 			return
-		to_chat(user, span_warning("I clean the prick"))
+		to_chat(user, span_warning("I wipe off the prick"))
 
 /obj/item/gold_prick/examine(mob/user)
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
@@ -216,7 +217,7 @@
 	. = ..()
 
 /obj/item/paper/merc_contract/proc/bloodvodoo(mob/user)
-	var/fuckitupterry = browser_alert(user, "The fire is inches away from the parchment", "THE PACT", "Absolve Contract", "Recall Champion")
+	var/fuckitupterry = browser_alert(user, "The fire is inches away from the parchment", "THE PACT", list("Absolve Contract", "Recall Champion"))
 	if(!fuckitupterry)
 		to_chat(user, "")
 		return
@@ -669,7 +670,7 @@
 			if(yuptheydied)
 				to_chat(user, span_warning("This is already signed."))
 				return
-			var/aretheydead = browser_alert(user, "Has the mercenary passed, is it time to pay the grievers?", "CONFIRM DEATH", "They rest now", "They Walk")
+			var/aretheydead = browser_alert(user, "Has the mercenary passed, is it time to pay the grievers?", "CONFIRM DEATH", list("They rest now", "They Walk"))
 			if(aretheydead == "They walk")
 				return
 			if(aretheydead == "They rest now" && (user.is_holding(src) || user.Adjacent(src)))
@@ -741,7 +742,7 @@
 			if(yuptheydied)
 				to_chat(user, span_warning("This is already signed."))
 				return
-			var/aretheydead = browser_alert(user, "Has the mercenary passed, is it time to pay the grievers?", "CONFIRM DEATH", "They rest now", "They Walk")
+			var/aretheydead = browser_alert(user, "Has the Free spirit passed, is it time to pay the grievers?", "CONFIRM DEATH", list("They rest now", "They Walk"))
 			if(aretheydead == "They walk")
 				return
 			if(aretheydead == "They rest now" && (user.is_holding(src) || user.Adjacent(src)))
@@ -806,10 +807,13 @@
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
 			gaffsigned = user
+			var/claimedtriumphs = GLOB.Beucratic_triumps[user.ckey]
 			if(signed)
 				addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
+				if(claimedtriumphs == src)
+					return
+				GLOB.Beucratic_triumps[user.ckey] += src
 				triumph_effect()
-				//N/A need to add something to check if they've claimed these triumphs
 			return
 		if(istype(user.mind.assigned_role, jobthatcansign))
 			if(signed)
@@ -821,6 +825,10 @@
 			update_icon_state()
 			if(gaffsigned)
 				addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
+				var/claimedtriumphss = GLOB.Beucratic_triumps[gaffsigned.ckey]
+				if(claimedtriumphss == src)
+					return
+				GLOB.Beucratic_triumps[gaffsigned.ckey] += src
 				triumph_effect()
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
@@ -933,10 +941,13 @@
 		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 		visible_message("[user] signs the contract")
 		gaffsigned = user
+		var/claimedtriumphs = GLOB.Beucratic_triumps[user.ckey]
 		if(signed)
 			addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
+			if(claimedtriumphs == src)
+				return
+			GLOB.Beucratic_triumps[user.ckey] += src
 			triumph_effect()
-			//N/A need to add something to check if they've claimed these triumphs
 		return
 	if(istype(P, /obj/item/gold_prick))
 		var/obj/item/gold_prick/G = P
@@ -958,6 +969,10 @@
 		update_icon_state()
 		if(gaffsigned)
 			addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
+			var/claimedtriumphss = GLOB.Beucratic_triumps[gaffsigned.ckey]
+			if(claimedtriumphss == src)
+				return
+			GLOB.Beucratic_triumps[gaffsigned.ckey] += src
 			triumph_effect()
 
 /obj/item/paper/political_PM/bloodseal/pre_attack(atom/A, mob/living/user, params)
@@ -979,7 +994,7 @@
 	return ..()
 
 /obj/item/paper/political_PM/bloodseal/proc/bloodvodoo(mob/user)
-	var/fuckitupterry = browser_alert(user, "The fire is inches away from the parchment", "THE PACT", "Absolve Contract", "Intimidate Whelp") //"Mark for death"
+	var/fuckitupterry = browser_alert(user, "The fire is inches away from the parchment", "THE PACT", list("Absolve Contract", "Intimidate Whelp")) //"Mark for death"
 	if(!fuckitupterry)
 		to_chat(user, "")
 		return
@@ -996,10 +1011,44 @@
 		if(!isliving(signed) || signed.stat == UNCONSCIOUS)
 			to_chat(user, "")
 			return
-		//N/A the maniac hallucination code would be neat for this so just wait till thats merged
+		START_PROCESSING(SSfastprocess, src)
+		addtimer(CALLBACK(src, PROC_REF(restore_order)), 12 SECONDS)
 		COOLDOWN_START(src, punish, 15 MINUTES)
 	//if("Mark for death")
 		//return
+
+/obj/item/paper/political_PM/bloodseal/process()
+	. = ..()
+	if(!signed.client)
+		STOP_PROCESSING(SSfastprocess, src)
+		return
+	if(!isliving(signed))
+		STOP_PROCESSING(SSfastprocess, src)
+		return
+	if(prob(40))
+		var/text = "ho ho ho, yurgg. ohohohohiee"
+		var/screen_location = "WEST+[rand(2,13)], SOUTH+[rand(1,12)]"
+		var/text_align = pick("left", "right", "center")
+		//text = pick_list_replacements()
+		show_blurb(signed, duration = 3 SECONDS, message = text, fade_time = 3 SECONDS, screen_position = screen_location, text_alignment = text_align, text_color = "red", outline_color = "black")
+
+/obj/item/paper/political_PM/bloodseal/proc/restore_order()
+	STOP_PROCESSING(SSfastprocess, src)
+	if(!signed.client)
+		return
+	if(!isliving(signed))
+		return
+	var/mob/living/okay = signed
+	okay.emote("faint")
+	okay.Sleeping(12 SECONDS)
+	to_chat(okay, span_danger("Something something ooooh"))
+	sleep(2)
+	to_chat(okay, span_danger("Yarba diva da! hah!"))
+	sleep(3)
+	to_chat(okay, span_danger("Fortnite..."))
+	sleep(3)
+	to_chat(okay, span_danger("mhm yea..."))
+	okay.apply_status_effect(/datum/status_effect/debuff/paperwork_dread)
 
 /obj/item/paper/political_PM/bloodseal/exemptfromlaw
 	name = ""

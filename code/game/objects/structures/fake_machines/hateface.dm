@@ -16,31 +16,31 @@
 		"Parchment" = list(
 			"type" = /obj/item/paper,
 			"cost" = 10,
-			"desc" = "bo bo bo",
+			"desc" = "WHAT DO YOU THINK IT IS?",
 		),
-		"bo hoo keey" = list(
+		"Guild key" = list(
 			"type" = /obj/item/key/mercenary,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 30,
+			"desc" = "IT'S A FUCKING KEY, YOU KNOW WHAT KEYS ARE!",
 		),
-		"bo hoo keey1" = list(
+		"GOLDEN PRICK" = list(
 			"type" = /obj/item/gold_prick,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 100,
+			"desc" = "I HOPE IT HURTS, I HOPE IT DOES.",
 		),
-		"bo hoo keey2" = list(
+		"Mercenary Commendation Writ" = list(
 			"type" = /obj/item/merctoken,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 100,
+			"desc" = "YOU SIGN IT AND HAND IT OVER TO SOME DISGUSTING MERCENARY.",
 		),
-		"bo hoo keey3" = list(
+		"Covenant of Mercenary Service and Operational Commitments" = list(
 			"type" = /obj/item/paper/merc_contract,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 70,
+			"desc" = "IT'S HOW YOU HIRE MEAT HEADS TO THE GUILD GHAAAHG WHY CAN'T YOU FALL OFF A CLIFF?",
 		),
-		"bo hoo keey4" = list(
+		"Covenant of Guild Commitments and Operational Service" = list(
 			"type" = /obj/item/paper/merc_contract/worker,
-			"cost" = 10,
+			"cost" = 70,
 			"desc" = "bo bo bo",
 		),
 		"bo hoo keey5" = list(
@@ -125,7 +125,7 @@
 /obj/structure/fake_machine/hateface/proc/hate_monologue() //N/A write later
 	STOP_PROCESSING(SSroguemachine, src)
 	COOLDOWN_START(src, hate, HATE_COOLDOWN)
-	switch(rand(1,3)) //This must be the literal worst possible way of doing this, but alas I do not know a better method.
+	switch(rand(1,3)) //I know there is a better method to this via .json, I just don't know how to use that at all.
 		if(1)
 			monitorflick()
 			say(span_danger("HATE--HATE!!"))
@@ -174,7 +174,7 @@
 
 /obj/structure/fake_machine/hateface/proc/monitorflick()
 	cut_overlays()
-	var/screen = pick("vendor-farm", "vendor-butcher") //for testing, and it doesn't work, couldn't tell you why
+	var/screen = pick("vendor-farm", "vendor-butcher") //for testing,
 	var/mutable_appearance/M = mutable_appearance(icon, "[screen]")
 	add_overlay(M)
 	return

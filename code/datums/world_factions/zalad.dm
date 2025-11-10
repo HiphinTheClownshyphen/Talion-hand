@@ -142,7 +142,6 @@
 		/datum/supply_pack/narcotics/spice,
 		/datum/supply_pack/narcotics/spoison,
 		/datum/supply_pack/seeds/sugarcane,
-		/datum/supply_pack/luxury/merctoken,
 		/datum/supply_pack/narcotics/zigboxempt,
 		/datum/supply_pack/jewelry/consort_crown,
 		/datum/supply_pack/jewelry/psycross,

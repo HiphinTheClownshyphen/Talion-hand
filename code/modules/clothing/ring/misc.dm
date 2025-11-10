@@ -337,6 +337,7 @@
 		return
 
 	if((gaffed == CHOICE_YES) && user.is_holding(src))
+		GLOB.Beucratic_triumps += user.ckey
 		ADD_TRAIT(user, TRAIT_BURDEN, type)
 		ADD_TRAIT(user, TRAIT_MERCGUILD, type)
 		user.equip_to_slot_if_possible(src, ITEM_SLOT_RING, FALSE, FALSE, TRUE, TRUE)

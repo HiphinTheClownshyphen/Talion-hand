@@ -613,3 +613,26 @@
 	name = "Electrified"
 	desc = "Your body is charged with unstable electricity!"
 	icon_state = "dazed"
+
+/datum/status_effect/debuff/paperwork_dread
+	id = "paper_dread"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/paperwork_dread
+	effectedstats = list(STATKEY_SPD = -2, STATKEY_LCK = -2, STATKEY_INT = -3, STATKEY_PER = -1)
+	duration = 12 MINUTES
+
+/atom/movable/screen/alert/status_effect/debuff/paperwork_dread
+	name = "ohbonoogogogog"
+	desc = "<span class='warning'>I be fuckin mad bitches tho.</span>\n"
+	icon_state = "hunger1"
+
+/datum/status_effect/debuff/hungryt1/on_apply()
+	. = ..()
+	if(iscarbon(owner))
+		var/mob/living/carbon/C = owner
+		C.add_stress(/datum/stress_event/paperwork_dread)
+
+/datum/status_effect/debuff/hungryt1/on_remove()
+	. = ..()
+	if(iscarbon(owner))
+		var/mob/living/carbon/C = owner
+		C.remove_stress(/datum/stress_event/paperwork_dread)

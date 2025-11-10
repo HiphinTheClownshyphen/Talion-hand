@@ -962,3 +962,4 @@
 /atom/movable/screen/alert/status_effect/buff/free_feet
 	name = "Foot Freedom"
 	desc = "Not wearing shoes allows me to move more freely."
+
