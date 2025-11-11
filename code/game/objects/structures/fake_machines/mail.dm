@@ -206,7 +206,9 @@ GLOBAL_LIST_EMPTY(letters_sent)
 		if(!HAS_TRAIT(user, TRAIT_BURDEN) && !is_gaffer_assistant_job(user.mind.assigned_role))
 			to_chat(user, span_warning("I am not in the position to declare this."))
 			return
-
+		if(has_world_trait(/datum/world_trait/mercenary_parade))
+			say("THE CALL IS STILL FRESH, LET THE PEOPLE RECUPERATE.")
+			return
 		log_game("The Mercenary guild started a Mercenary Parade, signed off by [MP.signed.real_name]")
 		qdel(MP)
 		visible_message(span_warning("[user] sends something."))
@@ -216,23 +218,12 @@ GLOBAL_LIST_EMPTY(letters_sent)
 
 		say("THE PEOPLE WILL KNOW.")
 		playsound(src.loc, 'sound/misc/hiss.ogg', 100, FALSE, -1)
-		//N/A this is so fucked
-		if(prob(30))
-			SSmigrants.set_current_wave(/datum/migrant_wave/merc, 10 MINUTES)
-			return
-		if(prob(40))
-			SSmigrants.set_current_wave(/datum/migrant_wave/merc_down_one, 10 MINUTES)
-			return
-		if(prob(15))
-			SSmigrants.set_current_wave(/datum/migrant_wave/merc_down_two, 10 MINUTES)
-			return
-		if(prob(5))
-			SSmigrants.set_current_wave(/datum/migrant_wave/merc_down_three, 10 MINUTES)
-			return
-		else
-			return
-
+		addtimer(CALLBACK(src, PROC_REF(kill_the_mood)), 20 MINUTES)
 	return ..()
+
+/obj/structure/fake_machine/mail/proc/kill_the_mood()
+	if(has_world_trait(/datum/world_trait/mercenary_parade))
+		SSmapping.find_and_remove_world_trait(/datum/world_trait/mercenary_parade)
 
 /obj/structure/fake_machine/mail/proc/handle_merctoken(obj/item/merctoken/token, mob/user)
 	if(!ishuman(user))

@@ -1393,6 +1393,7 @@
 #include "code\datums\world_traits\death_knight.dm"
 #include "code\datums\world_traits\event_traits.dm"
 #include "code\datums\world_traits\gods_boons.dm"
+#include "code\datums\world_traits\mercenary_parade.dm"
 #include "code\datums\world_traits\sentient_mob.dm"
 #include "code\datums\world_traits\sieges.dm"
 #include "code\datums\world_traits\triumph_traits.dm"
