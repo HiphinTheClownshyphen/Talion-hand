@@ -47,6 +47,7 @@ SUBSYSTEM_DEF(treasury)
 	var/list/log_entries = list()
 	var/list/vault_accounting = list() //used for the vault count, cleared every fire()
 	var/mercnotax = FALSE //glorious leader GAFFER claims no taxation even with representation
+	var/herovoucher
 
 /datum/controller/subsystem/treasury/Initialize()
 	//Randomizes the roundstart amount of money and the queens tax.

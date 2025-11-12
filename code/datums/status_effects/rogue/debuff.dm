@@ -625,14 +625,37 @@
 	desc = "<span class='warning'>I be fuckin mad bitches tho.</span>\n"
 	icon_state = "hunger1"
 
-/datum/status_effect/debuff/hungryt1/on_apply()
+/datum/status_effect/debuff/paperwork_dread/on_apply()
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
 		C.add_stress(/datum/stress_event/paperwork_dread)
 
-/datum/status_effect/debuff/hungryt1/on_remove()
+/datum/status_effect/debuff/paperwork_dread/on_remove()
 	. = ..()
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
 		C.remove_stress(/datum/stress_event/paperwork_dread)
+
+/datum/status_effect/debuff/unemployed
+	id = "unemployed"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/paperwork_dread
+	effectedstats = list(STATKEY_LCK = -1, STATKEY_INT = -2)
+	duration = 10 MINUTES
+
+/atom/movable/screen/alert/status_effect/debuff/unemployed
+	name = "ohbonoogogogog"
+	desc = "<span class='warning'>I be fuckin mad bitches tho.</span>\n"
+	icon_state = "hunger1"
+
+/datum/status_effect/debuff/unemployed/on_apply()
+	. = ..()
+	if(iscarbon(owner))
+		var/mob/living/carbon/C = owner
+		C.add_stress(/datum/stress_event/merc_fired)
+
+/datum/status_effect/debuff/unemployed/on_remove()
+	. = ..()
+	if(iscarbon(owner))
+		var/mob/living/carbon/C = owner
+		C.remove_stress(/datum/stress_event/merc_fired)

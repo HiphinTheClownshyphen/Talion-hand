@@ -232,6 +232,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	var/ui_scale
 	/// Assoc list of culinary preferences, where the key is the type of the culinary preference, and value is food/drink typepath
 	var/list/culinary_preferences = list()
+	var/datum/catalyst_datum/catalyst
 
 /datum/preferences/New(client/C)
 	parent = C

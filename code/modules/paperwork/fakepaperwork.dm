@@ -27,6 +27,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		user.emote("painscream")
 		to_chat(user, span_warning("THAT BURNS!!"))
 	blood = user
+	update_icon_state()
 	addtimer(CALLBACK(src, PROC_REF(clear_blood)), 1 MINUTES)
 
 /obj/item/gold_prick/attack_hand_secondary(mob/user, params)
@@ -42,9 +43,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			user.add_stress(/datum/stress_event/ring_madness)
 			return
 		to_chat(user, span_warning("I wipe off the prick"))
+		update_icon_state()
 
 /obj/item/gold_prick/examine(mob/user)
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		. = ""
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
 		. = ""
 	if(HAS_TRAIT(user, TRAIT_NOBLE))
 		. = ""
@@ -188,13 +192,18 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
 	if(in_range(user, src) || isobserver(user))
-		info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [signedmerc.real_name] (HEREAFTER REFERRED TO AS OUR CHAMPION), \
-		AND THE MERCENARY GUILD (HEREAFTER REFERRED TO AS THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH)<BR>WITNESSETH:<BR>WHEREAS, OUR CHAMPION IS A NATURAL BORN HUMEN OR HUMENOID, POSSESSING SKILLS OF; PHYSICAL STRENGTH, NIMBLE DEXTERITY, UNBREAKING CONSITUTION AND OR EXCELING IN FIELDS OF PHYSICALLY DEMANDING LABOUR.  UPON WHICH HE/SHE/PREFERRED-IDENTITY-PROVIDE  CAN AID THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH, \
-		WHO SEEKS TO CONTRIBUTE IN THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH.<BR>WHEREAS, THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AGREES TO UNCONDITIONALLY PROVIDE PAYMENT, AND BENEFITS, WORTHY AND ACCEPTABLE TO OUR CHAMPION, \
-		IN EXCHANGE FOR CONTINIOUS COOPERATION.<BR>NOW THEREFORE IN CONSIDERATION OF THE MUTUAL COVENANTS HEREIN CONTAINED, AND OTHER GOOD AND VALUABLE CONSIDERATION, THE PARTIES HERETO MUTUALLY AGREE AS FOLLOWS:\
-		<BR>IN EXCHANGE FOR PALTRY PAYMENTS AND BENEFITS, OUR CHAMPION AGREES TO KEEP THEIR WORK EXCLUSIVELY PROVIDED AND CHOSEN BY THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH REPRESENTETIVE (REFERRED TO AS WHELP DESPITE LACK OF MENTION HEREAFTER), \
-		FOR THE REMAINDER OF HIS OR HER OR PREFERRED-IDENTITY-PROVIDE CURRENT LIFE.  PROVIDED OUR CHAMPION REMAIN IN DESIRE TO WORK FOR  THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AND WITHOUT THE LAWFUL  EVISCERATION OF THE AGREEMENT STRUCK HEREIN THIS PARCHMENT.<BR> \
-		<BR>SIGNED,<BR><i>[signedmerc.real_name]</i>" //this conracts sucks, it doesn't even fit the time period but god I am not in the mood to write a contract, call this a place holder
+		if(HAS_TRAIT(user, TRAIT_BURDEN))
+			info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [signedmerc.real_name] (HEREAFTER REFERRED TO AS OUR CHAMPION), \
+			AND THE MERCENARY GUILD (HEREAFTER REFERRED TO AS THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH)<BR>WITNESSETH:<BR>WHEREAS, OUR CHAMPION IS A NATURAL BORN HUMEN OR HUMENOID, POSSESSING SKILLS OF; PHYSICAL STRENGTH, NIMBLE DEXTERITY, UNBREAKING CONSITUTION AND OR EXCELING IN FIELDS OF PHYSICALLY DEMANDING LABOUR.  UPON WHICH HE/SHE/PREFERRED-IDENTITY-PROVIDE  CAN AID THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH, \
+			WHO SEEKS TO CONTRIBUTE IN THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH.<BR>WHEREAS, THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AGREES TO UNCONDITIONALLY PROVIDE PAYMENT, AND BENEFITS, WORTHY AND ACCEPTABLE TO OUR CHAMPION, \
+			IN EXCHANGE FOR CONTINIOUS COOPERATION.<BR>NOW THEREFORE IN CONSIDERATION OF THE MUTUAL COVENANTS HEREIN CONTAINED, AND OTHER GOOD AND VALUABLE CONSIDERATION, THE PARTIES HERETO MUTUALLY AGREE AS FOLLOWS:\
+			<BR>IN EXCHANGE FOR PALTRY PAYMENTS AND BENEFITS, OUR CHAMPION AGREES TO KEEP THEIR WORK EXCLUSIVELY PROVIDED AND CHOSEN BY THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH REPRESENTETIVE (REFERRED TO AS WHELP DESPITE LACK OF MENTION HEREAFTER), \
+			FOR THE REMAINDER OF HIS OR HER OR PREFERRED-IDENTITY-PROVIDE CURRENT LIFE.  PROVIDED OUR CHAMPION REMAIN IN DESIRE TO WORK FOR  THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AND WITHOUT THE LAWFUL  EVISCERATION OF THE AGREEMENT STRUCK HEREIN THIS PARCHMENT.<BR> \
+			<BR>SIGNED,<BR><i>[signedmerc.real_name]</i>" //this conracts sucks, it doesn't even fit the time period but god I am not in the mood to write a contract, call this a place holder
+		if(is_gaffer_assistant_job(user.mind.assigned_role))
+			info += ""
+		else
+			info += ""
 		user.hud_used.reads.icon_state = "scroll"
 		user.hud_used.reads.show()
 		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -213,7 +222,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(signedmerc)
 		REMOVE_TRAIT(signedmerc, TRAIT_MERCGUILD, type)
 		to_chat(signedmerc, span_warning("in a blink, it was as if the world's joy was dimmed. The songs of birds, The sounds of children playing, they grew distant, hard to notice. As if the monotony of life muffled the song of wonder... or maybe, I just became unemployed."))
-		signedmerc.add_stress(/datum/stress_event/merc_fired)
+		signedmerc.apply_status_effect(/datum/status_effect/debuff/unemployed)
 	. = ..()
 
 /obj/item/paper/merc_contract/proc/bloodvodoo(mob/user)
@@ -224,8 +233,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(fuckitupterry == "Absolve Contract")
 		to_chat(user, "without even being claimed by the fire, the contract crumbles to ash.")
 		var/ash = new /obj/item/fertilizer/ash
+		if(user.is_holding(src) || Adjacent(src))
+			user.put_in_active_hand(ash)
 		qdel(src)
-		user.put_in_active_hand(ash)
 		return
 	if(fuckitupterry == "Recall Champion")
 		if(!COOLDOWN_FINISHED(src, recallcool))
@@ -270,13 +280,18 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
 	if(in_range(user, src) || isobserver(user))
-		info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [signedmerc.real_name] (HEREAFTER REFERRED TO AS OUR BENEFICIARY), \
-        AND THE MERCENARY GUILD (HEREAFTER REFERRED TO AS THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH)<BR>WITNESSETH:<BR>WHEREAS, OUR BENEFICIARY IS A NATURAL BORN HUMEN OR HUMENOID, POSSESSING SKILLS UPON WHICH HE/SHE/PREFERRED-IDENTITY-PROVIDE  CAN AID THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH, \
-        WHO SEEKS TO CONTRIBUTE IN THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH.<BR>WHEREAS, THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AGREES TO UNCONDITIONALLY PROVIDE PAYMENT, AND BENEFITS, WORTHY AND ACCEPTABLE TO OUR BENEFICIARY, \
-        IN EXCHANGE FOR CONTINIOUS COOPERATION.<BR>NOW THEREFORE IN CONSIDERATION OF THE MUTUAL COVENANTS HEREIN CONTAINED, AND OTHER GOOD AND VALUABLE CONSIDERATION, THE PARTIES HERETO MUTUALLY AGREE AS FOLLOWS:\
-        <BR>IN EXCHANGE FOR PALTRY PAYMENTS AND BENEFITS, OUR BENEFICIARY AGREES TO KEEP THEIR WORK EXCLUSIVELY IN BENEFIT TO THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH REPRESENTETIVE (REFERRED TO AS WHELP DESPITE LACK OF MENTION HEREAFTER), \
-        FOR THE REMAINDER OF HIS OR HER OR PREFERRED-IDENTITY-PROVIDE CURRENT LIFE.  PROVIDED OUR BENEFICIARY REMAIN IN DESIRE TO WORK FOR  THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AND WITHOUT THE LAWFUL  EVISCERATION OF THE AGREEMENT STRUCK HEREIN THIS PARCHMENT.<BR> \
-        <BR>SIGNED,<BR><i>[signedmerc.real_name]</i>" //still sucks. refer to above
+		if(HAS_TRAIT(user, TRAIT_BURDEN))
+			info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [signedmerc.real_name] (HEREAFTER REFERRED TO AS OUR BENEFICIARY), \
+				AND THE MERCENARY GUILD (HEREAFTER REFERRED TO AS THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH)<BR>WITNESSETH:<BR>WHEREAS, OUR BENEFICIARY IS A NATURAL BORN HUMEN OR HUMENOID, POSSESSING SKILLS UPON WHICH HE/SHE/PREFERRED-IDENTITY-PROVIDE  CAN AID THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH, \
+				WHO SEEKS TO CONTRIBUTE IN THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH.<BR>WHEREAS, THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AGREES TO UNCONDITIONALLY PROVIDE PAYMENT, AND BENEFITS, WORTHY AND ACCEPTABLE TO OUR BENEFICIARY, \
+				IN EXCHANGE FOR CONTINIOUS COOPERATION.<BR>NOW THEREFORE IN CONSIDERATION OF THE MUTUAL COVENANTS HEREIN CONTAINED, AND OTHER GOOD AND VALUABLE CONSIDERATION, THE PARTIES HERETO MUTUALLY AGREE AS FOLLOWS:\
+				<BR>IN EXCHANGE FOR PALTRY PAYMENTS AND BENEFITS, OUR BENEFICIARY AGREES TO KEEP THEIR WORK EXCLUSIVELY IN BENEFIT TO THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH REPRESENTETIVE (REFERRED TO AS WHELP DESPITE LACK OF MENTION HEREAFTER), \
+				FOR THE REMAINDER OF HIS OR HER OR PREFERRED-IDENTITY-PROVIDE CURRENT LIFE.  PROVIDED OUR BENEFICIARY REMAIN IN DESIRE TO WORK FOR  THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AND WITHOUT THE LAWFUL  EVISCERATION OF THE AGREEMENT STRUCK HEREIN THIS PARCHMENT.<BR> \
+				<BR>SIGNED,<BR><i>[signedmerc.real_name]</i>" //still sucks. refer to above
+		if(is_gaffer_assistant_job(user.mind.assigned_role))
+			info += ""
+		else
+			info += ""
 		user.hud_used.reads.icon_state = "scroll"
 		user.hud_used.reads.show()
 		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -312,7 +327,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
 	if(in_range(user, src) || isobserver(user))
-		info += ""
+		if(HAS_TRAIT(user, TRAIT_BURDEN))
+			info += ""
+		if(is_gaffer_assistant_job(user.mind.assigned_role))
+			info += ""
+		else
+			info += ""
 		user.hud_used.reads.icon_state = "scroll"
 		user.hud_used.reads.show()
 		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -355,6 +375,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 					to_chat(user, span_warning("This section has already been filled."))
 					return
 				var/discheck = input(user, "How much are you willing to part with?") as null|num
+				if(!discheck)
+					return
 				if(user.is_holding(src) || Adjacent(src))
 					payment = discheck
 			if("Employer Signature")
@@ -375,6 +397,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 					to_chat(user, span_warning("This section has already been filled."))
 					return
 				var/discheck2 = input(user, "What am I paying them for?")
+				if(!discheck2)
+					return
 				if(user.is_holding(src) || Adjacent(src))
 					thejob = discheck2
 			if("Formalize Contract")
@@ -421,7 +445,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
 	if(in_range(user, src) || isobserver(user))
-		info += ""
+		if(HAS_TRAIT(user, TRAIT_BURDEN))
+			info += ""
+		if(is_gaffer_assistant_job(user.mind.assigned_role))
+			info += ""
+		else
+			info += ""
 		user.hud_used.reads.icon_state = "scroll"
 		user.hud_used.reads.show()
 		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -463,6 +492,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 					to_chat(user, span_warning("This section has already been filled."))
 					return
 				var/discheck = input(user, span_warning("How much are you willing to part with?")) as null|num
+				if(!discheck)
+					return
 				if(user.is_holding(src) || Adjacent(src))
 					payment = discheck
 			if("Employer Signature")
@@ -483,6 +514,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 					to_chat(user, span_warning("This section has already been filled."))
 					return
 				var/discheck2 = input(user, span_warning("What am I paying them for?"))
+				if(!discheck2)
+					return
 				if(user.is_holding(src) || Adjacent(src))
 					thejob = discheck2
 			if("Work duration")
@@ -490,6 +523,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 					to_chat(user, span_warning("This section has already been filled."))
 					return
 				var/discheck3 = input(user, span_warning("How long must they work?")) as null|num
+				if(!discheck3)
+					return
 				if(user.is_holding(src) || Adjacent(src))
 					worktime = discheck3
 					daycount = GLOB.dayspassed
@@ -518,6 +553,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	desc = ""
 	icon_state = "contractunsigned" //N/A this one should have a unique sprite
 	var/mob/living/signed = null
+	var/mob/living/adressedto = null
 
 /obj/item/paper/merc_autograph/Initialize()
 	switch(rand(1,2))
@@ -583,26 +619,36 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 /obj/item/paper/merc_autograph/attackby(obj/item/P, mob/living/user, params)
 	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
-		if(!HAS_TRAIT(user, TRAIT_MERCGUILD))
-			to_chat(user, span_warning("I haven't sold my likeness to these shills!")) //too opinionated
+		if(HAS_TRAIT(user, TRAIT_MERCGUILD))
+			if(signed)
+				to_chat(user, span_warning("This is already signed"))
+				return
+			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
+			visible_message("[user] writes on the [src]")
+			signed = user
+			update_icon_state()
 			return
-		if(signed)
-			to_chat(user, span_warning("This is already signed")) //too opinionated
+		if(!adressedto)
+			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
+			visible_message("[user] writes on the [src]")
+			adressedto = user
+			update_icon_state()
 			return
+		to_chat(user, span_warning("This is already signed"))
+		return
 		//var/renown = GLOB.mob_renown_list[user.mobid]
 		////N/A canned until port. the mercenary check should be fine enough, its 1 point of happiness it can't be that bad
 		//if(renown <= 3)
 			//to_chat(user, span_warning("I'm uhh...not famous enough for this type of thing."))
 			//return
-		signed = user
-		update_icon_state()
 
 /obj/item/paper/merc_autograph/examine(mob/user)
 	. = ..()
 	if(!signed)
 		return
 	if(user.is_holding(src))
-		user.add_stress(/datum/stress_event/autograph_fangirl_1)
+		if(user == adressedto)
+			user.add_stress(/datum/stress_event/autograph_fangirl_1)
 		//var/Erenown = GLOB.mob_renown_list[signed.mobid]
 		//if(Erenown <= 4)
 			//user.add_stress(/datum/stressevent/autograph_fangirl_1)
@@ -632,7 +678,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
 	if(in_range(user, src) || isobserver(user))
-		info += ""
+		if(HAS_TRAIT(user, TRAIT_BURDEN))
+			info += ""
+		if(is_gaffer_assistant_job(user.mind.assigned_role))
+			info += ""
+		else
+			info += ""
 		user.hud_used.reads.icon_state = "scroll"
 		user.hud_used.reads.show()
 		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -718,7 +769,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
 	if(in_range(user, src) || isobserver(user))
-		info += ""
+		if(HAS_TRAIT(user, TRAIT_BURDEN))
+			info += ""
+		if(is_gaffer_assistant_job(user.mind.assigned_role))
+			info += ""
+		else
+			info += ""
 		user.hud_used.reads.icon_state = "scroll"
 		user.hud_used.reads.show()
 		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -773,7 +829,6 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		inheretorial = selection
 		soontodie = user
 		return
-	to_chat(user, span_warning("I can't do anything with this."))
 
 
 /obj/item/paper/political_PM
@@ -839,6 +894,17 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 /obj/item/paper/political_PM/proc/triumph_effect()
 	return
 
+/obj/item/paper/political_PM/Initialize()
+	. = ..()
+	RegisterSignal(SSdcs, COMSIG_GAFFER_RING_DESTROYED, PROC_REF(ringdied))
+
+/obj/item/paper/political_PM/proc/ringdied(datum/source)
+	SIGNAL_HANDLER
+	var/obj/ash = new /obj/item/fertilizer/ash
+	ash.forceMove(get_turf(src))
+	qdel(src)
+	return
+
 /obj/item/paper/political_PM/guild_tax_exempt
 	name = ""
 	desc = ""
@@ -868,7 +934,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
 	if(in_range(user, src) || isobserver(user))
-		info += ""
+		if(HAS_TRAIT(user, TRAIT_BURDEN))
+			info += ""
+		if(is_gaffer_assistant_job(user.mind.assigned_role))
+			info += ""
+		else
+			info += ""
 		user.hud_used.reads.icon_state = "scroll"
 		user.hud_used.reads.show()
 		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -883,7 +954,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	else
 		return "<span class='warning'>I'm too far away to read it.</span>"
 
-
+/*
 /obj/item/paper/political_PM/merc_parade
 	name = ""
 	desc = ""
@@ -913,6 +984,163 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		onclose(user, "reading", src)
 	else
 		return "<span class='warning'>I'm too far away to read it.</span>"
+
+*/
+
+/obj/item/paper/political_PM/herovoucher
+	name = ""
+	desc = ""
+	info = ""
+	icon_state = "contractunsigned"
+	jobthatcansign = /datum/job/steward
+	var/price
+
+/obj/item/paper/political_PM/herovoucher/attackby(obj/item/P, mob/living/carbon/human/user, params)
+	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
+		if(HAS_TRAIT(user, TRAIT_BURDEN))
+			if(gaffsigned)
+				to_chat(user, span_warning("This is already signed"))
+				return
+			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
+			visible_message("[user] signs the contract")
+			gaffsigned = user
+			return
+		if(istype(user.mind.assigned_role, jobthatcansign))
+			if(signed && price)
+				to_chat(user, span_warning("This is already signed"))
+				return
+			if(!price)
+				var/discheck = input(user, "How much are you willing to part with?") as null|num
+				if(!discheck)
+					return
+				if(user.is_holding(src) || Adjacent(src))
+					price = discheck
+					playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
+					visible_message("[user] signs the contract")
+					return
+				return
+			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
+			visible_message("[user] signs the contract")
+			signed = user
+			update_icon_state()
+			return
+		to_chat(user, span_warning("I can't do anything with this."))
+
+/obj/item/paper/political_PM/herovoucher/read(mob/user)
+	if(!user.client || !user.hud_used)
+		return
+	if(!user.hud_used.reads)
+		return
+	if(!user.can_read(src))
+		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
+		return
+	if(in_range(user, src) || isobserver(user))
+		user.hud_used.reads.icon_state = "scroll"
+		user.hud_used.reads.show()
+		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+					<html><head><style type=\"text/css\">
+					body { background-image:url('book.png');background-repeat: repeat; }</style>
+					</head><body scroll=yes>"}
+		dat += "[info]<br>"
+		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+		dat += "</body></html>"
+		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+		onclose(user, "reading", src)
+	else
+		return "<span class='warning'>I'm too far away to read it.</span>"
+
+/obj/item/paper/political_PM/herovoucher/attack_hand_secondary(mob/user, params)
+	. = ..()
+	if(.)
+		return
+	if(!signed && !gaffsigned && !price)
+		return
+	SStreasury.herovoucher = price
+	var/obj/stewardvoucher = new /obj/item/paper/vouchersteward
+	var/obj/item/paper/vouchergaffer/gaffvoucher = new /obj/item/paper/vouchergaffer
+	gaffvoucher.vouchersteward = stewardvoucher
+	stewardvoucher.forceMove(get_turf(user))
+	gaffvoucher.forceMove(get_turf(user))
+	qdel(src)
+
+/obj/item/paper/vouchergaffer
+	name = ""
+	desc = ""
+	info = ""
+	icon_state = "merctoken"
+	icon = 'icons/roguetown/items/misc.dmi'
+	w_class = WEIGHT_CLASS_TINY
+	var/vouchersteward = null
+
+/obj/item/paper/vouchergaffer/read(mob/user, ignore_distance)
+	. = ..()
+	if(!user.client || !user.hud_used)
+		return
+	if(!user.hud_used.reads)
+		return
+	if(!user.can_read(src))
+		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
+		return
+	if(in_range(user, src) || isobserver(user))
+		if(HAS_TRAIT(user, TRAIT_BURDEN) || is_gaffer_assistant_job(user.mind.assigned_role))
+			if(!vouchersteward)
+				. += "deals off"
+		user.hud_used.reads.icon_state = "scroll"
+		user.hud_used.reads.show()
+		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+					<html><head><style type=\"text/css\">
+					body { background-image:url('book.png');background-repeat: repeat; }</style>
+					</head><body scroll=yes>"}
+		dat += "[info]<br>"
+		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+		dat += "</body></html>"
+		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+		onclose(user, "reading", src)
+	else
+		return "<span class='warning'>I'm too far away to read it.</span>"
+
+/obj/item/paper/vouchersteward
+	name = ""
+	desc = ""
+	info = ""
+	icon_state = "merctoken"
+	icon = 'icons/roguetown/items/misc.dmi'
+
+/obj/item/paper/vouchersteward/read(mob/user, ignore_distance)
+	. = ..()
+	if(!user.client || !user.hud_used)
+		return
+	if(!user.hud_used.reads)
+		return
+	if(!user.can_read(src))
+		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
+		return
+	if(in_range(user, src) || isobserver(user))
+		user.hud_used.reads.icon_state = "scroll"
+		user.hud_used.reads.show()
+		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+					<html><head><style type=\"text/css\">
+					body { background-image:url('book.png');background-repeat: repeat; }</style>
+					</head><body scroll=yes>"}
+		dat += "[info]<br>"
+		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+		dat += "</body></html>"
+		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+		onclose(user, "reading", src)
+	else
+		return "<span class='warning'>I'm too far away to read it.</span>"
+
+/obj/item/paper/vouchersteward/Destroy()
+	. = ..()
+	if(SStreasury.herovoucher)
+		SStreasury.herovoucher = null
+
+/obj/item/paper/voucher
+	name = ""
+	desc = ""
+	info = ""
+	icon_state = "merctoken"
+	icon = 'icons/roguetown/items/misc.dmi'
 
 /obj/item/paper/political_PM/bloodseal
 	COOLDOWN_DECLARE(punish)
@@ -1001,8 +1229,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(fuckitupterry == "Absolve Contract")
 		to_chat(user, "without even being claimed by the fire, the contract crumbles to ash.")
 		var/ash = new /obj/item/fertilizer/ash
+		if(user.is_holding(src) || Adjacent(src))
+			user.put_in_active_hand(ash)
 		qdel(src)
-		user.put_in_active_hand(ash)
 		return
 	if(fuckitupterry == "Intimidate Whelp")
 		if(!COOLDOWN_FINISHED(src, punish))
@@ -1247,6 +1476,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
 
+/obj/item/paper/merchant_merger/Destroy()
+	. = ..()
+	if(used)
+		if(SSroguemachine.falseheadeater)
+			SSroguemachine.falseheadeater.infestation_death()
+
 /obj/item/paper/inn_partnership
 	name = ""
 	desc = ""
@@ -1340,6 +1575,16 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	user.add_stress(/datum/stress_event/touched_headeater_spawn)
 	. = ..()
 
+/obj/item/headeater_spawn/attack_self(mob/living/user)
+	var/alert = alert(user, "Do I want to use this?", "WRITHING THING", "Yes", "No")
+	if(alert == "No")
+		return
+	var/turf/place = get_step(get_turf(user), user.dir)
+	new /obj/structure/fake_machine/falseheadeater(place)
+	playsound(place, 'sound/combat/gib (2).ogg')
+	to_chat(user, span_notice("The writhing flesh compresses itself into a different shape..."))
+	qdel(src)
+
 /obj/item/headeater_spawn/examine(mob/user)
 	. += "<span class='info'></span>"
 
@@ -1368,6 +1613,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	playsound(place, 'sound/combat/gib (2).ogg')
 	to_chat(user, span_notice("The writhing flesh compresses itself into a different shape..."))
 	usage--
+	if(usage <= 0)
+		qdel(src)
 
 /*-----------------------------------------------------------------\
 |  MERCHANT ZONE PAST THIS POINT. PSYDON SAVE ALL YEE WHO PASS     |

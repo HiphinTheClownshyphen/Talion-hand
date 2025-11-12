@@ -26,7 +26,7 @@
 		"GOLDEN PRICK" = list(
 			"type" = /obj/item/gold_prick,
 			"cost" = 100,
-			"desc" = "I HOPE IT HURTS, I HOPE IT DOES.",
+			"desc" = "I HOPE IT HURTS, I HOPE IT BURNS YOU.",
 		),
 		"Mercenary Commendation Writ" = list(
 			"type" = /obj/item/merctoken,
@@ -36,67 +36,68 @@
 		"Covenant of Mercenary Service and Operational Commitments" = list(
 			"type" = /obj/item/paper/merc_contract,
 			"cost" = 70,
-			"desc" = "IT'S HOW YOU HIRE MEAT HEADS TO THE GUILD GHAAAHG WHY CAN'T YOU FALL OFF A CLIFF?",
+			"desc" = "IT'S HOW YOU HIRE MEAT HEADS TO THE GUILD--GHAAAHG WHY CAN'T YOU FALL OFF A CLIFF?",
 		),
 		"Covenant of Guild Commitments and Operational Service" = list(
 			"type" = /obj/item/paper/merc_contract/worker,
 			"cost" = 70,
-			"desc" = "bo bo bo",
+			"desc" = "RECRUITMENT PAPER BUT INSTEAD OF THE MEAT HEADS YOU GET THE FILFTHY PEASENTRY TO WORK FOR YOU, I HOPE THEY SLIT YOUR THROAT.",
 		),
-		"bo hoo keey5" = list(
+		"One-Time Service and Engagement Agreement" = list(
 			"type" = /obj/item/paper/merc_work_onetime,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 15,
+			"desc" = "WORK CONTRACT, THEY PAY THE MERC FOR THE-- GHHGHHH THEY PAY THEM!",
 		),
-		"bo hoo keey6" = list(
+		"Continuous Engagement and Service Agreement" = list(
 			"type" = /obj/item/paper/merc_work_conti,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 20,
+			"desc" = "THEY PAY WEEKLY INSTEAD, THAT IS THE DIFFERENCE, IT IS OBVIOUS, YOU ARE USELEES. I WATCH YOUR MIND FRAGMENT WITH EVERY NEW DAE, YOU WILL REMEMBER NOTHING IN TIME.",
 		),
-		"bo hoo keey7" = list(
+		"Mercenary Autograph" = list(
 			"type" = /obj/item/paper/merc_autograph,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 60,
+			"desc" = "HATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATEHATE",
 		),
-		"bo hoo keey8" = list(
+		"Mercenary Service Risk Mitigation and Final Testament Agreement" = list(
 			"type" = /obj/item/paper/merc_will,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 40,
+			"desc" = "HAS YOUR MERC KICKED THE BUCKET? GOOD! GOOD IT IS A GOOD THING, YOU SHOULD FOLLOW SUIT.",
 		),
-		"bo hoo keey9" = list(
+		"Adventurer's Legacy and Risk Waiver Agreement" = list(
 			"type" = /obj/item/paper/merc_will/adven_will,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 30,
+			"desc" = "CHANCER, HOW LOWLY CAN YOU GET?",
 		),
-		"bo hoo keey10" = list(
+		"change this after named" = list(
 			"type" = /obj/item/paper/political_PM/guild_tax_exempt,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 95,
+			"desc" = "YOU WILL HAVE NOTHING, NOTHING, YOU WILL EXPERIENCE AND LIVE THROUGH DISTRACTION AFTER DISTRACTION UNTIL YOUR GRAVE IS FILLED.",
 		),
-		"bo hoo keey11" = list(
+		/*"bo hoo keey11" = list(
 			"type" = /obj/item/paper/political_PM/merc_parade,
 			"cost" = 10,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey12" = list(
+		*/
+		"change this after named2" = list(
 			"type" = /obj/item/paper/political_PM/bloodseal/exemptfromlaw,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 60,
+			"desc" = "YOU ARE NO DIFFERENT THAN THAT TYRANT. HOW MANY HAVE DIED FOR YOU, DO YOU EVEN KNOW?",
 		),
-		"bo hoo keey13" = list(
+		"change this after named3" = list(
 			"type" = /obj/item/paper/political_PM/bloodseal/exempt_from_cruelty,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 70,
+			"desc" = "YOU DON'T KNOW THE HURT YOU CAUSE, YOU NEVER WILL.",
 		),
-		"bo hoo keey14" = list(
+		"change this after named4" = list(
 			"type" = /obj/item/paper/merchant_merger,
-			"cost" = 10,
+			"cost" = 60,
 			"desc" = "bo bo bo",
 		),
-		"bo hoo keey15" = list(
+		"change this after named5" = list(
 			"type" = /obj/item/paper/inn_partnership,
-			"cost" = 10,
-			"desc" = "bo bo bo",
+			"cost" = 60,
+			"desc" = "THEY WON'T BE ANY WISER.",
 		),
     )
 
@@ -219,9 +220,11 @@
 				if(WO.jobber in SStreasury.bank_accounts)
 					var/paycheck1 = SStreasury.bank_accounts[WO.jobber]
 					if(WO.payment > paycheck1)
-						say(span_danger("[WO.jobber.real_name] ONLY HAS [WO.payment] IN THEIR ACCOUNT AND CAN'T PAY THE AGREED [WO.payment]!!"))
+						say(span_danger("[WO.jobber.real_name] ONLY HAS [paycheck1] IN THEIR ACCOUNT AND CAN'T PAY THE AGREED [WO.payment]!!"))
+						return
 					else
 						say(span_danger("THEY CAN AFFORD TO PAY... FOR NOW!!"))
+						return
 				say(span_danger("[WO.jobber.real_name] DOESN'T HAVE AN ACCOUNT!!"))
 			return
 
@@ -235,9 +238,11 @@
 				if(WC.jobber in SStreasury.bank_accounts)
 					var/paycheck2 = SStreasury.bank_accounts[WC.jobber]
 					if(WC.payment * WC.worktime > paycheck2)
-						say(span_danger("[WC.jobber.real_name] ONLY HAS [WC.payment] IN THEIR ACCOUNT AND CAN'T PAY THE AGREED [WC.payment] TOTAL!!"))
+						say(span_danger("[WC.jobber.real_name] ONLY HAS [paycheck2] IN THEIR ACCOUNT AND CAN'T PAY THE AGREED [WC.payment] TOTAL!!"))
+						return
 					else
 						say(span_danger("THEY CAN AFFORD TO PAY... FOR NOW!!"))
+						return
 				say(span_danger("[WC.jobber.real_name] DOESN'T HAVE AN ACCOUNT!!"))
 			return
 

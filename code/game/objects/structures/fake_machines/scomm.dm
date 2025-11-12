@@ -165,11 +165,14 @@
 	for(var/obj/structure/fake_machine/scomm/S in SSroguemachine.scomm_machines)
 		S.say(message, spans = list("info"))
 
-/obj/structure/fake_machine/scomm/proc/getmerced() //this whole thing is to make the effects of the contract be immediate and notciable for an instant feedback to the player. it is important for making these decisions feel heavy
+/obj/structure/fake_machine/scomm/proc/getmerced()
 	var/time = rand(1, 12)
 	sleep(time)
 	var/saey = pick("")
 	say(saey)
+	for(var/mob/living/carbon/human/noble in range(src, loc))
+		if(HAS_TRAIT(noble, TRAIT_NOBLE) && !HAS_TRAIT(noble, TRAIT_DEAF)) //I know trait deaf isn't it but I cant find the code for canhear
+			noble.add_stress(/datum/stress_event/getmerced)
 	merctakeover = TRUE
 	//N/A these should make sound
 	//N/A and an overlay for a bit

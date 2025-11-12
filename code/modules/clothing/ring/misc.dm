@@ -466,22 +466,23 @@
 	desc = "The wearer is a proud member of the Makers' guild."
 	icon_state = "weepers_boon"
 	sellprice = 0
+	var/mob/merchant
 
-/obj/item/clothing/ring/weepers_boon/Initialize(mapload, ...)
-	addtimer(CALLBACK(src, PROC_REF(wheep)), 2 SECONDS)
+/obj/item/clothing/ring/weepers_boon/equipped(mob/user, slot)
 	. = ..()
+	merchant = user
+	START_PROCESSING(SSdcs, src)
 
-/obj/item/clothing/ring/weepers_boon/proc/wheep()
-	playsound(src, pick('sound/vo/female/gen/cry (1).ogg',
-							'sound/vo/female/gen/cry (2).ogg',
-							'sound/vo/female/gen/cry (3).ogg',
-							'sound/vo/female/gen/cry (4).ogg',
-							'sound/vo/female/gen/cry (5).ogg',
-							'sound/vo/female/gen/cry (6).ogg',
-							'sound/vo/female/gen/cry (7).ogg',
-							'sound/vo/male/gen/cry (1).ogg',
-							'sound/vo/male/gen/cry (2).ogg',
-							'sound/vo/male/gen/cry (3).ogg',
-							'sound/vo/male/gen/cry (4).ogg'))
-	var/timer = rand(2 SECONDS, 7 SECONDS)
-	addtimer(CALLBACK(src, PROC_REF(wheep)), timer)
+/obj/item/clothing/ring/weepers_boon/dropped(mob/user)
+	. = ..()
+	merchant = null
+	STOP_PROCESSING(SSdcs, src)
+
+/obj/item/clothing/ring/weepers_boon/process()
+	. = ..()
+	if(!isliving(merchant))
+		return
+	if(prob(5))
+		var/text = pick("")
+		to_chat(merchant, span_danger(text))
+		//merchant.user.add_stress(/datum/stress_event/weepersring)

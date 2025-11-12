@@ -133,23 +133,98 @@
 
 	if(istype(H, /obj/item/paper/inn_partnership))
 		var/obj/item/paper/inn_partnership/inn = H
-		if(!inn.gaffsigned || !inn.used || !inn.inkeep)
+		if(!inn.gaffsigned && inn.used && !inn.inkeep)
 			return
-		var/obj/core = new /obj/item/hailer_core
-		if(!usr.put_in_hands(core))
+		var/obj/core = new /obj/item/hailer_core(get_turf(user))
+		if(!user.put_in_hands(core))
 			core.forceMove(get_turf(user))
+		inn.used = TRUE
 		//N/A sound and message
 		return
 	if(istype(H, /obj/item/paper/merchant_merger))
 		var/obj/item/paper/merchant_merger/guild = H
-		if(!guild.gaffsigned || !guild.used || !guild.merchant)
+		if(!guild.gaffsigned && guild.used && !guild.merchant)
 			return
-		var/obj/hspawn = new /obj/item/headeater_spawn
-		if(!usr.put_in_hands(hspawn))
+		var/obj/hspawn = new /obj/item/headeater_spawn(get_turf(user))
+		if(!user.put_in_hands(hspawn))
 			hspawn.forceMove(get_turf(user))
+		guild.used = TRUE
 		//N/A sound and message
 		return
 
 /obj/structure/fake_machine/headeater/proc/aggresive_income(income)
 	if(income)
 		budget2change(income)
+
+/obj/structure/fake_machine/falseheadeater
+	name = "ANKLE BITER"
+	desc = "Feeds on certain heads for coin, despite all this time... this itteration still seems unfinished, what a sell out"
+	icon = 'icons/roguetown/misc/machines.dmi'
+	icon_state = "infestation_1"
+	density = FALSE
+	blade_dulling = DULLING_BASH
+	var/headeaterspread
+
+/obj/structure/fake_machine/falseheadeater/process()
+	. = ..()
+	SSroguemachine.falseheadeater = src
+
+/obj/structure/fake_machine/falseheadeater/Destroy()
+	. = ..()
+	SSroguemachine.falseheadeater = null
+
+/obj/structure/fake_machine/falseheadeater/attackby(obj/item/H, mob/user, params)
+	. = ..()
+	var/obj/item/the_ring = locate(/obj/item/clothing/ring/weepers_boon) in user
+	if(the_ring)
+		if(istype(H, /obj/item/natural/head))
+			var/obj/item/natural/head/A = H
+			if(A.headprice > 0)
+				var/hardcoldsweetdelicousfuckingmammons = A.headprice * 0.10
+				hardcoldsweetdelicousfuckingmammons = round(hardcoldsweetdelicousfuckingmammons)
+				A.headprice -= hardcoldsweetdelicousfuckingmammons
+				SSroguemachine.headeater.aggresive_income(hardcoldsweetdelicousfuckingmammons)
+				to_chat(user, span_danger("the [src] consumes the [A] spitting out coins in its place!"))
+				playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
+				budget2change(A.headprice, user)
+				qdel(A)
+				return
+		if(istype(H, /obj/item/bodypart/head))
+			var/obj/item/bodypart/head/E = H
+			if(E.headprice > 0)
+				var/hardcoldsweetdelicousfuckingmammonss = E.headprice * 0.10
+				hardcoldsweetdelicousfuckingmammonss = round(hardcoldsweetdelicousfuckingmammonss)
+				E.headprice -= hardcoldsweetdelicousfuckingmammonss
+				SSroguemachine.headeater.aggresive_income(hardcoldsweetdelicousfuckingmammonss)
+				to_chat(user, span_danger("the [src] consumes the [E] spitting out coins in its place!"))
+				playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
+				budget2change(E.headprice, user)
+				qdel(E)
+				return
+	return ..()
+
+/obj/structure/fake_machine/falseheadeater/proc/infection()
+	if(headeaterspread == 1)
+		headeaterspread++
+		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
+		icon_state = ""
+		addtimer(CALLBACK(src, PROC_REF(infection)), 20 MINUTES)
+		set_light(1, 1, 1, l_color =  "#b40909")
+		return
+	if(headeaterspread == 2)
+		headeaterspread++
+		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
+		icon_state = ""
+		update_name()
+		return
+
+/obj/structure/fake_machine/falseheadeater/update_name()
+	. = ..()
+	if(headeaterspread == 1)
+		name = "CHEST BURSTER"
+	if(headeaterspread == 2)
+		name = "CYST"
+
+/obj/structure/fake_machine/falseheadeater/proc/infestation_death()
+	playsound(src, 'sound/combat/gib (1).ogg', 70, FALSE, ignore_walls = TRUE)
+	qdel(src)

@@ -466,19 +466,7 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 				column_counter++
 				if(column_counter > 0 && (column_counter % 3 == 0))
 					dat += "</td><td valign='top'>"
-			//if(has_world_trait(/datum/world_trait/sentient_mob))
-				//dat += "<a class='job command' href='byond://?src=[REF(src)];Makesentience=Sentient mob'>STALK THE LANDS AS A SENTIENT HOSTILE MOB</a>"
-				//dat += "</fieldset><br>"
-				//column_counter++
-				//if(column_counter > 0 && (column_counter % 3 == 0))
-					//dat += "</td><td valign='top'>"
-			if(has_world_trait(/datum/world_trait/mercenary_parade))
-				dat += "<a class='job command' href='byond://?src=[REF(src)];SelectedJob=Death Knight'>THE MERCENARY PARADE HAS COME, JOIN THE MARCH!</a>"
-				dat += "</fieldset><br>"
-				column_counter++
-				if(column_counter > 0 && (column_counter % 3 == 0))
-					dat += "</td><td valign='top'>"
-			if(has_world_trait(/datum/world_trait/skeleton_siege) || has_world_trait(/datum/world_trait/death_knight) || has_world_trait(/datum/world_trait/rousman_siege) || has_world_trait(/datum/world_trait/goblin_siege) || has_world_trait(/datum/world_trait/sentient_mob) || has_world_trait(/datum/world_trait/mercenary_parade))
+			if(has_world_trait(/datum/world_trait/skeleton_siege) || has_world_trait(/datum/world_trait/death_knight) || has_world_trait(/datum/world_trait/rousman_siege) || has_world_trait(/datum/world_trait/goblin_siege))
 				break
 			for(var/job in available_jobs)
 				var/datum/job/job_datum = SSjob.name_occupations[job]

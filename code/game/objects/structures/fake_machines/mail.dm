@@ -197,7 +197,7 @@ GLOBAL_LIST_EMPTY(letters_sent)
 	if(istype(P, /obj/item/coin))
 		return handle_regular_coin(P, user)
 
-
+	/*
 	if(istype(P, /obj/item/paper/political_PM/merc_parade))
 		var/obj/item/paper/political_PM/merc_parade/MP = P
 		if(!MP.signed || !MP.gaffsigned)
@@ -219,6 +219,7 @@ GLOBAL_LIST_EMPTY(letters_sent)
 		say("THE PEOPLE WILL KNOW.")
 		playsound(src.loc, 'sound/misc/hiss.ogg', 100, FALSE, -1)
 		addtimer(CALLBACK(src, PROC_REF(kill_the_mood)), 20 MINUTES)
+	*/
 	return ..()
 
 /obj/structure/fake_machine/mail/proc/kill_the_mood()
@@ -237,7 +238,7 @@ GLOBAL_LIST_EMPTY(letters_sent)
 		to_chat(H, span_warning("This is of no use to me - I may give this to a mercenary so they may send it themselves."))
 		return
 
-	if(!is_mercenary_job(H.mind.assigned_role))
+	if(!HAS_TRAIT(user, TRAIT_MERCGUILD))
 		to_chat(H, span_warning("I can't make use of this - I do not belong to the Guild."))
 		return
 

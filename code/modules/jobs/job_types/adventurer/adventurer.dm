@@ -32,6 +32,10 @@ GLOBAL_VAR_INIT(adventurer_hugbox_duration_still, 3 MINUTES)
 /datum/job/adventurer/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
 	to_chat(spawned, "<br><font color='#855b14'><span class='bold'>If I wanted to make mammons by selling my services, or completing quests, the Mercenary guild would be a good place to start.</span></font><br>")
+	if(SStreasury.herovoucher)
+		var/obj/item/voucher = new /obj/item/paper/voucher(get_turf(spawned))
+		if(!spawned.put_in_hands(voucher))
+			voucher.forceMove(get_turf(spawned))
 
 /datum/job/adventurer/set_spawn_and_total_positions(count)
 	// Calculate the new spawn positions

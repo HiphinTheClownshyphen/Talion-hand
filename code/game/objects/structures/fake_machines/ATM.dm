@@ -183,7 +183,7 @@
 			playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
 			say("[AW.soontodie.real_name] does not have an account to pay out.")
 			return
-		if(istype(P, /obj/item/paper/merc_will/))
+		if(istype(P, /obj/item/paper/merc_will))
 			var/obj/item/paper/merc_will/MW = P
 			if(!MW.yuptheydied || !MW.stewardsigned)
 				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
@@ -214,6 +214,23 @@
 			playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
 			say("[MW.soontodie.real_name] does not have an account to pay out.")
 			return
+		if(istype(P, /obj/item/paper/voucher))
+			var/obj/item/paper/voucher/voucher = P
+			var/treasury_value = SStreasury.treasury_value
+			var/voucherpay = SStreasury.herovoucher
+			if(!voucherpay)
+				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
+				say("The crown is no longer accepting these vouchers")
+				return
+			if(voucherpay > treasury_value)
+				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
+				say("[src] is not legitimate") //keeping it hush hush that they are fucking broke.
+				return
+			playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
+			say("Enjoy the [voucherpay] mammons from the ever generous crown, 'we look forward to future achivements!'")
+			budget2change(voucherpay, H)
+			SStreasury.treasury_value -= voucherpay
+			qdel(voucher)
 	return ..()
 
 /obj/structure/fake_machine/atm/examine(mob/user)

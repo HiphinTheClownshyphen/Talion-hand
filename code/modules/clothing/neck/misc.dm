@@ -535,5 +535,23 @@
 	name = "Nescient's chain"
 	desc = "A magnificant neckpiece made up of gold and gems, the interlocking gold chains are expertly engraved with poppies." //idk is it "poppies" in vanderlin common?
 	icon_state = ""
+	var/mob/innkeep
 
-///obj/item/clothing/neck/tyrants_chain //N/A finish this
+/obj/item/clothing/neck/tyrants_chain/equipped(mob/user, slot)
+	. = ..()
+	innkeep = user
+	START_PROCESSING(SSdcs, src)
+
+/obj/item/clothing/neck/tyrants_chain/dropped(mob/user)
+	. = ..()
+	innkeep = null
+	STOP_PROCESSING(SSdcs, src)
+
+/obj/item/clothing/neck/tyrants_chain/process()
+	. = ..()
+	if(!isliving(innkeep))
+		return
+	if(prob(5))
+		var/text = pick("")
+		to_chat(innkeep, span_green(text))
+		//innkeep.user.add_stress(/datum/stress_event/tyrantschain)

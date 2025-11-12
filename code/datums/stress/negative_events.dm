@@ -696,3 +696,8 @@
 	timer = 12 MINUTES
 	stress_change = 2
 	desc = span_warning("OHgh nogogogogog")
+
+/datum/stress_event/getmerced
+	timer = 15 MINUTES
+	stress_change = 2
+	desc = span_warning("OHgh nogogogogog")

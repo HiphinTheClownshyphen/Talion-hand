@@ -31,6 +31,12 @@
 	for(var/C in GLOB.landmarks_list)
 		var/obj/effect/landmark/contracthole/merchole = C
 		merchole.addcontract(spawned)
+	if(SStreasury.herovoucher)
+		var/obj/item/voucher = new /obj/item/paper/voucher(get_turf(spawned))
+		if(!spawned.put_in_hands(voucher))
+			voucher.forceMove(get_turf(spawned))
+
+
 
 /datum/job/advclass/mercenary
 	abstract_type = /datum/job/advclass/mercenary
