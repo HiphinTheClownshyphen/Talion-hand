@@ -1,3 +1,4 @@
+/*
 #define TITLE_PREVIOUSTITLE 1
 #define ONLY_NEWTTITLE 2
 #define TITLE_ADJECTIVE 3
@@ -122,7 +123,7 @@
 #undef TITLE_ADJECTIVE
 #undef TITLE_NOUN_PEPHRASE
 #undef TITLE_NOUN
-
+*/
 //N/A put this shit in its own file
 /*
 /datum/mob_quirks

@@ -68,11 +68,13 @@ GLOBAL_LIST_EMPTY(last_words)
 		GLOB.mob_kill_count[fragger.mobid] += 1
 		if(was_sentient)
 			GLOB.mob_sentient_kill_count[fragger.mobid] += 1
+/*
 		if(!fragger.ckey && !fragger.client) //this all just feels fucked
 			if(was_sentient)
 				INVOKE_ASYNC(fragger, PROC_REF(process_renown_beast), TRUE, TRUE)
 			else
 				INVOKE_ASYNC(fragger, PROC_REF(process_renown_beast), TRUE)
+*/
 
 	timeofdeath = world.time
 	tod = station_time_timestamp()
