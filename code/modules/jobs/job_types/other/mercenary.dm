@@ -28,9 +28,9 @@
 	. = ..()
 	to_chat(spawned, "<br><br><font color='#855b14'><span class='bold'>The Gaffer, who feeds and houses you may have work for you todae, go see him at the office outside your lodgings.</span></font><br><br>")
 	ADD_TRAIT(spawned, TRAIT_MERCGUILD, TRAIT_GENERIC)
-	for(var/C in GLOB.landmarks_list)
-		var/obj/effect/landmark/contracthole/merchole = C
-		merchole.addcontract(spawned)
+	for(var/obj/effect/landmark/contracthole/merchole in GLOB.landmarks_list)
+		if(istype(merchole, /obj/effect/landmark/contracthole))
+			merchole.addcontract(spawned)
 	if(SStreasury.herovoucher)
 		var/obj/item/voucher = new /obj/item/paper/voucher(get_turf(spawned))
 		if(!spawned.put_in_hands(voucher))
