@@ -1,5 +1,5 @@
 //ported codeword code from TG, this all literally means absolutely nothing to me
-
+/*
 
 GLOBAL_VAR(legendary_name_evil)
 GLOBAL_VAR(legendary_name_maybeevil)
@@ -58,3 +58,4 @@ GLOBAL_DATUM(legendary_name_maybeevil_regex, /regex)
 		return TRUE
 
 	return FALSE
+*/
