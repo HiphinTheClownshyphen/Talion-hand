@@ -1436,6 +1436,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	var/gaffsigned = FALSE
 	var/used = FALSE
 	var/mob/merchant
+	var/obj/item/headeater_spawn/tiedobject
 
 /obj/item/paper/merchant_merger/update_icon_state()
 	. = ..()
@@ -1481,6 +1482,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(used)
 		if(SSroguemachine.falseheadeater)
 			SSroguemachine.falseheadeater.infestation_death()
+	if(tiedobject)
+		tiedobject.tiedpaper = null
 
 /obj/item/paper/inn_partnership
 	name = ""
@@ -1489,6 +1492,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	var/gaffsigned = FALSE
 	var/used = FALSE
 	var/mob/inkeep
+	var/obj/item/hailer_core/tiedobject
 
 /obj/item/paper/inn_partnership/update_icon_state()
 	. = ..()
@@ -1528,6 +1532,17 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			update_icon_state()
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
+
+
+/obj/item/paper/inn_partnership/Destroy()
+	. = ..()
+	if(used)
+		if(SSroguemachine.inn_hailer)
+			SSroguemachine.inn_hailer.infestation_death()
+		if(SSroguemachine.inn_hailer_b)
+			SSroguemachine.inn_hailer_b.infestation_death()
+	if(tiedobject)
+		tiedobject.tiedpaper = null
 
 /*
 /obj/item/tournament //need to do some logistics with this first.
@@ -1569,13 +1584,18 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dropshrink = 0.4
 	drop_sound = 'sound/surgery/organ1.ogg'
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF | FREEZE_PROOF
+	var/tiedpaper
 
 /obj/item/headeater_spawn/pickup(mob/user)
-	to_chat(user, span_danger("WHAT IS THIS PUTRID THING?!!"))
-	user.add_stress(/datum/stress_event/touched_headeater_spawn)
+	if(!is_gaffer_assistant_job(user.mind.assigned_role))
+		to_chat(user, span_danger("WHAT IS THIS PUTRID THING?!!"))
+		user.add_stress(/datum/stress_event/touched_headeater_spawn)
 	. = ..()
 
 /obj/item/headeater_spawn/attack_self(mob/living/user)
+	if(!tiedpaper)
+		to_chat(user, span_red(""))
+		return
 	var/alert = alert(user, "Do I want to use this?", "WRITHING THING", "Yes", "No")
 	if(alert == "No")
 		return
@@ -1600,8 +1620,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	drop_sound = 'sound/surgery/organ1.ogg'
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF | FREEZE_PROOF
 	var/usage = 2
+	var/tiedpaper
 
 /obj/item/hailer_core/attack_self(mob/living/user)
+	if(!tiedpaper)
+		to_chat(user, span_red(""))
+		return
 	var/alert = alert(user, "Do I want to use this?", "HAILER CORE", "Yes", "No")
 	if(alert == "No")
 		return

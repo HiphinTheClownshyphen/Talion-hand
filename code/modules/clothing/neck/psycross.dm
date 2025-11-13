@@ -21,12 +21,13 @@
 	. = ..()
 	if(rotting)
 		. += "<span class='warning'>It is being overtaken by rot, but how?</span>"
+		//N/A stressevent if you are psydon worshipper maybe
 
 /obj/item/clothing/neck/psycross/proc/do_rot() //I am willing to ignore that these are not represented in the mob overlay its like 5 pixels
 	if(rotting)
 		icon_state = "[icon_state]_rot"
-	else
-		icon_state = initial(icon_state)
+		return
+	icon_state = initial(icon_state)
 
 
 // SILVER PSYCROSS START

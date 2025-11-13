@@ -177,6 +177,14 @@
 	icon_state = "inn_hailer"
 	density = TRUE
 
+/obj/structure/fake_machine/hailer/inn_hailer/Initialize(mapload)
+	. = ..()
+	SSroguemachine.inn_hailer = src
+
+/obj/structure/fake_machine/hailer/inn_hailer/Destroy()
+	. = ..()
+	SSroguemachine.inn_hailer = null
+
 /obj/structure/fake_machine/hailer/inn_hailer/attackby(obj/item/H, mob/user, params)
 	var/obj/item/the_chain = locate(/obj/item/clothing/neck/tyrants_chain) in user
 	if(!the_chain)
@@ -208,6 +216,11 @@
 	say("Bbbllrrr... fffrrrtt... brrrhh...")
 	return ..()
 
+/obj/structure/fake_machine/hailer/inn_hailer/proc/infestation_death()
+	playsound(src, 'sound/combat/gib (1).ogg', 70, FALSE, ignore_walls = TRUE)
+	//N/A needs the butchering effect of speweing blood and guts everywhere
+	qdel(src)
+
 /obj/structure/fake_machine/hailerboard/inn_hailer_board
 	name = "INN-HAILER BOARD"
 	desc = "A notice board that shows all the notices the Gaffer and the Innkeeper has put up"
@@ -215,6 +228,14 @@
 	icon_state = "hailerboard_inn"
 	density = TRUE
 	pixel_y = 0
+
+/obj/structure/fake_machine/hailerboard/inn_hailer_board/Initialize()
+	. = ..()
+	SSroguemachine.inn_hailer_b = src
+
+/obj/structure/fake_machine/hailerboard/inn_hailer_board/Destroy()
+	. = ..()
+	SSroguemachine.inn_hailer_b = null
 
 /obj/structure/fake_machine/hailerboard/inn_hailer_board/process()//they are inn hailing
 	. = ..()
@@ -226,3 +247,8 @@
 	playsound(src, 'sound/surgery/organ2.ogg', 70, FALSE, ignore_walls = TRUE)
 	message = span_danger(message)
 	say(message)
+
+/obj/structure/fake_machine/hailerboard/inn_hailer_board/proc/infestation_death()
+	playsound(src, 'sound/combat/gib (1).ogg', 70, FALSE, ignore_walls = TRUE)
+	//N/A needs the butchering effect of speweing blood and guts everywhere
+	qdel(src)

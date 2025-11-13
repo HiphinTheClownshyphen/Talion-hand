@@ -41,7 +41,7 @@
 		"Covenant of Guild Commitments and Operational Service" = list(
 			"type" = /obj/item/paper/merc_contract/worker,
 			"cost" = 70,
-			"desc" = "RECRUITMENT PAPER BUT INSTEAD OF THE MEAT HEADS YOU GET THE FILFTHY PEASENTRY TO WORK FOR YOU, I HOPE THEY SLIT YOUR THROAT.",
+			"desc" = "RECRUITMENT PAPER BUT INSTEAD OF THE MEAT HEADS YOU GET THE FILFTHY PEASANTRY TO WORK FOR YOU, I HOPE THEY SLIT YOUR THROAT.",
 		),
 		"One-Time Service and Engagement Agreement" = list(
 			"type" = /obj/item/paper/merc_work_onetime,

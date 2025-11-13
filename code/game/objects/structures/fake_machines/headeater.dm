@@ -135,20 +135,24 @@
 		var/obj/item/paper/inn_partnership/inn = H
 		if(!inn.gaffsigned && inn.used && !inn.inkeep)
 			return
-		var/obj/core = new /obj/item/hailer_core(get_turf(user))
+		var/obj/item/hailer_core/core = new /obj/item/hailer_core(get_turf(user))
 		if(!user.put_in_hands(core))
 			core.forceMove(get_turf(user))
 		inn.used = TRUE
+		inn.tiedobject = core
+		core.tiedpaper =  inn
 		//N/A sound and message
 		return
 	if(istype(H, /obj/item/paper/merchant_merger))
 		var/obj/item/paper/merchant_merger/guild = H
 		if(!guild.gaffsigned && guild.used && !guild.merchant)
 			return
-		var/obj/hspawn = new /obj/item/headeater_spawn(get_turf(user))
+		var/obj/item/headeater_spawn/hspawn = new /obj/item/headeater_spawn(get_turf(user))
 		if(!user.put_in_hands(hspawn))
 			hspawn.forceMove(get_turf(user))
 		guild.used = TRUE
+		guild.tiedobject = hspawn
+		hspawn.tiedpaper = guild
 		//N/A sound and message
 		return
 
@@ -227,4 +231,5 @@
 
 /obj/structure/fake_machine/falseheadeater/proc/infestation_death()
 	playsound(src, 'sound/combat/gib (1).ogg', 70, FALSE, ignore_walls = TRUE)
+	//N/A needs the butchering effect of speweing blood and guts everywhere
 	qdel(src)
