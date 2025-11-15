@@ -375,6 +375,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 		return
 
 	var/datum/catalyst_datum/catalyst = hud.mymob.client?.prefs.catalyst
+
 	catalyst.show_ui()
 
 #undef LOBBY_SCREEN_SLIDE_DURATION

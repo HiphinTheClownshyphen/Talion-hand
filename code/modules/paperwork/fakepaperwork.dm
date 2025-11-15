@@ -862,13 +862,14 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
 			gaffsigned = user
-			var/claimedtriumphs = GLOB.Beucratic_triumps[user.ckey]
 			if(signed)
 				addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
-				if(claimedtriumphs == src)
+				src.name = initial(name)
+				for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+					if(claimed != src.name)
+						GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
+						triumph_effect()
 					return
-				GLOB.Beucratic_triumps[user.ckey] += src
-				triumph_effect()
 			return
 		if(istype(user.mind.assigned_role, jobthatcansign))
 			if(signed)
@@ -880,11 +881,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			update_icon_state()
 			if(gaffsigned)
 				addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
-				var/claimedtriumphss = GLOB.Beucratic_triumps[gaffsigned.ckey]
-				if(claimedtriumphss == src)
+				src.name = initial(name)
+				for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+					if(claimed != src.name)
+						GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
+						triumph_effect()
 					return
-				GLOB.Beucratic_triumps[gaffsigned.ckey] += src
-				triumph_effect()
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
 
@@ -1169,13 +1171,14 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 		visible_message("[user] signs the contract")
 		gaffsigned = user
-		var/claimedtriumphs = GLOB.Beucratic_triumps[user.ckey]
 		if(signed)
 			addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
-			if(claimedtriumphs == src)
+			src.name = initial(name)
+			for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+				if(claimed != src.name)
+					GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
+					triumph_effect()
 				return
-			GLOB.Beucratic_triumps[user.ckey] += src
-			triumph_effect()
 		return
 	if(istype(P, /obj/item/gold_prick))
 		var/obj/item/gold_prick/G = P
@@ -1197,11 +1200,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		update_icon_state()
 		if(gaffsigned)
 			addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
-			var/claimedtriumphss = GLOB.Beucratic_triumps[gaffsigned.ckey]
-			if(claimedtriumphss == src)
+			src.name = initial(name)
+			for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+				if(claimed != src.name)
+					GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
+					triumph_effect()
 				return
-			GLOB.Beucratic_triumps[gaffsigned.ckey] += src
-			triumph_effect()
 
 /obj/item/paper/political_PM/bloodseal/pre_attack(atom/A, mob/living/user, params)
 	if(isitem(A))

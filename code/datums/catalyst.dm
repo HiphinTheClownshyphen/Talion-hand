@@ -10,6 +10,10 @@
 	var/bards
 	var/physickers
 
+/datum/catalyst_datum/New(datum/preferences/passed_prefs)
+	. = ..()
+	prefs = passed_prefs
+
 /datum/catalyst_datum/proc/show_ui()
 	var/client/client = prefs.parent
 	if(!client)
@@ -30,6 +34,7 @@
 		stuff += "<center>babababbabababababa, bab? bababa<br>"
 		stuff += "<center><br>"
 		stuff += "<center><br>"
+		/*
 	if(mercparade)
 		stuff += "<center>babababbabababababa, bab? bababa<br>"
 		stuff += "<center><br>"
@@ -45,6 +50,7 @@
 		stuff += "</fieldset><br>"
 	if(has_world_trait(/datum/world_trait/sentient_mob))
 		stuff += ""
+	*/
 	var/datum/browser/popup = new(client.mob, "catalyst", "<center>Define the story</center>", 650, 500, src)
 	popup.set_content(stuff)
 	popup.open()
@@ -54,6 +60,7 @@
 
 /datum/catalyst_datum/Topic(href, href_list[]) //this whole thing is fucking hopeless, man.
 	. = ..()
+	/*
 	var/selectedjob
 	if(href_list["mercspawn"])
 		selectedjob = /datum/job/advclass/mercenary
@@ -61,5 +68,6 @@
 		selectedjob = /datum/job/advclass/adventurer
 	if(href_list["bardsspawn"])
 		selectedjob = /datum/job/bard
+	*/
 	//if(href_list["physickers"]) this is not gonna fucking work with a migrant_role
-	new_player.AttemptLateSpawn(selectedjob)
+	//new_player.AttemptLateSpawn(selectedjob)

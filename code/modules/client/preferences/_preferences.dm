@@ -238,6 +238,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	parent = C
 
 	migrant  = new /datum/migrant_pref(src)
+	catalyst = new /datum/catalyst_datum(src)
 
 	flavortext = null
 	headshot_link = null
@@ -1693,6 +1694,8 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 					user << browse(null, "window=mob_occupation")
 					user << browse(null, "window=latechoices") //closes late job selection
 					user << browse(null, "window=migration") // Closes migrant menu
+					user << browse(null, "window=catalyst") // Closes catalyst menu
+
 
 					SStriumphs.remove_triumph_buy_menu(user.client)
 
