@@ -71,6 +71,8 @@ abstract types are automatically excluded.
 		/obj/item/clothing/ring/weepers_boon, // special for merchant merger contract
 		/obj/item/clothing/neck/psycross/silver/malum_steel,
 		/obj/item/clothing/neck/psycross/noc, //these two don't actually have a reason to not be uncraftable, its just that its ruining my linters, despite it not being my issue, and I do not feel like making the crafting recipes either. This is just an act of war for this fucking linter, sue me -Clown
+		/obj/item/clothing/wrists/bracers/naledi //Inqstuff
+
 	)
 	// these don't use misc_flags = CRAFTING_TEST_EXCLUDE because we want to explicitly know which paths we are excluding.
 	/// excludes paths along with their subtypes
