@@ -671,6 +671,8 @@
 	. = ..()
 	if(!isliving(innkeep))
 		return
+	if(!innkeep.client && !innkeep.ckey)
+		return
 	if(prob(5))
 		var/text = pick("")
 		to_chat(innkeep, span_green(text))

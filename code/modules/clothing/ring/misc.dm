@@ -482,6 +482,8 @@
 	. = ..()
 	if(!isliving(merchant))
 		return
+	if(!merchant.client && !merchant.ckey)
+		return
 	if(prob(5))
 		var/text = pick("")
 		to_chat(merchant, span_danger(text))

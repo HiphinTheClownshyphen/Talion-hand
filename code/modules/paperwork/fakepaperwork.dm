@@ -244,6 +244,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		if(!isliving(signedmerc) || signedmerc.stat == UNCONSCIOUS)
 			to_chat(user, "")
 			return
+		if(!signedmerc.client && !signedmerc.ckey)
+			to_chat(user, "")
+			return
 		to_chat(signedmerc, span_warning("a gentle warmth spreads into my soul, beckoning me closer to the place I find rest...")) //not too obvious
 		//playsoound_local(signedmerc, '')
 		//N/A sound here would be neat
@@ -1244,6 +1247,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		if(!isliving(signed) || signed.stat == UNCONSCIOUS)
 			to_chat(user, "")
 			return
+		if(!signed.client && !signed.ckey)
+			to_chat(user, "")
+			return
 		START_PROCESSING(SSfastprocess, src)
 		addtimer(CALLBACK(src, PROC_REF(restore_order)), 12 SECONDS)
 		COOLDOWN_START(src, punish, 15 MINUTES)
@@ -1258,6 +1264,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!isliving(signed))
 		STOP_PROCESSING(SSfastprocess, src)
 		return
+	if(!signed.client && !signed.ckey)
+		STOP_PROCESSING(SSfastprocess, src)
+		return
 	if(prob(40))
 		var/text = "ho ho ho, yurgg. ohohohohiee"
 		var/screen_location = "WEST+[rand(2,13)], SOUTH+[rand(1,12)]"
@@ -1270,6 +1279,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!signed.client)
 		return
 	if(!isliving(signed))
+		return
+	if(!signed.client && !signed.ckey)
 		return
 	var/mob/living/okay = signed
 	okay.emote("faint")
