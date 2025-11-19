@@ -34,16 +34,18 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 	if(.)
 		return
-	if(blood)
-		user.changeNext_move(CLICK_CD_MELEE)
-		blood = null
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			to_chat(user, span_warning("I pinch the end of the prick and trace my fingers up along it's length, until the only blood left is on my fingers."))
-			playsound(src, 'sound/magic/enter_blood.ogg', 30, FALSE, ignore_walls = FALSE)
-			user.add_stress(/datum/stress_event/ring_madness)
-			return
-		to_chat(user, span_warning("I wipe off the prick"))
+	if(!blood)
+		return
+	user.changeNext_move(CLICK_CD_MELEE)
+	blood = null
+	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		to_chat(user, span_warning("I pinch the end of the prick and trace my fingers up along it's length, until the only blood left is on my fingers."))
+		playsound(src, 'sound/magic/enter_blood.ogg', 30, FALSE, ignore_walls = FALSE)
+		user.add_stress(/datum/stress_event/ring_madness)
 		update_icon_state()
+		return
+	to_chat(user, span_warning("I wipe off the prick"))
+	update_icon_state()
 
 /obj/item/gold_prick/examine(mob/user)
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
@@ -1058,7 +1060,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 	if(.)
 		return
-	if(!signed && !gaffsigned && !price)
+	if(!signed || !gaffsigned || !price)
 		return
 	SStreasury.herovoucher = price
 	var/obj/stewardvoucher = new /obj/item/paper/vouchersteward
@@ -1558,6 +1560,310 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			SSroguemachine.inn_hailer_b.infestation_death()
 	if(tiedobject)
 		tiedobject.tiedpaper = null
+
+/obj/item/paper/merchantprotectionpact  //N/A I'm sorry chef this is especially fucking ass
+	name = ""
+	desc = ""
+	icon_state = "contractunsigned"
+	var/mob/gaffsigned
+	var/mob/merchsigned
+	var/paymentclause
+	var/bellclause = FALSE
+	var/guaranteeclause
+	//var/percentageclause
+	var/miscclause
+
+/obj/item/paper/merchantprotectionpact/update_icon_state()
+	. = ..()
+	if(mailer)
+		icon_state = "paper_prep"
+		name = "letter"
+		throw_range = 7
+		return
+	name = initial(name)
+	throw_range = initial(throw_range)
+	if(merchsigned)
+		icon_state = "contractsigned"
+		return
+	icon_state = "contractunsigned"
+
+/obj/item/paper/merchantprotectionpact/attackby(obj/item/P, mob/living/carbon/human/user, params)
+	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
+		if(paymentclause && bellclause && guaranteeclause)
+			to_chat(user, span_warning("This is already signed"))
+			return
+		var/awfulpaperworking = browser_input_list(user, "What are you filling out?", src, list("Payment Clause", "Bell Clause", "Contract Duration Safety", "Miscellaneous Clause"))
+		if(!awfulpaperworking)
+			return
+		if(!user.is_holding(src) || !Adjacent(src))
+			return
+		switch(awfulpaperworking)
+			if("Payment Clause")
+				if(paymentclause)
+					to_chat(user, span_warning("This section has already been filled."))
+					return
+				var/discheck = input(user, "How much is the merchant's guild willing to part with?") as null|num
+				if(!discheck)
+					return
+				if(user.is_holding(src) || Adjacent(src))
+					paymentclause = discheck
+			if("Bell Clause")
+				if(bellclause)
+					to_chat(user, span_warning("This section has already been signed."))
+					return
+				bellclause = TRUE
+			if("Contract Duration Safety")
+				if(guaranteeclause)
+					to_chat(user, span_warning("This section has already been filled."))
+					return
+				var/discheck1 = input(user, "How long must the contract be honored?") as null|num
+				if(!discheck1)
+					return
+				if(user.is_holding(src) || Adjacent(src))
+					guaranteeclause = discheck1
+			if("Miscellaneous Clause")
+				var/discheck2 = input(user, "What else is there to add?")
+				if(!discheck2)
+					return
+				if(user.is_holding(src) || Adjacent(src))
+					guaranteeclause += discheck2
+		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
+		visible_message("[user] signs the contract")
+		return
+	if(istype(P, /obj/item/gold_prick))
+		var/obj/item/gold_prick/prick = P
+		if(prick.blood != user)
+			to_chat(user, span_warning("I can't do anything with this.")) //N/A
+			return
+		if(HAS_TRAIT(user, TRAIT_BURDEN))
+			if(gaffsigned)
+				to_chat(user, span_warning("This is already signed"))
+				return
+			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
+			visible_message("[user] signs the contract")
+			gaffsigned = user
+			return
+		if(is_merchant_job(user.mind.assigned_role))
+			if(merchsigned)
+				to_chat(user, span_warning("This is already signed"))
+				return
+			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
+			visible_message("[user] signs the contract")
+			merchsigned = user
+			update_icon_state()
+			return
+		to_chat(user, span_warning("I can't do anything with this."))
+
+/obj/item/paper/merchantprotectionpact/read(mob/user, ignore_distance)
+	. = ..()
+	if(!user.client || !user.hud_used)
+		return
+	if(!user.hud_used.reads)
+		return
+	if(!user.can_read(src))
+		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
+		return
+	if(in_range(user, src) || isobserver(user))
+		if(paymentclause)
+			info += "babababab [paymentclause]"
+		if(bellclause)
+			info += "babababab"
+		if(guaranteeclause)
+			info += "babababababba [guaranteeclause]"
+		if(miscclause)
+			info += "bababababba [miscclause]"
+		info += "bababababab"
+		user.hud_used.reads.icon_state = "scroll"
+		user.hud_used.reads.show()
+		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+					<html><head><style type=\"text/css\">
+					body { background-image:url('book.png');background-repeat: repeat; }</style>
+					</head><body scroll=yes>"}
+		dat += "[info]<br>"
+		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+		dat += "</body></html>"
+		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+		onclose(user, "reading", src)
+	else
+		return "<span class='warning'>I'm too far away to read it.</span>"
+
+/obj/item/paper/merchantprotectionpact/attack_hand_secondary(mob/user, params) //N/A THIS FUCKING SUCKS!!!
+	. = ..()
+	if(.)
+		return
+	if(!merchsigned || !gaffsigned)
+		return
+	var/obj/item/paper/merchantprotectionpact_merchpart/M = new /obj/item/paper/merchantprotectionpact_merchpart
+	var/obj/item/paper/merchantprotectionpact_gaffpart/G = new /obj/item/paper/merchantprotectionpact_gaffpart
+	M.gaffpart = G
+	M.gaff = gaffsigned
+	M.merch = merchsigned
+	G.gaff = gaffsigned
+	G.merch = merchsigned
+	G.merchpart = M
+	if(guaranteeclause)
+		M.guarantee = guaranteeclause
+		M.lastguarantee = GLOB.dayspassed
+		M.resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF | FREEZE_PROOF
+		G.guarantee = guaranteeclause
+		G.lastguarantee = GLOB.dayspassed
+		G.resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF | FREEZE_PROOF
+	if(bellclause)
+		for(var/obj/structure/dock_bell/bells in GLOB.dock_bells)
+			if(bells)
+				bells.mercenaryclaus = TRUE
+				G.bell = TRUE
+	if(paymentclause)
+		G.pay = paymentclause
+		G.lastpay = GLOB.dayspassed
+	if(miscclause)
+		G.misc = miscclause
+	qdel(src)
+
+/obj/item/paper/merchantprotectionpact_merchpart
+	name = ""
+	desc = ""
+	icon_state = "contractsigned"
+	var/mob/gaff
+	var/mob/merch
+	var/obj/item/paper/merchantprotectionpact_gaffpart/gaffpart
+	var/guarantee
+	var/lastguarantee
+
+
+/obj/item/paper/merchantprotectionpact_merchpart/read(mob/user, ignore_distance)
+	. = ..()
+	if(!user.client || !user.hud_used)
+		return
+	if(!user.hud_used.reads)
+		return
+	if(!user.can_read(src))
+		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
+		return
+	if(in_range(user, src) || isobserver(user))
+		if(!gaffpart)
+			info += "deals off"
+		if(guarantee)
+			info += "babababab [guarantee]"
+		user.hud_used.reads.icon_state = "scroll"
+		user.hud_used.reads.show()
+		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+					<html><head><style type=\"text/css\">
+					body { background-image:url('book.png');background-repeat: repeat; }</style>
+					</head><body scroll=yes>"}
+		dat += "[info]<br>"
+		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+		dat += "</body></html>"
+		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+		onclose(user, "reading", src)
+	else
+		return "<span class='warning'>I'm too far away to read it.</span>"
+
+/obj/item/paper/merchantprotectionpact_merchpart/attackby(obj/item/P, mob/living/user, params)
+	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
+		if(!guarantee)
+			return
+		if(lastguarantee == GLOB.dayspassed)
+			return
+		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
+		visible_message("[user] ticks off [src]")
+		lastguarantee = GLOB.dayspassed
+		guarantee -= 1
+		if(guarantee <= 0)
+			guarantee = null
+			lastguarantee = null
+			resistance_flags = null
+			if(gaffpart)
+				gaffpart.guarantee = null
+				gaffpart.lastguarantee = null
+				gaffpart.resistance_flags = null
+
+/obj/item/paper/merchantprotectionpact_merchpart/Destroy()
+	. = ..()
+	if(gaffpart)
+		gaffpart.merchpart = null
+		if(gaffpart.bell == TRUE)
+			for(var/obj/structure/dock_bell/bells as anything in GLOB.dock_bells)
+				if(bells)
+					bells.mercenaryclaus = FALSE
+					gaffpart.bell = FALSE
+
+/obj/item/paper/merchantprotectionpact_gaffpart
+	name = ""
+	desc = ""
+	icon_state = "contractsigned"
+	var/mob/gaff
+	var/mob/merch
+	var/obj/item/paper/merchantprotectionpact_merchpart/merchpart
+	var/pay
+	var/lastpay
+	var/bell = FALSE
+	var/guarantee
+	var/lastguarantee
+	var/misc
+
+/obj/item/paper/merchantprotectionpact_gaffpart/read(mob/user, ignore_distance)
+	. = ..()
+	if(!user.client || !user.hud_used)
+		return
+	if(!user.hud_used.reads)
+		return
+	if(!user.can_read(src))
+		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
+		return
+	if(in_range(user, src) || isobserver(user))
+		if(!merchpart)
+			info += "deals off"
+		if(pay)
+			info += "bababab [pay]"
+		if(bell)
+			info += "bababab"
+		if(guarantee)
+			info += "babababab [guarantee]"
+		if(misc)
+			info += "bababab [misc]"
+		user.hud_used.reads.icon_state = "scroll"
+		user.hud_used.reads.show()
+		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+					<html><head><style type=\"text/css\">
+					body { background-image:url('book.png');background-repeat: repeat; }</style>
+					</head><body scroll=yes>"}
+		dat += "[info]<br>"
+		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+		dat += "</body></html>"
+		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+		onclose(user, "reading", src)
+	else
+		return "<span class='warning'>I'm too far away to read it.</span>"
+
+/obj/item/paper/merchantprotectionpact_gaffpart/Destroy()
+	if(merchpart)
+		merchpart.gaffpart = null
+		if(bell)
+			for(var/obj/structure/dock_bell/bells as anything in GLOB.dock_bells)
+				if(bells)
+					bells.mercenaryclaus = FALSE
+					src.bell = FALSE
+	return ..()
+
+/obj/item/paper/merchantprotectionpact_gaffpart/attackby(obj/item/P, mob/living/user, params)
+	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
+		if(!guarantee)
+			return
+		if(lastguarantee == GLOB.dayspassed)
+			return
+		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
+		visible_message("[user] ticks off [src]")
+		lastguarantee = GLOB.dayspassed
+		guarantee -= 1
+		if(guarantee <= 0)
+			guarantee = null
+			lastguarantee = null
+			resistance_flags = null
+			if(merchpart)
+				merchpart.guarantee = null
+				merchpart.lastguarantee = null
+				merchpart.resistance_flags = null
 
 /*
 /obj/item/tournament //need to do some logistics with this first.

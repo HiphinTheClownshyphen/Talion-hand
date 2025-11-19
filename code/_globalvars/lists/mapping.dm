@@ -57,3 +57,5 @@ GLOBAL_LIST_EMPTY(fires_list)
 GLOBAL_LIST_EMPTY(streetlamp_list)
 
 GLOBAL_LIST_EMPTY(astrata_statues)
+
+GLOBAL_LIST_EMPTY(dock_bells)

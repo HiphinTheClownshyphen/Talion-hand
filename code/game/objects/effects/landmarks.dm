@@ -581,9 +581,4 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/start/new_player)
 	name = "Round-start Mercenary contract placer"
 
 /obj/effect/landmark/contracthole/proc/addcontract(mob/living/carbon/human/employee)
-	var/obj/item/paper/merc_contract/H = new /obj/item/paper/merc_contract(src, employee)
-	H.forceMove(get_turf(src))
-
-
-
-
+	new /obj/item/paper/merc_contract(src, employee)

@@ -11,6 +11,15 @@
 	COOLDOWN_DECLARE(outsider_ring_bell)
 	var/static/approved_jobs = list(/datum/job/merchant, /datum/job/grabber, /datum/job/shophand)
 	max_integrity = 999999
+	var/mercenaryclaus = FALSE
+
+/obj/structure/dock_bell/Initialize()
+	. = ..()
+	GLOB.dock_bells += src
+
+/obj/structure/dock_bell/Destroy()
+	. = ..()
+	GLOB.dock_bells -= src
 
 /obj/structure/dock_bell/examine(mob/user)
 	. = ..()
@@ -24,8 +33,9 @@
 
 	var/datum/job/user_job = SSjob.GetJob(user.job)
 	if(user_job && !(initial(user_job.type) in approved_jobs) && (SSmapping.config.map_name != "Voyager"))
-		if(!COOLDOWN_FINISHED(src, outsider_ring_bell))
-			return
+		if(mercenaryclaus == FALSE && !HAS_TRAIT(user, TRAIT_MERCGUILD)) //the trait for the guild itself might be overkill
+			if(!COOLDOWN_FINISHED(src, outsider_ring_bell))
+				return
 
 	if(!do_after(user, 5 SECONDS, src))
 		return

@@ -121,7 +121,6 @@
 		return
 	if(prob(0.1))
 		hate_monologue()
-	return
 
 /obj/structure/fake_machine/hateface/proc/hate_monologue() //N/A write later
 	STOP_PROCESSING(SSroguemachine, src)

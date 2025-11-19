@@ -17,7 +17,7 @@
 
 /obj/structure/fake_machine/hailer/Initialize(mapload)
 	. = ..()
-	SSroguemachine.hailer += src
+	SSroguemachine.hailer |= src
 
 /obj/structure/fake_machine/hailer/Destroy()
 	SSroguemachine.hailer -= src
@@ -185,33 +185,36 @@
 	. = ..()
 	SSroguemachine.inn_hailer = null
 
-/obj/structure/fake_machine/hailer/inn_hailer/attackby(obj/item/H, mob/user, params)
-	var/obj/item/the_chain = locate(/obj/item/clothing/neck/tyrants_chain) in user
+/obj/structure/fake_machine/hailer/inn_hailer/attackby(obj/item/I, mob/user, params)
+	if(!iscarbon(user))
+		return ..()
+	var/mob/living/carbon/innkeep = user
+	var/obj/item/clothing/neck/tyrants_chain/the_chain = locate() in innkeep.get_all_gear()
 	if(!the_chain)
-		to_chat(user, span_danger("you can't feed the [src] without the chain."))
+		to_chat(innkeep, span_danger("you can't feed the [src] without the chain."))
 		return
-	if(istype(H, /obj/item/reagent_containers/powder/salt)) //mmmm, salt.
-		to_chat(user, "<span class='notice'>the [src]'s tongue slips between its bronze teeth to lap at the salt in [user]'s hand, finishing with effectionate licks across their palm... gross </span>")
+	if(istype(I, /obj/item/reagent_containers/powder/salt)) //mmmm, salt.
+		to_chat(innkeep, "<span class='notice'>the [src]'s tongue slips between its bronze teeth to lap at the salt in [innkeep]'s hand, finishing with effectionate licks across their palm... gross </span>")
 		say("mmmpphh... grrrrrhh... hhhrrrnnn...")
 		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
-		qdel(H)
+		qdel(I)
 		return
-	if(istype(H, /obj/item/reagent_containers/food/snacks))
-		var/obj/item/reagent_containers/food/snacks/food = H
+	if(istype(I, /obj/item/reagent_containers/food/snacks))
+		var/obj/item/reagent_containers/food/snacks/food = I
 		if(food.eat_effect == /datum/status_effect/debuff/rotfood)
-			to_chat(user, "<span class='notice'>the [src]'s tongue slips between its bronze teeth to lap at the [food] in [user]'s hand, finishing with effectionate licks across their palm... gross </span>")
+			to_chat(innkeep, "<span class='notice'>the [src]'s tongue slips between its bronze teeth to lap at the [food] in [innkeep]'s hand, finishing with effectionate licks across their palm... gross </span>")
 			say("mmmpphh... grrrrrhh... hhhrrrnnn...")
 			playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
 			qdel(food)
 			return
-	if(!istype(H, /obj/item/paper))
-		to_chat(user, "<span class='notice'>the [src] only accepts paper</span>")
+	if(!istype(I, /obj/item/paper))
+		to_chat(innkeep, "<span class='notice'>the [src] only accepts paper</span>")
 		playsound(src, 'sound/misc/godweapons/gorefeast5.ogg', 70, FALSE, ignore_walls = TRUE)
 		say("GRRRRHHH!!...GRAAAAGH")
 		return
-	if(!user.transferItemToLoc(H, src))
+	if(!innkeep.transferItemToLoc(I, src))
 		return
-	to_chat(user, "<span class='notice'>I feed the [H] to the [src].</span>")
+	to_chat(innkeep, "<span class='notice'>I feed the [I] to the [src].</span>")
 	playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
 	say("Bbbllrrr... fffrrrtt... brrrhh...")
 	return ..()

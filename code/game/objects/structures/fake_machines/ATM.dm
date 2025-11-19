@@ -231,6 +231,30 @@
 			budget2change(voucherpay, H)
 			SStreasury.treasury_value -= voucherpay
 			qdel(voucher)
+		if(istype(P, /obj/item/paper/merchantprotectionpact_gaffpart))
+			var/obj/item/paper/merchantprotectionpact_gaffpart/garf
+			if(!garf.merchpart)
+				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
+				say("garf") //N/A
+				return
+			if(garf.lastpay == GLOB.dayspassed)
+				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
+				say("garf")
+				return
+			if(garf.merch  in SStreasury.bank_accounts)
+				var/merchantsaccounts = SStreasury.bank_accounts[garf.merch]
+				if(merchantsaccounts < garf.pay)
+					playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
+					say("garf")
+					return
+				garf.lastpay = GLOB.dayspassed
+				budget2change(merchantsaccounts, H)
+				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
+				say("garf")
+				return
+			playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
+			say("garf")
+			return
 	return ..()
 
 /obj/structure/fake_machine/atm/examine(mob/user)

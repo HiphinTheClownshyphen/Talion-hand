@@ -177,34 +177,38 @@
 	. = ..()
 	SSroguemachine.falseheadeater = null
 
-/obj/structure/fake_machine/falseheadeater/attackby(obj/item/H, mob/user, params)
-	. = ..()
-	var/obj/item/the_ring = locate(/obj/item/clothing/ring/weepers_boon) in user
-	if(the_ring)
-		if(istype(H, /obj/item/natural/head))
-			var/obj/item/natural/head/A = H
-			if(A.headprice > 0)
-				var/hardcoldsweetdelicousfuckingmammons = A.headprice * 0.10
-				hardcoldsweetdelicousfuckingmammons = round(hardcoldsweetdelicousfuckingmammons)
-				A.headprice -= hardcoldsweetdelicousfuckingmammons
-				SSroguemachine.headeater.aggresive_income(hardcoldsweetdelicousfuckingmammons)
-				to_chat(user, span_danger("the [src] consumes the [A] spitting out coins in its place!"))
-				playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
-				budget2change(A.headprice, user)
-				qdel(A)
-				return
-		if(istype(H, /obj/item/bodypart/head))
-			var/obj/item/bodypart/head/E = H
-			if(E.headprice > 0)
-				var/hardcoldsweetdelicousfuckingmammonss = E.headprice * 0.10
-				hardcoldsweetdelicousfuckingmammonss = round(hardcoldsweetdelicousfuckingmammonss)
-				E.headprice -= hardcoldsweetdelicousfuckingmammonss
-				SSroguemachine.headeater.aggresive_income(hardcoldsweetdelicousfuckingmammonss)
-				to_chat(user, span_danger("the [src] consumes the [E] spitting out coins in its place!"))
-				playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
-				budget2change(E.headprice, user)
-				qdel(E)
-				return
+/obj/structure/fake_machine/falseheadeater/attackby(obj/item/I, mob/user, params)
+	if(!iscarbon(user))
+		return ..()
+	var/mob/living/carbon/merchant = user
+	var/obj/item/clothing/ring/weepers_boon/the_ring = locate() in merchant.get_all_gear()
+	if(!the_ring)
+		to_chat(merchant, span_danger("you can't feed the [src] without the ring."))
+		return
+	if(istype(I, /obj/item/natural/head))
+		var/obj/item/natural/head/A = I
+		if(A.headprice > 0)
+			var/hardcoldsweetdelicousfuckingmammons = A.headprice * 0.10
+			hardcoldsweetdelicousfuckingmammons = round(hardcoldsweetdelicousfuckingmammons)
+			A.headprice -= hardcoldsweetdelicousfuckingmammons
+			SSroguemachine.headeater.aggresive_income(hardcoldsweetdelicousfuckingmammons)
+			to_chat(merchant, span_danger("the [src] consumes the [A] spitting out coins in its place!"))
+			playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
+			budget2change(A.headprice, merchant)
+			qdel(A)
+			return
+	if(istype(I, /obj/item/bodypart/head))
+		var/obj/item/bodypart/head/E = I
+		if(E.headprice > 0)
+			var/hardcoldsweetdelicousfuckingmammonss = E.headprice * 0.10
+			hardcoldsweetdelicousfuckingmammonss = round(hardcoldsweetdelicousfuckingmammonss)
+			E.headprice -= hardcoldsweetdelicousfuckingmammonss
+			SSroguemachine.headeater.aggresive_income(hardcoldsweetdelicousfuckingmammonss)
+			to_chat(merchant, span_danger("the [src] consumes the [E] spitting out coins in its place!"))
+			playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
+			budget2change(E.headprice, merchant)
+			qdel(E)
+			return
 	return ..()
 
 /obj/structure/fake_machine/falseheadeater/proc/infection()
