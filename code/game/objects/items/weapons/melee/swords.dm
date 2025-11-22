@@ -1058,24 +1058,19 @@
 	possible_item_intents = list(/datum/intent/sword/cut, /datum/intent/sword/thrust, /datum/intent/sword/strike)
 	gripped_intents = list(/datum/intent/sword/cut, /datum/intent/sword/thrust, /datum/intent/axe/chop)
 
-/obj/item/weapon/sword/long/greatsword/broadsword/psy
+/obj/item/weapon/sword/long/broadsword/psy
 	name = "old psydonian broadsword"
 	desc = "Even the most ignorant of zealots know that the holy silver loses its properties when not blessed by Adjudicators and Priests of the Holy See for an extended period of time. Its edge remains as lethal as ever, however."
 	icon = 'icons/roguetown/weapons/64/psydonite.dmi'
 	icon_state = "psybroadsword"
-	force = 25
-	force_wielded = 30
-	possible_item_intents = list(/datum/intent/sword/cut,/datum/intent/sword/chop,/datum/intent/stab)
-	gripped_intents = list(/datum/intent/sword/cut/zwei, /datum/intent/sword/chop, /datum/intent/sword/lunge, /datum/intent/sword/thrust/estoc)
-	alt_intents = list(/datum/intent/effect/daze, /datum/intent/sword/strike, /datum/intent/sword/bash)
 	melting_material = /datum/material/silver
 	melt_amount = 150
 
-/obj/item/weapon/sword/long/greatsword/broadsword/psy/relic
+/obj/item/weapon/sword/long/broadsword/psy/relic
 	name = "Creed"
 	desc = "Bathed in Psydonian prayers, this large and heavy blade exists to slay the inhumen and evil. The crossguard’s psycross is engraved with prayers of the Ordo Benetarus. You’re the light - show them the way."
 
-/obj/item/weapon/sword/long/greatsword/broadsword/psy/getonmobprop(tag)
+/obj/item/weapon/sword/long/broadsword/psy/getonmobprop(tag)
 	. = ..()
 	if(tag)
 		switch(tag)
@@ -1084,16 +1079,16 @@
 			if("onback") return list("shrink" = 0.5, "sx" = -1, "sy" = 2, "nx" = 0, "ny" = 2, "wx" = 2, "wy" = 1, "ex" = 0, "ey" = 1, "nturn" = 0, "sturn" = 0, "wturn" = 70, "eturn" = 15, "nflip" = 1, "sflip" = 1, "wflip" = 1, "eflip" = 1, "northabove" = 1, "southabove" = 0, "eastabove" = 0, "westabove" = 0)
 			if("onbelt") return list("shrink" = 0.3, "sx" = -4, "sy" = -6, "nx" = 5, "ny" = -6, "wx" = 0, "wy" = -6, "ex" = -1, "ey" = -6, "nturn" = 100, "sturn" = 156, "wturn" = 90, "eturn" = 180, "nflip" = 0, "sflip" = 0, "wflip" = 0, "eflip" = 0, "northabove" = 0, "southabove" = 1, "eastabove" = 1, "westabove" = 0)
 
-/obj/item/weapon/sword/long/greatsword/broadsword/psy/relic/Initialize(mapload)
+/obj/item/weapon/sword/long/broadsword/psy/relic/Initialize(mapload)
 	. = ..()					//Pre-blessed, +5 DMG, +100 Blade int, +100 int, +2 def, make it silver
 	AddComponent(/datum/component/psyblessed, TRUE, 5, 100, 100, 2, TRUE)
 
-/obj/item/weapon/sword/long/greatsword/broadsword/psy/unforgotten
+/obj/item/weapon/sword/long/greatsword/psydon/unforgotten
 	name = "unforgotten blade"
 	desc = "High Inquisitor Archibald once recorded an expedition of seven brave Adjudicators into Gronnian snow-felled wastes to root out evil. Its leader, Holy Ordinator Guillemin, was said to have held on for seven daes and seven nights against darksteel-clad heretics before Psydon acknowledged his endurance. Nothing but his blade remained - his psycross wrapped around its hilt in rememberance."
 	icon_state = "forgottenblade"
 
-/obj/item/weapon/sword/long/greatsword/broadsword/psy/unforgotten/Initialize()
+/obj/item/weapon/sword/long/greatsword/psydon/unforgotten/Initialize()
 	. = ..()					//+50 Blade int, +3 DMG, +50 int, +1 def, make it silver
 	AddComponent(/datum/component/psyblessed, FALSE, 3, 50, 50, 1, TRUE)
 
@@ -1537,26 +1532,43 @@
 		. += "A hollow replica of the usual longsword design presumebly made for showsake, useless in real battle"
 
 
-/obj/item/weapon/sword/sabre/mulyeog
-	force = 25
+//A weapon meant to be used with two hands.
+/obj/item/weapon/sword/katana
+	name = "katana"
+	desc = "A foreign sword."
+	icon_state = "eastsword1"
+	force_wielded = 28
+	possible_item_intents = list(/datum/intent/katana/cut/one_hand_cut, /datum/intent/sword/strike)
+	gripped_intents = list(/datum/intent/katana/cut, /datum/intent/katana/arc, /datum/intent/sword/strike, /datum/intent/katana/precision_cut)
+	swingsound = BLADEWOOSH_MED
+	parrysound = "bladedmedium"
+	pickup_sound = "brandish_blade"
+	wlength = WLENGTH_NORMAL
+	wdefense = GOOD_PARRY
+	slot_flags = ITEM_SLOT_BACK|ITEM_SLOT_HIP
+	melt_amount = 75
+	melting_material = /datum/material/steel
+
+
+/obj/item/weapon/sword/katana/mulyeog
 	name = "foreign straight blade"
 	desc = "A foreign sword used by cut-throats & thugs. There's a red tassel on the hilt."
 	icon_state = "eastsword1"
-	melt_amount = 75
-	melting_material = /datum/material/steel
-	wdefense = GOOD_PARRY
 
-/obj/item/weapon/sword/sabre/mulyeog/rumahench
+/obj/item/weapon/sword/katana/mulyeog/rumahench
 	name = "hwang blade"
 	desc = "A foreign steel sword with cloud patterns on the groove."
 	icon_state = "eastsword2"
 
-/obj/item/weapon/sword/sabre/mulyeog/rumacaptain
-	force = 30
+/obj/item/weapon/sword/katana/mulyeog/rumacaptain
+	force = 25
+	force_wielded = 30
 	name = "samjeongdo"
 	desc = "A gold-stained with cloud patterns on the groove. One of a kind."
 	icon_state = "eastsword3"
-	max_integrity = 180
+	wdefense = GREAT_PARRY
+
+
 
 /obj/item/weapon/sword/sabre/hook
 	name = "hook sword"

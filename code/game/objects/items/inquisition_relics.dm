@@ -353,10 +353,9 @@
 	var/added_force
 	var/added_blade_int
 	var/added_int
-	var/added_def
 	var/silver
 
-/datum/component/psyblessed/Initialize(preblessed = FALSE, force, blade_int, int, def, makesilver)
+/datum/component/psyblessed/Initialize(preblessed = FALSE, force, blade_int, int, makesilver)
 	if(!istype(parent, /obj/item/weapon))
 		return COMPONENT_INCOMPATIBLE
 	RegisterSignal(parent, COMSIG_PARENT_EXAMINE, PROC_REF(on_examine))
@@ -364,7 +363,6 @@
 	added_force = force
 	added_blade_int = blade_int
 	added_int = int
-	added_def = def
 	silver = makesilver
 	if(pre_blessed)
 		apply_bless()
@@ -402,7 +400,6 @@
 			I.max_blade_int += added_blade_int
 			I.blade_int = I.max_blade_int
 		I.modify_max_integrity(I.max_integrity + added_int)
-		I.wdefense += added_def
 		I.name = "blessed [I.name]"
 		if(silver)
 			I.enchant(/datum/enchantment/silver)

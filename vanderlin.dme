@@ -2698,6 +2698,7 @@
 #include "code\modules\jobs\job_types\inquistion\oratorium\position.dm"
 #include "code\modules\jobs\job_types\inquistion\puritian\inspector.dm"
 #include "code\modules\jobs\job_types\inquistion\puritian\ordinator.dm"
+#include "code\modules\jobs\job_types\inquistion\puritian\preceptor.dm"
 #include "code\modules\jobs\job_types\nobility\archivist.dm"
 #include "code\modules\jobs\job_types\nobility\captain.dm"
 #include "code\modules\jobs\job_types\nobility\consort.dm"
