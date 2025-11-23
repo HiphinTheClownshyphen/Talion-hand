@@ -8,7 +8,7 @@
 	var/lastattacker = null
 	var/lastattackerckey = null
 	var/datum/weakref/lastattacker_weakref = null
-	var/mob/fragger = null
+	//var/mob/fragger = null
 
 	//Health and life related vars
 	var/maxHealth = 100 //Maximum health that should be possible.

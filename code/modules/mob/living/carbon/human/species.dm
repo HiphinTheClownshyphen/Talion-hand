@@ -1438,7 +1438,7 @@ GLOBAL_LIST_EMPTY(patreon_races)
 		var/armor_block = target.run_armor_check(selzone, "blunt", blade_dulling = user.used_intent.blade_class)
 
 		target.lastattacker = user.real_name
-		target.fragger = user
+		//target.fragger = user
 		if(target.mind)
 			target.mind.attackedme[user.real_name] = world.time
 		target.lastattackerckey = user.ckey
@@ -1649,7 +1649,7 @@ GLOBAL_LIST_EMPTY(patreon_races)
 			target.lastattacker = user.real_name
 			target.lastattackerckey = user.ckey
 			target.lastattacker_weakref = WEAKREF(user)
-			target.fragger = user
+			//target.fragger = user
 			if(target.mind)
 				target.mind.attackedme[user.real_name] = world.time
 			var/selzone = accuracy_check(user.zone_selected, user, target, /datum/skill/combat/unarmed, user.used_intent)
@@ -1775,7 +1775,7 @@ GLOBAL_LIST_EMPTY(patreon_races)
 		target.lastattacker = user.real_name
 		target.lastattackerckey = user.ckey
 		target.lastattacker_weakref = WEAKREF(user)
-		target.fragger = user
+		//target.fragger = user
 		if(target.mind)
 			target.mind.attackedme[user.real_name] = world.time
 		user.adjust_stamina(15)

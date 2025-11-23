@@ -61,13 +61,13 @@ GLOBAL_LIST_EMPTY(last_words)
 
 /mob/living/death(gibbed)
 	var/was_dead_before = stat == DEAD
-	var/was_sentient = (src.ckey && src.client)
+	//var/was_sentient = (src.ckey && src.client)
 	set_stat(DEAD)
 	unset_machine()
-	if(isliving(fragger))
-		GLOB.mob_kill_count[fragger.mobid] += 1
-		if(was_sentient)
-			GLOB.mob_sentient_kill_count[fragger.mobid] += 1
+	//if(isliving(fragger))
+		//GLOB.mob_kill_count[fragger.mobid] += 1
+		//if(was_sentient)
+			//GLOB.mob_sentient_kill_count[fragger.mobid] += 1
 /*
 		if(!fragger.ckey && !fragger.client) //this all just feels fucked
 			if(was_sentient)

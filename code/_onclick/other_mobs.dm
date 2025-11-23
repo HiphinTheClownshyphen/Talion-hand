@@ -216,7 +216,7 @@
 
 		lastattacker = user.real_name
 		lastattackerckey = user.ckey
-		fragger = user
+		//fragger = user
 		if(mind)
 			mind.attackedme[user.real_name] = world.time
 		log_combat(user, src, "bit")

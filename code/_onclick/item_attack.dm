@@ -277,7 +277,7 @@
 
 	M.lastattacker = user.real_name
 	M.lastattackerckey = user.ckey
-	M.fragger = WEAKREF(user)
+	//M.fragger = WEAKREF(user)
 	if(M.mind)
 		M.mind.attackedme[user.real_name] = world.time
 	if(!force)

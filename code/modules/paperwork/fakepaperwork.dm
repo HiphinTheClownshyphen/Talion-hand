@@ -843,6 +843,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	var/mob/gaffsigned = null
 	var/mob/signed = null
 	var/datum/job/jobthatcansign = null
+	var/triumph_award
 
 /obj/item/paper/political_PM/update_icon_state()
 	. = ..()
@@ -870,11 +871,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			if(signed)
 				addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
 				src.name = initial(name)
-				for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
-					if(claimed != src.name)
-						GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
-						triumph_effect()
-					return
+				if(triumph_award)
+					for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+						if(claimed != src.name)
+							GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
+							gaffsigned.adjust_triumphs(triumph_award)
+				return
 			return
 		if(istype(user.mind.assigned_role, jobthatcansign))
 			if(signed)
@@ -887,18 +889,16 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			if(gaffsigned)
 				addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
 				src.name = initial(name)
-				for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
-					if(claimed != src.name)
-						GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
-						triumph_effect()
-					return
+				if(triumph_award)
+					for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+						if(claimed != src.name)
+							GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
+							gaffsigned.adjust_triumphs(triumph_award)
+				return
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
 
 /obj/item/paper/political_PM/proc/contract_effect()
-	return
-
-/obj/item/paper/political_PM/proc/triumph_effect()
 	return
 
 /obj/item/paper/political_PM/Initialize()
@@ -917,6 +917,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	desc = ""
 	icon_state = "contractunsigned"
 	jobthatcansign = /datum/job/steward
+	triumph_award = 1
 
 /obj/item/paper/political_PM/guild_tax_exempt/Destroy()
 	if(signed)
@@ -928,9 +929,6 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(signed)
 		if(SStreasury.mercnotax == FALSE)
 			SStreasury.mercnotax = TRUE
-
-/obj/item/paper/political_PM/guild_tax_exempt/triumph_effect()
-	gaffsigned.adjust_triumphs(1)
 
 /obj/item/paper/political_PM/guild_tax_exempt/read(mob/user)
 	if(!user.client || !user.hud_used)
@@ -1179,11 +1177,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		if(signed)
 			addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
 			src.name = initial(name)
-			for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
-				if(claimed != src.name)
-					GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
-					triumph_effect()
-				return
+			if(triumph_award)
+				for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+					if(claimed != src.name)
+						GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
+						gaffsigned.adjust_triumphs(triumph_award)
+			return
 		return
 	if(istype(P, /obj/item/gold_prick))
 		var/obj/item/gold_prick/G = P
@@ -1206,11 +1205,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		if(gaffsigned)
 			addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
 			src.name = initial(name)
-			for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
-				if(claimed != src.name)
-					GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
-					triumph_effect()
-				return
+			if(triumph_award)
+				for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+					if(claimed != src.name)
+						GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
+						gaffsigned.adjust_triumphs(triumph_award)
 
 /obj/item/paper/political_PM/bloodseal/pre_attack(atom/A, mob/living/user, params)
 	if(isitem(A))
@@ -1299,13 +1298,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 /obj/item/paper/political_PM/bloodseal/exemptfromlaw
 	name = ""
 	jobthatcansign = /datum/job/lord
+	triumph_award = 2
 
 /obj/item/paper/political_PM/bloodseal/exemptfromlaw/contract_effect()
 	for(var/obj/structure/fake_machine/scomm/X as anything in SSroguemachine.scomm_machines)
 		X.getmerced()
-
-/obj/item/paper/political_PM/bloodseal/exemptfromlaw/triumph_effect()
-	gaffsigned.adjust_triumphs(2)
 
 /obj/item/paper/political_PM/bloodseal/exemptfromlaw/Destroy()
 	if(signed)
@@ -1340,85 +1337,18 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 /obj/item/paper/political_PM/bloodseal/exempt_from_cruelty
 	name = ""
+	jobthatcansign = /datum/job/priest
+	triumph_award = 2
 
-/obj/item/paper/political_PM/bloodseal/exempt_from_cruelty/attackby(obj/item/P, mob/living/carbon/human/user, params)
-	if(istype(P, /obj/item/flashlight/flare/torch))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			var/obj/item/flashlight/flare/torch/T = P
-			if(T.on && user.used_intent.type != INTENT_HARM  && signed)
-				bloodvodoo()
-				return
-	if(istype(P, /obj/item/candle))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			var/obj/item/candle/C = PANTS_LAYER
-			if(C.lit && user.used_intent.type != INTENT_HARM  && signed)
-				bloodvodoo()
-				return
-
-	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
-		if(!HAS_TRAIT(user, TRAIT_BURDEN))
-			to_chat(user, span_warning("I can't do anything with this."))
-			return
-		if(gaffsigned)
-			to_chat(user, span_warning("This is already signed"))
-			return
-		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
-		visible_message("[user] signs the contract")
-		gaffsigned = user
-		if(signed)
-			contract_effect()
-			triumph_effect()
-			//N/A need to add something to check if they've claimed these triumphs
-		return
-	if(istype(P, /obj/item/gold_prick))
-		var/obj/item/gold_prick/G = P
-		if(!is_inquisitor_job(user.mind.assigned_role) && !is_priest_job(user.mind.assigned_role))
-			to_chat(user, span_warning("I can't do anything with this."))
-			return
-		if(!G.blood)
-			to_chat(user, span_warning("The prick is dry."))
-			return
-		if(signed)
-			to_chat(user, span_warning("This is already signed"))
-			return
-		if(G.blood != user)
-			to_chat(user, span_warning("Nothing I write seems to stain the parchment."))
-			return
-		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
-		visible_message("[user] signs the contract")
-		signed = user
-		update_icon_state()
-		if(gaffsigned)
-			if(is_priest_job(user.mind.assigned_role))
-				addtimer(CALLBACK(src, PROC_REF(contract_effect), TRUE), 12 SECONDS)
-			else
-				addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
-			triumph_effect()
-
-
-/obj/item/paper/political_PM/bloodseal/exempt_from_cruelty/contract_effect(priestsigned = FALSE)
-	if(priestsigned)
-		for(var/obj/structure/fluff/statue/astrata/statue as anything in GLOB.astrata_statues)
-			statue.breaking = TRUE
-			statue.do_break()
-		return
-	for(var/obj/item/clothing/neck/psycross/cross as anything in GLOB.psycrosses)
-		cross.rotting = TRUE
-		cross.do_rot()
-
-/obj/item/paper/political_PM/bloodseal/exempt_from_cruelty/triumph_effect()
-	gaffsigned.adjust_triumphs(2)
+/obj/item/paper/political_PM/bloodseal/exempt_from_cruelty/contract_effect()
+	for(var/obj/structure/fluff/statue/astrata/statue as anything in GLOB.astrata_statues)
+		statue.breaking = TRUE
+		statue.do_break()
 
 /obj/item/paper/political_PM/bloodseal/exempt_from_cruelty/Destroy()
-	if(signed)
-		if(signed.mind.assigned_role == "Priest" || signed.mind.assigned_role == "Priestess")
-			for(var/obj/structure/fluff/statue/astrata/statue as anything in GLOB.astrata_statues)
-				statue.breaking = FALSE
-				statue.do_break()
-		else
-			for(var/obj/item/clothing/neck/psycross/cross as anything in GLOB.psycrosses)
-				cross.rotting = FALSE
-				cross.do_rot()
+	for(var/obj/structure/fluff/statue/astrata/statue as anything in GLOB.astrata_statues)
+		statue.breaking = FALSE
+		statue.do_break()
 	. = ..()
 
 
