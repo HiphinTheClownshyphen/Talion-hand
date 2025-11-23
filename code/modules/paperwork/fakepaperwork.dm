@@ -1286,14 +1286,22 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	var/mob/living/okay = signed
 	okay.emote("faint")
 	okay.Sleeping(12 SECONDS)
-	to_chat(okay, span_danger("Something something ooooh"))
-	sleep(2)
-	to_chat(okay, span_danger("Yarba diva da! hah!"))
-	sleep(3)
-	to_chat(okay, span_danger("Fortnite..."))
-	sleep(3)
-	to_chat(okay, span_danger("mhm yea..."))
+	var/time
+	var/static/list/yarba = list(
+		span_danger("Something something ooooh"),
+		span_danger("Yarba diva da! hah!"),
+		span_danger("Fortnite..."),
+		span_danger("mhm yea..."),
+		)
+	for(var/word in yarba)
+		time = time + 3
+		addtimer(CALLBACK(src, PROC_REF(restore_order_say), okay, word), time)
 	okay.apply_status_effect(/datum/status_effect/debuff/paperwork_dread)
+
+/obj/item/paper/political_PM/bloodseal/proc/restore_order_say(mob/living/H, worb)
+	if(!worb)
+		return
+	to_chat(H, worb)
 
 /obj/item/paper/political_PM/bloodseal/exemptfromlaw
 	name = ""
