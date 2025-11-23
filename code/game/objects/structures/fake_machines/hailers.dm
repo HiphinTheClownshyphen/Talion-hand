@@ -248,8 +248,7 @@
 		"Ggggg... GGGHH... Hhhk...",
 		"Paaaaff... Hhhheeee... hhhhhh...")
 	playsound(src, 'sound/surgery/organ2.ogg', 70, FALSE, ignore_walls = TRUE)
-	message = span_danger(message)
-	say(message)
+	say(span_danger(message))
 
 /obj/structure/fake_machine/hailerboard/inn_hailer_board/proc/infestation_death()
 	playsound(src, 'sound/combat/gib (1).ogg', 70, FALSE, ignore_walls = TRUE)
