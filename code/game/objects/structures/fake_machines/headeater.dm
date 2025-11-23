@@ -223,7 +223,7 @@
 		headeaterspread++
 		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
 		icon_state = ""
-		update_name()
+		update_appearance(UPDATE_NAME)
 		return
 
 /obj/structure/fake_machine/falseheadeater/update_name()
