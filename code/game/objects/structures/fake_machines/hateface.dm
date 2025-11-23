@@ -53,7 +53,7 @@
 				span_danger("HATE!!"),
 				)
 			for(var/word in mono_1)
-				time = time + 2
+				time = time + 3
 				addtimer(CALLBACK(src, PROC_REF(hate_monologue_say), word), time)
 				addtimer(CALLBACK(src, PROC_REF(monitorflick)), time)
 		if(2)
