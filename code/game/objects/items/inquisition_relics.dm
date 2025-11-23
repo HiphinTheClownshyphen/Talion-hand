@@ -1,7 +1,7 @@
 
 /obj/structure/closet/crate/chest/inqreliquary
 	name = "oratorium reliquary"
-	desc = "A foreboding red chest with a intricate lock design. It seems to only fit a very specific key. Choose wisely."
+	desc = "A foreboding red chest with an intricate lock design. It seems to only fit a very specific key. Choose wisely."
 	icon_state = "chestweird1"
 	base_icon_state = "chestweird1"
 
@@ -14,7 +14,7 @@
 // Reliquary Box and key - The Box Which contains these
 /obj/structure/reliquarybox
 	name = "oratorium reliquary"
-	desc = "A foreboding red chest with a intricate lock design. It seems to only fit a very specific key. Choose wisely."
+	desc = "A foreboding red chest with an intricate lock design. It seems to only fit a very specific key. Choose wisely."
 	icon = 'icons/roguetown/misc/structure.dmi'
 	icon_state = "chestweird1"
 	anchored = TRUE
@@ -195,7 +195,7 @@
 
 /atom/movable/screen/alert/status_effect/buff/censerbuff
 	name = "Inspired by Psydon."
-	desc = "The lingering blessing of Pyson tells me to ENDURE."
+	desc = "The lingering blessing of Psydon tells me to ENDURE."
 	icon_state = "censerbuff"
 
 /datum/status_effect/buff/censerbuff
@@ -882,7 +882,7 @@
 /obj/item/inqarticles/garrote/attacked_by(obj/item/I, mob/living/user)
 	. = ..()
 	if(istype(I, /obj/item/rope/inqarticles/inquirycord))
-		user.visible_message(span_warning("[user] starts to rethread the [src] using the [I]."))
+		user.visible_message(span_warning("[user] starts to rethread the [src] using \the [I]."))
 		if(do_after(user, 12 SECONDS, user))
 			qdel(I)
 			obj_broken = FALSE
@@ -955,7 +955,7 @@
 		user.changeNext_move(CLICK_CD_RESIST)	//Stops spam for choking.
 
 /obj/item/inqarticles/garrote/razor // To yische, who said not to give this out constantly, I respectfully disagree when it comes to assassin
-	name = "Profane Razor" // Its very not non lethal now.  Strangle your prey with glee
+	name = "Profane Razor" // It's very not non lethal now.  Strangle your prey with glee
 	desc = "A thin strand of phantom black wire strung between steel grasps. The grasps are cold to the touch, even through gloves, and the strand of wire, while appearing fragile, is seemingly unbreakable"
 	icon = 'icons/roguetown/items/misc.dmi'
 	icon_state = "garrote"

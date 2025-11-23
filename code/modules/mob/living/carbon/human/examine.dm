@@ -211,7 +211,7 @@
 				. += span_green("Ahh... my old friend!")
 
 			if(HAS_TRAIT(src, TRAIT_THIEVESGUILD) && HAS_TRAIT(user, TRAIT_THIEVESGUILD))
-				. += span_green("A member of the Thieves Guild.")
+				. += span_green("A member of the Thieves' Guild.")
 
 			if(HAS_TRAIT(src, TRAIT_MERCGUILD) && HAS_TRAIT(user, TRAIT_MERCGUILD))
 				. += span_green("A member of the Mercenary Guild.")

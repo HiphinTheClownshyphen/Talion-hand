@@ -4,7 +4,7 @@
 	domain = "God of Humenity, Dreams and Creation"
 	desc = "Deceased, slain by Necra in His final moments. She ripped His body apart to create The Ten... we must put Him back together again. Psydon lives on, He will return."
 	flaws = "Grudge-Holding, Judgemental, Self-Sacrificing"
-	worshippers = "Grenzelhofters, Inquisitors, Heroes"
+	worshippers = "Grenzelhoftians, Inquisitors, Heroes"
 	sins = "Apostasy, Demon Worship, Betraying thy Father"
 	boons = "None. His power is divided."
 	associated_faith = /datum/faith/psydon

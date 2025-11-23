@@ -305,7 +305,7 @@
 		to_chat(user, span_warning("It's already been signed."))
 		return
 	if(paired && !paired.full)
-		to_chat(user, span_warning("I should seperate [paired] from [src] before signing it."))
+		to_chat(user, span_warning("I should separate [paired] from [src] before signing it."))
 		return
 	if(sliptype != 2)
 		if(M != user)
