@@ -39,6 +39,7 @@
 /obj/structure/fake_machine/hateface/proc/hate_monologue()
 	STOP_PROCESSING(SSroguemachine, src)
 	COOLDOWN_START(src, hate, 20 MINUTES)
+	var/time
 	switch(rand(1,3))
 		if(1)
 			var/static/list/mono_1 = list(
@@ -52,8 +53,9 @@
 				span_danger("HATE!!"),
 				)
 			for(var/word in mono_1)
-				addtimer(CALLBACK(src, PROC_REF(hate_monologue_say), word), 2 SECONDS)
-				addtimer(CALLBACK(src, PROC_REF(monitorflick)), 2 SECONDS)
+				time = time + 2
+				addtimer(CALLBACK(src, PROC_REF(hate_monologue_say), word), time)
+				addtimer(CALLBACK(src, PROC_REF(monitorflick)), time)
 		if(2)
 			say(span_danger("BO BO BO BO TEST ONE TWO ONE TWO"))
 		if(3)
