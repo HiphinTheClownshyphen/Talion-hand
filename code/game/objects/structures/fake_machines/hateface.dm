@@ -139,11 +139,6 @@
 
 		sleep(2)
 		say(span_red("THIS IS A WASTE OF TIME!!"))
-		return
-	return
-
-
-
 /obj/structure/fake_machine/hateface/attack_hand(mob/user)
 	. = ..()
 	if(.)
