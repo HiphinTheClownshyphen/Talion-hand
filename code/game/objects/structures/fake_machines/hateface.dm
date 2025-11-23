@@ -52,9 +52,8 @@
 				span_danger("HATE!!"),
 				)
 			for(var/word in mono_1)
-				monitorflick()
-				say(word)
-				sleep(3 SECONDS)
+				addtimer(CALLBACK(src, PROC_REF(hate_monologue_say), word), 2 SECONDS)
+				addtimer(CALLBACK(src, PROC_REF(monitorflick)), 2 SECONDS)
 		if(2)
 			say(span_danger("BO BO BO BO TEST ONE TWO ONE TWO"))
 		if(3)
@@ -63,6 +62,11 @@
 
 	START_PROCESSING(SSroguemachine, src)
 	return
+
+/obj/structure/fake_machine/hateface/proc/hate_monologue_say(hate_words)
+	if(!hate_words)
+		return
+	say(hate_words)
 
 /obj/structure/fake_machine/hateface/proc/monitorflick()
 	cut_overlays()
@@ -136,9 +140,11 @@
 						return
 				say(span_danger("[WC.jobber.real_name] DOESN'T HAVE AN ACCOUNT!!"))
 			return
+		addtimer(CALLBACK(src, PROC_REF(uselessproc)), 2 SECONDS)
 
-		sleep(2)
-		say(span_red("THIS IS A WASTE OF TIME!!"))
+/obj/structure/fake_machine/hateface/proc/uselessproc()
+	say(span_red("THIS IS A WASTE OF TIME!!"))
+
 /obj/structure/fake_machine/hateface/attack_hand(mob/user)
 	. = ..()
 	if(.)
