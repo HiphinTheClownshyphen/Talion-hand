@@ -1294,7 +1294,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		span_danger("mhm yea..."),
 		)
 	for(var/word in yarba)
-		time = time + 3
+		time = time + 2
 		addtimer(CALLBACK(src, PROC_REF(restore_order_say), okay, word), time)
 	okay.apply_status_effect(/datum/status_effect/debuff/paperwork_dread)
 
