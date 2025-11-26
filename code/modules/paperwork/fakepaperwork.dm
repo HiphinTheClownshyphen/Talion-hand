@@ -20,6 +20,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	icon_state = "feather"
 
 /obj/item/gold_prick/attack_self(mob/living/user)
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		to_chat(user, span_warning("No matter how much effort I put into it, I just can't break skin. The tip is too dull!"))
+		return
 	user.flash_fullscreen("redflash3")
 	playsound(user, 'sound/combat/hits/bladed/genstab (1).ogg', 100, FALSE, -1)
 	visible_message(span_warning("[user] draws blood with the [src]"))
@@ -39,20 +42,22 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	user.changeNext_move(CLICK_CD_MELEE)
 	blood = null
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
-		to_chat(user, span_warning("I pinch the end of the prick and trace my fingers up along it's length, until the only blood left is on my fingers."))
+		to_chat(user, span_warning("I pinch the end of the prick and trace my fingers up along it's length, until the only blood left is on my fingers. It dissipates with a quiet gurgle, it was never blood."))
 		playsound(src, 'sound/magic/enter_blood.ogg', 30, FALSE, ignore_walls = FALSE)
 		user.add_stress(/datum/stress_event/ring_madness)
 		update_icon_state()
 		return
-	to_chat(user, span_warning("I wipe off the prick"))
+	to_chat(user, span_warning("I wipe off the [src]"))
 	update_icon_state()
 
 /obj/item/gold_prick/examine(mob/user)
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		. = "An odious gimmick. Once the tip meets a willing edge, it drips it's false blood in meek charade. The tepid pain the body remembers is the bind and sigil." //pretentious and sucks. Change later
+	else if(is_gaffer_assistant_job(user.mind.assigned_role))
 		. = ""
-	if(is_gaffer_assistant_job(user.mind.assigned_role))
+	else if(HAS_TRAIT(user, TRAIT_NOBLE))
 		. = ""
-	if(HAS_TRAIT(user, TRAIT_NOBLE))
+	else
 		. = ""
 	if(HAS_TRAIT(user, TRAIT_SEEPRICES))
 		. += "<span class='info'>value: Worthless.</span>"
@@ -559,6 +564,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	icon_state = "contractunsigned" //N/A this one should have a unique sprite
 	var/mob/living/signed = null
 	var/mob/living/adressedto = null
+	var/coolness = 5
 
 /obj/item/paper/merc_autograph/Initialize()
 	switch(rand(1,2))
@@ -592,6 +598,10 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
 	if(in_range(user, src) || isobserver(user))
+		if(adressedto == user)
+			if(coolness > 0)
+				user.add_stress(/datum/stress_event/autograph_fangirl_1)
+				coolness--
 		user.hud_used.reads.icon_state = "scroll"
 		user.hud_used.reads.show()
 		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -647,6 +657,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			//to_chat(user, span_warning("I'm uhh...not famous enough for this type of thing."))
 			//return
 
+/*
 /obj/item/paper/merc_autograph/examine(mob/user)
 	. = ..()
 	if(!signed)
@@ -664,7 +675,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		//if(Erenown >= 7)
 			//user.add_stress(/datum/stressevent/autograph_fangirl_3)
 			//return
-
+*/
 
 /obj/item/paper/merc_will //don't look now, but this whole thing is a ploy to make adventurers and mercs keep their money in the banks so they actually contribute to capital
 	name = "Mercenary Service Risk Mitigation and Final Testament Agreement"
