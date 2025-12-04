@@ -107,7 +107,6 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			signeejob = user.mind.assigned_role.get_informed_title(user)
 			visible_message(span_warning("[user] writes [user.p_their()] name on [src]."))
 			playsound(src, 'sound/items/write.ogg', 100, FALSE)
-			return
 
 /obj/item/paper/merc_contract
 	name = "Covenant of Mercenary Service and Operational Commitments"
@@ -198,32 +197,32 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [signedmerc.real_name] (HEREAFTER REFERRED TO AS OUR CHAMPION), \
-			AND THE MERCENARY GUILD (HEREAFTER REFERRED TO AS THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH)<BR>WITNESSETH:<BR>WHEREAS, OUR CHAMPION IS A NATURAL BORN HUMEN OR HUMENOID, POSSESSING SKILLS OF; PHYSICAL STRENGTH, NIMBLE DEXTERITY, UNBREAKING CONSITUTION AND OR EXCELING IN FIELDS OF PHYSICALLY DEMANDING LABOUR.  UPON WHICH HE/SHE/PREFERRED-IDENTITY-PROVIDE  CAN AID THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH, \
-			WHO SEEKS TO CONTRIBUTE IN THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH.<BR>WHEREAS, THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AGREES TO UNCONDITIONALLY PROVIDE PAYMENT, AND BENEFITS, WORTHY AND ACCEPTABLE TO OUR CHAMPION, \
-			IN EXCHANGE FOR CONTINIOUS COOPERATION.<BR>NOW THEREFORE IN CONSIDERATION OF THE MUTUAL COVENANTS HEREIN CONTAINED, AND OTHER GOOD AND VALUABLE CONSIDERATION, THE PARTIES HERETO MUTUALLY AGREE AS FOLLOWS:\
-			<BR>IN EXCHANGE FOR PALTRY PAYMENTS AND BENEFITS, OUR CHAMPION AGREES TO KEEP THEIR WORK EXCLUSIVELY PROVIDED AND CHOSEN BY THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH REPRESENTETIVE (REFERRED TO AS WHELP DESPITE LACK OF MENTION HEREAFTER), \
-			FOR THE REMAINDER OF HIS OR HER OR PREFERRED-IDENTITY-PROVIDE CURRENT LIFE.  PROVIDED OUR CHAMPION REMAIN IN DESIRE TO WORK FOR  THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AND WITHOUT THE LAWFUL  EVISCERATION OF THE AGREEMENT STRUCK HEREIN THIS PARCHMENT.<BR> \
-			<BR>SIGNED,<BR><i>[signedmerc.real_name]</i>" //this conracts sucks, it doesn't even fit the time period but god I am not in the mood to write a contract, call this a place holder
-		if(is_gaffer_assistant_job(user.mind.assigned_role))
-			info += ""
-		else
-			info += ""
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [signedmerc.real_name] (HEREAFTER REFERRED TO AS OUR CHAMPION), \
+		AND THE MERCENARY GUILD (HEREAFTER REFERRED TO AS THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH)<BR>WITNESSETH:<BR>WHEREAS, OUR CHAMPION IS A NATURAL BORN HUMEN OR HUMENOID, POSSESSING SKILLS OF; PHYSICAL STRENGTH, NIMBLE DEXTERITY, UNBREAKING CONSITUTION AND OR EXCELING IN FIELDS OF PHYSICALLY DEMANDING LABOUR.  UPON WHICH HE/SHE/PREFERRED-IDENTITY-PROVIDE  CAN AID THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH, \
+		WHO SEEKS TO CONTRIBUTE IN THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH.<BR>WHEREAS, THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AGREES TO UNCONDITIONALLY PROVIDE PAYMENT, AND BENEFITS, WORTHY AND ACCEPTABLE TO OUR CHAMPION, \
+		IN EXCHANGE FOR CONTINIOUS COOPERATION.<BR>NOW THEREFORE IN CONSIDERATION OF THE MUTUAL COVENANTS HEREIN CONTAINED, AND OTHER GOOD AND VALUABLE CONSIDERATION, THE PARTIES HERETO MUTUALLY AGREE AS FOLLOWS:\
+		<BR>IN EXCHANGE FOR PALTRY PAYMENTS AND BENEFITS, OUR CHAMPION AGREES TO KEEP THEIR WORK EXCLUSIVELY PROVIDED AND CHOSEN BY THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH REPRESENTETIVE (REFERRED TO AS WHELP DESPITE LACK OF MENTION HEREAFTER), \
+		FOR THE REMAINDER OF HIS OR HER OR PREFERRED-IDENTITY-PROVIDE CURRENT LIFE.  PROVIDED OUR CHAMPION REMAIN IN DESIRE TO WORK FOR  THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AND WITHOUT THE LAWFUL  EVISCERATION OF THE AGREEMENT STRUCK HEREIN THIS PARCHMENT.<BR> \
+		<BR>SIGNED,<BR><i>[signedmerc.real_name]</i>" //this conracts sucks, it doesn't even fit the time period but god I am not in the mood to write a contract, call this a place holder
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		info += ""
+	else
+		info += ""
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
+
 
 /obj/item/paper/merc_contract/Destroy()
 	if(signedmerc)
@@ -289,33 +288,31 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [signedmerc.real_name] (HEREAFTER REFERRED TO AS OUR BENEFICIARY), \
-				AND THE MERCENARY GUILD (HEREAFTER REFERRED TO AS THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH)<BR>WITNESSETH:<BR>WHEREAS, OUR BENEFICIARY IS A NATURAL BORN HUMEN OR HUMENOID, POSSESSING SKILLS UPON WHICH HE/SHE/PREFERRED-IDENTITY-PROVIDE  CAN AID THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH, \
-				WHO SEEKS TO CONTRIBUTE IN THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH.<BR>WHEREAS, THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AGREES TO UNCONDITIONALLY PROVIDE PAYMENT, AND BENEFITS, WORTHY AND ACCEPTABLE TO OUR BENEFICIARY, \
-				IN EXCHANGE FOR CONTINIOUS COOPERATION.<BR>NOW THEREFORE IN CONSIDERATION OF THE MUTUAL COVENANTS HEREIN CONTAINED, AND OTHER GOOD AND VALUABLE CONSIDERATION, THE PARTIES HERETO MUTUALLY AGREE AS FOLLOWS:\
-				<BR>IN EXCHANGE FOR PALTRY PAYMENTS AND BENEFITS, OUR BENEFICIARY AGREES TO KEEP THEIR WORK EXCLUSIVELY IN BENEFIT TO THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH REPRESENTETIVE (REFERRED TO AS WHELP DESPITE LACK OF MENTION HEREAFTER), \
-				FOR THE REMAINDER OF HIS OR HER OR PREFERRED-IDENTITY-PROVIDE CURRENT LIFE.  PROVIDED OUR BENEFICIARY REMAIN IN DESIRE TO WORK FOR  THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AND WITHOUT THE LAWFUL  EVISCERATION OF THE AGREEMENT STRUCK HEREIN THIS PARCHMENT.<BR> \
-				<BR>SIGNED,<BR><i>[signedmerc.real_name]</i>" //still sucks. refer to above
-		if(is_gaffer_assistant_job(user.mind.assigned_role))
-			info += ""
-		else
-			info += ""
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
-
+	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [signedmerc.real_name] (HEREAFTER REFERRED TO AS OUR BENEFICIARY), \
+			AND THE MERCENARY GUILD (HEREAFTER REFERRED TO AS THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH)<BR>WITNESSETH:<BR>WHEREAS, OUR BENEFICIARY IS A NATURAL BORN HUMEN OR HUMENOID, POSSESSING SKILLS UPON WHICH HE/SHE/PREFERRED-IDENTITY-PROVIDE  CAN AID THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH, \
+			WHO SEEKS TO CONTRIBUTE IN THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH.<BR>WHEREAS, THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AGREES TO UNCONDITIONALLY PROVIDE PAYMENT, AND BENEFITS, WORTHY AND ACCEPTABLE TO OUR BENEFICIARY, \
+			IN EXCHANGE FOR CONTINIOUS COOPERATION.<BR>NOW THEREFORE IN CONSIDERATION OF THE MUTUAL COVENANTS HEREIN CONTAINED, AND OTHER GOOD AND VALUABLE CONSIDERATION, THE PARTIES HERETO MUTUALLY AGREE AS FOLLOWS:\
+			<BR>IN EXCHANGE FOR PALTRY PAYMENTS AND BENEFITS, OUR BENEFICIARY AGREES TO KEEP THEIR WORK EXCLUSIVELY IN BENEFIT TO THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH REPRESENTETIVE (REFERRED TO AS WHELP DESPITE LACK OF MENTION HEREAFTER), \
+			FOR THE REMAINDER OF HIS OR HER OR PREFERRED-IDENTITY-PROVIDE CURRENT LIFE.  PROVIDED OUR BENEFICIARY REMAIN IN DESIRE TO WORK FOR  THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AND WITHOUT THE LAWFUL  EVISCERATION OF THE AGREEMENT STRUCK HEREIN THIS PARCHMENT.<BR> \
+			<BR>SIGNED,<BR><i>[signedmerc.real_name]</i>" //still sucks. refer to above
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		info += ""
+	else
+		info += ""
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/merc_work_onetime //this whole shpeal is unintuitive on purpose, we are laying the groundwork for people not paying their debt and having their assets siezed
 	name = "One-Time Service and Engagement Agreement" //the actual UI for this sucking isn't part of it though

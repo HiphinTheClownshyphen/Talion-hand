@@ -660,7 +660,7 @@
 /obj/item/clothing/neck/tyrants_chain/equipped(mob/user, slot)
 	. = ..()
 	innkeep = user
-	START_PROCESSING(SSdcs, src)
+	START_PROCESSING(SSobj, src)
 
 /obj/item/clothing/neck/tyrants_chain/dropped(mob/user)
 	. = ..()

@@ -471,7 +471,7 @@
 /obj/item/clothing/ring/weepers_boon/equipped(mob/user, slot)
 	. = ..()
 	merchant = user
-	START_PROCESSING(SSdcs, src)
+	START_PROCESSING(SSobj, src)
 
 /obj/item/clothing/ring/weepers_boon/dropped(mob/user)
 	. = ..()
