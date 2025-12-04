@@ -113,15 +113,16 @@
 			else
 				say(span_danger("IT'S MISSING SOME THINGS."))
 			if(WO.jobber && WO.payment)
-				if(WO.jobber in SStreasury.bank_accounts)
+				var/mob/jobberref = WO.jobber.resolve()
+				if(jobberref in SStreasury.bank_accounts)
 					var/paycheck1 = SStreasury.bank_accounts[WO.jobber]
 					if(WO.payment > paycheck1)
-						say(span_danger("[WO.jobber.real_name] ONLY HAS [paycheck1] IN THEIR ACCOUNT AND CAN'T PAY THE AGREED [WO.payment]!!"))
+						say(span_danger("[jobberref.real_name] ONLY HAS [paycheck1] IN THEIR ACCOUNT AND CAN'T PAY THE AGREED [WO.payment]!!"))
 						return
 					else
 						say(span_danger("THEY CAN AFFORD TO PAY... FOR NOW!!"))
 						return
-				say(span_danger("[WO.jobber.real_name] DOESN'T HAVE AN ACCOUNT!!"))
+				say(span_danger("[jobberref.real_name] DOESN'T HAVE AN ACCOUNT!!"))
 			return
 
 		if(istype(I, /obj/item/paper/merc_work_conti))
@@ -131,15 +132,16 @@
 			else
 				say(span_danger("IT'S MISSING SOME THINGS."))
 			if(WC.jobber && WC.payment)
-				if(WC.jobber in SStreasury.bank_accounts)
+				var/mob/jobberref = WC.jobber.resolve()
+				if(jobberref in SStreasury.bank_accounts)
 					var/paycheck2 = SStreasury.bank_accounts[WC.jobber]
 					if(WC.payment * WC.worktime > paycheck2)
-						say(span_danger("[WC.jobber.real_name] ONLY HAS [paycheck2] IN THEIR ACCOUNT AND CAN'T PAY THE AGREED [WC.payment] TOTAL!!"))
+						say(span_danger("[jobberref.real_name] ONLY HAS [paycheck2] IN THEIR ACCOUNT AND CAN'T PAY THE AGREED [WC.payment] TOTAL!!"))
 						return
 					else
 						say(span_danger("THEY CAN AFFORD TO PAY... FOR NOW!!"))
 						return
-				say(span_danger("[WC.jobber.real_name] DOESN'T HAVE AN ACCOUNT!!"))
+				say(span_danger("[jobberref.real_name] DOESN'T HAVE AN ACCOUNT!!"))
 			return
 		addtimer(CALLBACK(src, PROC_REF(uselessproc)), 2 SECONDS)
 

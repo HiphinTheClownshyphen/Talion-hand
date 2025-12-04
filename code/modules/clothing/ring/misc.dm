@@ -466,25 +466,26 @@
 	desc = "The wearer is a proud member of the Makers' guild."
 	icon_state = "weepers_boon"
 	sellprice = 0
-	var/mob/merchant
+	var/datum/weakref/merchant
 
 /obj/item/clothing/ring/weepers_boon/equipped(mob/user, slot)
 	. = ..()
-	merchant = user
+	merchant = WEAKREF(user)
 	START_PROCESSING(SSobj, src)
 
 /obj/item/clothing/ring/weepers_boon/dropped(mob/user)
 	. = ..()
 	merchant = null
-	STOP_PROCESSING(SSdcs, src)
+	STOP_PROCESSING(SSobj, src)
 
 /obj/item/clothing/ring/weepers_boon/process()
 	. = ..()
-	if(!isliving(merchant))
+	var/mob/themerchant = merchant.resolve()
+	if(!isliving(themerchant))
 		return
-	if(!merchant.client && !merchant.ckey)
+	if(!themerchant.client && !themerchant.ckey)
 		return
 	if(prob(5))
 		var/text = pick("")
-		to_chat(merchant, span_danger(text))
+		to_chat(themerchant, span_danger(text))
 		//merchant.user.add_stress(/datum/stress_event/weepersring)

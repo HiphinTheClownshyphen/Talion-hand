@@ -109,16 +109,17 @@
 				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
 				say("This contract is unfinished!")
 				return
-			if(WC.jobber in SStreasury.bank_accounts)
-				var/amt = SStreasury.bank_accounts[WC.jobber]
+			var/mob/jobberref = WC.jobber.resolve()
+			if(jobberref in SStreasury.bank_accounts)
+				var/amt = SStreasury.bank_accounts[jobberref]
 				if(amt < WC.payment)
 					playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-					say("[WC.jobber.real_name] does not have enough funds to pay for this contract.")
+					say("[jobberref.real_name] does not have enough funds to pay for this contract.")
 					return
 				budget2change(WC.payment, user)
 				return
 			playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-			say("[WC.jobber.real_name] does not have an account.")
+			say("[jobberref.real_name] does not have an account.")
 			return
 		if(istype(P, /obj/item/paper/merc_work_conti/))
 			var/obj/item/paper/merc_work_conti/CW = P
@@ -134,17 +135,18 @@
 				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
 				say("The payment cycle is not in effect.")
 				return
-			if(CW.jobber in SStreasury.bank_accounts)
-				var/amt2 = SStreasury.bank_accounts[CW.jobber]
+			var/mob/jobberref = CW.jobber.resolve()
+			if(jobberref in SStreasury.bank_accounts)
+				var/amt2 = SStreasury.bank_accounts[jobberref]
 				if(amt2 < CW.payment)
 					playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-					say("[CW.jobber.real_name] does not have enough funds to pay for this contract.")
+					say("[jobberref.real_name] does not have enough funds to pay for this contract.")
 					return
 				budget2change(CW.payment, user)
 				CW.worktime--
 				return
 			playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-			say("[CW.jobber.real_name] does not have an account.")
+			say("[jobberref.real_name] does not have an account.")
 			return
 		if(istype(P, /obj/item/paper/merc_will/adven_will))
 			var/obj/item/paper/merc_will/adven_will/AW = P

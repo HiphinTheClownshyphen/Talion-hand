@@ -10,7 +10,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	icon = 'icons/roguetown/items/natural.dmi'
 	w_class = WEIGHT_CLASS_TINY
 	slot_flags = ITEM_SLOT_MOUTH //putting pricks in your mouth might be fun for a bit, just don't go on that second date.
-	var/mob/living/blood
+	var/datum/weakref/blood
 
 /obj/item/gold_prick/update_icon_state()
 	. = ..()
@@ -29,7 +29,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(HAS_TRAIT(user, TRAIT_NOBLE) && !HAS_TRAIT(user, TRAIT_NOPAIN))
 		user.emote("painscream")
 		to_chat(user, span_warning("THAT BURNS!!"))
-	blood = user
+	blood = WEAKREF(user)
 	update_icon_state()
 	addtimer(CALLBACK(src, PROC_REF(clear_blood)), 1 MINUTES)
 
@@ -112,12 +112,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	name = "Covenant of Mercenary Service and Operational Commitments"
 	icon_state = "contractunsigned"
 	var/signed = FALSE
-	var/mob/living/signedmerc = null
+	var/datum/weakref/signedmerc
 	COOLDOWN_DECLARE(recallcool)
 
 /obj/item/paper/merc_contract/Initialize(new_employee)
 	if(new_employee)
-		signedmerc = new_employee
+		signedmerc = WEAKREF(new_employee)
 		signed = TRUE
 	. = ..()
 
@@ -157,7 +157,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			visible_message("[user] ratifies the contract")
 			signed = TRUE
 			if(signedmerc)
-				ADD_TRAIT(signedmerc, TRAIT_MERCGUILD, type)
+				var/mob/merc = signedmerc.resolve()
+				ADD_TRAIT(merc, TRAIT_MERCGUILD, type)
 			update_appearance(UPDATE_ICON_STATE)
 			return
 
@@ -168,9 +169,10 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			to_chat(user, span_warning("I don't know what I'm agreeing too..."))
 		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 		visible_message("[user] signs the contract")
-		signedmerc = user
+		signedmerc = WEAKREF(user)
 		if(signed)
-			ADD_TRAIT(signedmerc, TRAIT_MERCGUILD, type)
+			var/mob/merc = signedmerc.resolve()
+			ADD_TRAIT(merc, TRAIT_MERCGUILD, type)
 
 
 /obj/item/paper/merc_contract/examine(mob/user)
@@ -182,7 +184,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		. += "A lesser pact with the HEADEATER, whenever I dim my eyes and gaze again at the words, they change in some way, never enough to be meaningful, never enough to be ignored."
 		user.add_stress(/datum/stress_event/ring_madness)
 		return
-	if(signedmerc.stat == DEAD)
+	var/mob/merc = signedmerc.resolve()
+	if(merc.stat == DEAD)
 		var/loldied = pick("Dirty", "Cold", "Scabby", "Stiff", "Limp", "Rotted", "Mutilated", "Pallid", "Withered")
 		. += "I can still see the skin shivering, it is [loldied]"
 		return
@@ -200,13 +203,17 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
-		info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [signedmerc.real_name] (HEREAFTER REFERRED TO AS OUR CHAMPION), \
-		AND THE MERCENARY GUILD (HEREAFTER REFERRED TO AS THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH)<BR>WITNESSETH:<BR>WHEREAS, OUR CHAMPION IS A NATURAL BORN HUMEN OR HUMENOID, POSSESSING SKILLS OF; PHYSICAL STRENGTH, NIMBLE DEXTERITY, UNBREAKING CONSITUTION AND OR EXCELING IN FIELDS OF PHYSICALLY DEMANDING LABOUR.  UPON WHICH HE/SHE/PREFERRED-IDENTITY-PROVIDE  CAN AID THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH, \
-		WHO SEEKS TO CONTRIBUTE IN THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH.<BR>WHEREAS, THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AGREES TO UNCONDITIONALLY PROVIDE PAYMENT, AND BENEFITS, WORTHY AND ACCEPTABLE TO OUR CHAMPION, \
-		IN EXCHANGE FOR CONTINIOUS COOPERATION.<BR>NOW THEREFORE IN CONSIDERATION OF THE MUTUAL COVENANTS HEREIN CONTAINED, AND OTHER GOOD AND VALUABLE CONSIDERATION, THE PARTIES HERETO MUTUALLY AGREE AS FOLLOWS:\
-		<BR>IN EXCHANGE FOR PALTRY PAYMENTS AND BENEFITS, OUR CHAMPION AGREES TO KEEP THEIR WORK EXCLUSIVELY PROVIDED AND CHOSEN BY THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH REPRESENTETIVE (REFERRED TO AS WHELP DESPITE LACK OF MENTION HEREAFTER), \
-		FOR THE REMAINDER OF HIS OR HER OR PREFERRED-IDENTITY-PROVIDE CURRENT LIFE.  PROVIDED OUR CHAMPION REMAIN IN DESIRE TO WORK FOR  THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AND WITHOUT THE LAWFUL  EVISCERATION OF THE AGREEMENT STRUCK HEREIN THIS PARCHMENT.<BR> \
-		<BR>SIGNED,<BR><i>[signedmerc.real_name]</i>" //this conracts sucks, it doesn't even fit the time period but god I am not in the mood to write a contract, call this a place holder
+		var/merc = "_________"
+		if(signedmerc)
+			var/mob/mercref = signedmerc.resolve()
+			merc = mercref.real_name
+		info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [merc] (HEREAFTER REFERRED TO AS OUR CHAMPION), \
+			AND THE MERCENARY GUILD (HEREAFTER REFERRED TO AS THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH)<BR>WITNESSETH:<BR>WHEREAS, OUR CHAMPION IS A NATURAL BORN HUMEN OR HUMENOID, POSSESSING SKILLS OF; PHYSICAL STRENGTH, NIMBLE DEXTERITY, UNBREAKING CONSITUTION AND OR EXCELING IN FIELDS OF PHYSICALLY DEMANDING LABOUR.  UPON WHICH HE/SHE/PREFERRED-IDENTITY-PROVIDE  CAN AID THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH, \
+			WHO SEEKS TO CONTRIBUTE IN THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH.<BR>WHEREAS, THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AGREES TO UNCONDITIONALLY PROVIDE PAYMENT, AND BENEFITS, WORTHY AND ACCEPTABLE TO OUR CHAMPION, \
+			IN EXCHANGE FOR CONTINIOUS COOPERATION.<BR>NOW THEREFORE IN CONSIDERATION OF THE MUTUAL COVENANTS HEREIN CONTAINED, AND OTHER GOOD AND VALUABLE CONSIDERATION, THE PARTIES HERETO MUTUALLY AGREE AS FOLLOWS:\
+			<BR>IN EXCHANGE FOR PALTRY PAYMENTS AND BENEFITS, OUR CHAMPION AGREES TO KEEP THEIR WORK EXCLUSIVELY PROVIDED AND CHOSEN BY THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH REPRESENTETIVE (REFERRED TO AS WHELP DESPITE LACK OF MENTION HEREAFTER), \
+			FOR THE REMAINDER OF HIS OR HER OR PREFERRED-IDENTITY-PROVIDE CURRENT LIFE.  PROVIDED OUR CHAMPION REMAIN IN DESIRE TO WORK FOR  THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AND WITHOUT THE LAWFUL  EVISCERATION OF THE AGREEMENT STRUCK HEREIN THIS PARCHMENT.<BR> \
+			<BR>SIGNED,<BR><i>[merc]</i>" //this conracts sucks, it doesn't even fit the time period but god I am not in the mood to write a contract, call this a place holder
 	if(is_gaffer_assistant_job(user.mind.assigned_role))
 		info += ""
 	else
@@ -226,9 +233,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 /obj/item/paper/merc_contract/Destroy()
 	if(signedmerc)
-		REMOVE_TRAIT(signedmerc, TRAIT_MERCGUILD, type)
-		to_chat(signedmerc, span_warning("in a blink, it was as if the world's joy was dimmed. The songs of birds, The sounds of children playing, they grew distant, hard to notice. As if the monotony of life muffled the song of wonder... or maybe, I just became unemployed."))
-		signedmerc.apply_status_effect(/datum/status_effect/debuff/unemployed)
+		var/mob/merc = signedmerc.resolve()
+		REMOVE_TRAIT(merc, TRAIT_MERCGUILD, type)
+		if(isliving(merc))
+			var/mob/living/livingmerc = merc
+			to_chat(livingmerc, span_warning("in a blink, it was as if the world's joy was dimmed. The songs of birds, The sounds of children playing, they grew distant, hard to notice. As if the monotony of life muffled the song of wonder... or maybe, I just became unemployed."))
+			livingmerc.apply_status_effect(/datum/status_effect/debuff/unemployed)
 	. = ..()
 
 /obj/item/paper/merc_contract/proc/bloodvodoo(mob/user)
@@ -244,16 +254,17 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		qdel(src)
 		return
 	if(fuckitupterry == "Recall Champion")
+		var/mob/merc = signedmerc.resolve()
 		if(!COOLDOWN_FINISHED(src, recallcool))
 			to_chat(user, "")
 			return
-		if(!isliving(signedmerc) || signedmerc.stat == UNCONSCIOUS)
+		if(!isliving(merc) || merc.stat == UNCONSCIOUS)
 			to_chat(user, "")
 			return
-		if(!signedmerc.client && !signedmerc.ckey)
+		if(!merc.client && !merc.ckey)
 			to_chat(user, "")
 			return
-		to_chat(signedmerc, span_warning("a gentle warmth spreads into my soul, beckoning me closer to the place I find rest...")) //not too obvious
+		to_chat(merc, span_warning("a gentle warmth spreads into my soul, beckoning me closer to the place I find rest...")) //not too obvious
 		//playsoound_local(signedmerc, '')
 		//N/A sound here would be neat
 		COOLDOWN_START(src, recallcool, 10 MINUTES)
@@ -291,13 +302,17 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
-		info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [signedmerc.real_name] (HEREAFTER REFERRED TO AS OUR BENEFICIARY), \
+		var/merc = "_________"
+		if(signedmerc)
+			var/mob/mercref = signedmerc.resolve()
+			merc = mercref.real_name
+		info += "THIS AGREEMENT IS MADE AND ENTERED INTO AS OF THE DATE OF LAST SIGNATURE BELOW, BY AND BETWEEN [merc] (HEREAFTER REFERRED TO AS OUR BENEFICIARY), \
 			AND THE MERCENARY GUILD (HEREAFTER REFERRED TO AS THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH)<BR>WITNESSETH:<BR>WHEREAS, OUR BENEFICIARY IS A NATURAL BORN HUMEN OR HUMENOID, POSSESSING SKILLS UPON WHICH HE/SHE/PREFERRED-IDENTITY-PROVIDE  CAN AID THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH, \
 			WHO SEEKS TO CONTRIBUTE IN THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH.<BR>WHEREAS, THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AGREES TO UNCONDITIONALLY PROVIDE PAYMENT, AND BENEFITS, WORTHY AND ACCEPTABLE TO OUR BENEFICIARY, \
 			IN EXCHANGE FOR CONTINIOUS COOPERATION.<BR>NOW THEREFORE IN CONSIDERATION OF THE MUTUAL COVENANTS HEREIN CONTAINED, AND OTHER GOOD AND VALUABLE CONSIDERATION, THE PARTIES HERETO MUTUALLY AGREE AS FOLLOWS:\
 			<BR>IN EXCHANGE FOR PALTRY PAYMENTS AND BENEFITS, OUR BENEFICIARY AGREES TO KEEP THEIR WORK EXCLUSIVELY IN BENEFIT TO THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH REPRESENTETIVE (REFERRED TO AS WHELP DESPITE LACK OF MENTION HEREAFTER), \
 			FOR THE REMAINDER OF HIS OR HER OR PREFERRED-IDENTITY-PROVIDE CURRENT LIFE.  PROVIDED OUR BENEFICIARY REMAIN IN DESIRE TO WORK FOR  THE SOVEREIGN BROTHERHOOD OF GLORY AND WEALTH AND WITHOUT THE LAWFUL  EVISCERATION OF THE AGREEMENT STRUCK HEREIN THIS PARCHMENT.<BR> \
-			<BR>SIGNED,<BR><i>[signedmerc.real_name]</i>" //still sucks. refer to above
+			<BR>SIGNED,<BR><i>[merc]</i>" //still sucks. refer to above
 	if(is_gaffer_assistant_job(user.mind.assigned_role))
 		info += ""
 	else
@@ -322,8 +337,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	var/jobsdone = FALSE
 	var/thejob = null
 	var/payment = null
-	var/mob/living/jobber = null
-	var/mob/living/jobed = null
+	var/datum/weakref/jobber
+	var/datum/weakref/jobed
 
 /obj/item/paper/merc_work_onetime/read(mob/user)
 	if(!user.client || !user.hud_used)
@@ -389,7 +404,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				if(jobber)
 					to_chat(user, span_warning("This section has already been filled."))
 					return
-				jobber = user
+				jobber = WEAKREF(user)
 			if("Employee signature")
 				if(!HAS_TRAIT(user, TRAIT_MERCGUILD))
 					to_chat(user, span_warning("I don't even work for the guild!"))
@@ -397,7 +412,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				if(jobed)
 					to_chat(user, span_warning("This section has already been filled."))
 					return
-				jobed = user
+				jobed = WEAKREF(user)
 			if("Job details")
 				if(thejob)
 					to_chat(user, span_warning("This section has already been filled."))
@@ -422,13 +437,14 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				if(!(thejob || jobed || signed || jobber || payment))
 					to_chat(user, span_warning("This contract isn't even filled."))
 					return
-				if(user != jobber || !(HAS_TRAIT(user, TRAIT_BURDEN) && is_gaffer_assistant_job(user.mind.assigned_role))) //will there ever be an issue with this and the changelings, I don't know
+				var/mob/jobberref = jobber.resolve()
+				if(user != jobberref || !(HAS_TRAIT(user, TRAIT_BURDEN) && is_gaffer_assistant_job(user.mind.assigned_role))) //will there ever be an issue with this and the changelings, I don't know
 					to_chat(user, span_warning("This isn't mine to sign off"))
 					return
 				jobsdone = TRUE
 		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 		visible_message("[user] writes on the contract")
-		update_icon_state()
+		update_appearance(UPDATE_ICON_STATE)
 
 /obj/item/paper/merc_work_conti
 	name = "Continuous Engagement and Service Agreement"
@@ -439,8 +455,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	var/payment = null
 	var/worktime = null
 	var/daycount = null
-	var/mob/living/jobber = null
-	var/mob/living/jobed = null
+	var/datum/weakref/jobber = null
+	var/datum/weakref/jobed = null
 
 /obj/item/paper/merc_work_conti/read(mob/user)
 	if(!user.client || !user.hud_used)
@@ -505,7 +521,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				if(jobber)
 					to_chat(user, span_warning("This section has already been filled."))
 					return
-				jobber = user
+				jobber = WEAKREF(user)
 			if("Employee signature")
 				if(!HAS_TRAIT(user, TRAIT_MERCGUILD))
 					to_chat(user, span_warning("I don't even work for the guild!"))
@@ -513,7 +529,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				if(jobed)
 					to_chat(user, span_warning("This section has already been filled."))
 					return
-				jobed = user
+				jobed = WEAKREF(user)
 			if("Job details")
 				if(thejob)
 					to_chat(user, span_warning("This section has already been filled."))
@@ -543,7 +559,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				signed = TRUE
 		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 		visible_message("[user] writes on the contract")
-		update_icon_state()
+		update_appearance(UPDATE_ICON_STATE)
 
 /*/obj/item/merc_asset_steal //not sure about this one yet
 	name = ""
@@ -557,8 +573,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	name = ""
 	desc = ""
 	icon_state = "contractunsigned" //N/A this one should have a unique sprite
-	var/mob/living/signed = null
-	var/mob/living/adressedto = null
+	var/datum/weakref/signed
+	var/datum/weakref/adressedto
 	var/coolness = 5
 
 /obj/item/paper/merc_autograph/Initialize()
@@ -594,10 +610,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
-	if(adressedto == user)
-		if(coolness > 0)
-			user.add_stress(/datum/stress_event/autograph_fangirl_1)
-			coolness--
+	if(adressedto)
+		var/mob/adressedtoref  = adressedto.resolve()
+		if(adressedtoref == user)
+			if(coolness > 0)
+				user.add_stress(/datum/stress_event/autograph_fangirl_1)
+				coolness--
 	user.hud_used.reads.icon_state = "scroll"
 	user.hud_used.reads.show()
 	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -605,7 +623,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				body { background-image:url('book.png');background-repeat: repeat; }</style>
 				</head><body scroll=yes>"}
 	dat += "[info]<br>"
-	dat += "Signature: [signed.real_name]" //"signature" is a bit lame.
+	var/merc = "_________"
+	if(signed)
+		var/mob/mercref = signed.resolve()
+		merc = mercref.real_name
+	dat += "Signature: [merc]" //"signature" is a bit lame.
 	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
@@ -633,14 +655,14 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] writes on the [src]")
-			signed = user
-			update_icon_state()
+			signed = WEAKREF(user)
+			update_appearance(UPDATE_ICON_STATE)
 			return
 		if(!adressedto)
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] writes on the [src]")
-			adressedto = user
-			update_icon_state()
+			adressedto = WEAKREF(user)
+			update_appearance(UPDATE_ICON_STATE)
 			return
 		to_chat(user, span_warning("This is already signed"))
 		return
@@ -736,7 +758,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 				visible_message("[user] confirms [soontodie.real_name]'s death.")
 				yuptheydied = user
-				update_icon_state()
+				update_appearance(UPDATE_ICON_STATE)
 				return
 		if(is_steward_job(user.mind.assigned_role))
 			if(!stewardsigned)
@@ -812,7 +834,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 				visible_message("[user] confirms [soontodie.real_name]'s death.")
 				yuptheydied = user
-				update_icon_state()
+				update_appearance(UPDATE_ICON_STATE)
 				return
 		if(is_steward_job(user.mind.assigned_role))
 			if(!stewardsigned)
@@ -887,7 +909,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
 			signed = user
-			update_icon_state()
+			update_appearance(UPDATE_ICON_STATE)
 			if(gaffsigned)
 				addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
 				src.name = initial(name)
@@ -1026,7 +1048,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
 			signed = user
-			update_icon_state()
+			update_appearance(UPDATE_ICON_STATE)
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
 
@@ -1191,13 +1213,14 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		if(signed)
 			to_chat(user, span_warning("This is already signed"))
 			return
-		if(G.blood != user)
+		var/mob/refblood = G.blood.resolve()
+		if(refblood != user)
 			to_chat(user, span_warning("Nothing I write seems to stain the parchment."))
 			return
 		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 		visible_message("[user] signs the contract")
 		signed = user
-		update_icon_state()
+		update_appearance(UPDATE_ICON_STATE)
 		if(gaffsigned)
 			addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
 			src.name = initial(name)
@@ -1422,7 +1445,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			merchant = user
 			if(gaffsigned)
 				ADD_TRAIT(user, TRAIT_MERCGUILD, type)
-			update_icon_state()
+			update_appearance(UPDATE_ICON_STATE)
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
 
@@ -1478,7 +1501,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			inkeep = user
 			if(gaffsigned)
 				ADD_TRAIT(user, TRAIT_MERCGUILD, type)
-			update_icon_state()
+			update_appearance(UPDATE_ICON_STATE)
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
 
@@ -1564,7 +1587,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(istype(P, /obj/item/gold_prick))
 		var/obj/item/gold_prick/prick = P
-		if(prick.blood != user)
+		var/mob/refblood = prick.blood.resolve()
+		if(refblood != user)
 			to_chat(user, span_warning("I can't do anything with this.")) //N/A
 			return
 		if(HAS_TRAIT(user, TRAIT_BURDEN))
@@ -1582,7 +1606,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
 			merchsigned = user
-			update_icon_state()
+			update_appearance(UPDATE_ICON_STATE)
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
 
