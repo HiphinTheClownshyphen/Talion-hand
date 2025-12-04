@@ -333,26 +333,25 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			info += ""
-		if(is_gaffer_assistant_job(user.mind.assigned_role))
-			info += ""
-		else
-			info += ""
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		info += ""
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		info += ""
+	else
+		info += ""
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/merc_work_onetime/update_icon_state()
 	. = ..()
@@ -451,26 +450,25 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			info += ""
-		if(is_gaffer_assistant_job(user.mind.assigned_role))
-			info += ""
-		else
-			info += ""
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		info += ""
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		info += ""
+	else
+		info += ""
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/merc_work_conti/update_icon_state()
 	. = ..()
@@ -594,26 +592,24 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(adressedto == user)
-			if(coolness > 0)
-				user.add_stress(/datum/stress_event/autograph_fangirl_1)
-				coolness--
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "Signature: [signed.real_name]" //"signature" is a bit lame.
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
-
+	if(adressedto == user)
+		if(coolness > 0)
+			user.add_stress(/datum/stress_event/autograph_fangirl_1)
+			coolness--
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "Signature: [signed.real_name]" //"signature" is a bit lame.
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/merc_autograph/update_icon_state()
 	. = ..()
@@ -690,26 +686,25 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			info += ""
-		if(is_gaffer_assistant_job(user.mind.assigned_role))
-			info += ""
-		else
-			info += ""
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		info += ""
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		info += ""
+	else
+		info += ""
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/merc_will/update_icon_state()
 	. = ..()
@@ -781,26 +776,25 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			info += ""
-		if(is_gaffer_assistant_job(user.mind.assigned_role))
-			info += ""
-		else
-			info += ""
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		info += ""
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		info += ""
+	else
+		info += ""
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/merc_will/adven_will/attackby(obj/item/P, mob/living/carbon/human/user, params)
 	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
@@ -946,26 +940,25 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(HAS_TRAIT(user, TRAIT_BURDEN))
-			info += ""
-		if(is_gaffer_assistant_job(user.mind.assigned_role))
-			info += ""
-		else
-			info += ""
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	if(HAS_TRAIT(user, TRAIT_BURDEN))
+		info += ""
+	if(is_gaffer_assistant_job(user.mind.assigned_role))
+		info += ""
+	else
+		info += ""
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /*
 /obj/item/paper/political_PM/merc_parade
@@ -982,22 +975,20 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		info += ""
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
-
+	info += ""
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 */
 
 /obj/item/paper/political_PM/herovoucher
@@ -1047,20 +1038,19 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/political_PM/herovoucher/attack_hand_secondary(mob/user, params)
 	. = ..()
@@ -1094,23 +1084,22 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(HAS_TRAIT(user, TRAIT_BURDEN) || is_gaffer_assistant_job(user.mind.assigned_role))
-			if(!vouchersteward)
-				. += "deals off"
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	if(HAS_TRAIT(user, TRAIT_BURDEN) || is_gaffer_assistant_job(user.mind.assigned_role))
+		if(!vouchersteward)
+			. += "deals off"
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/vouchersteward
 	name = ""
@@ -1128,20 +1117,19 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/vouchersteward/Destroy()
 	. = ..()
@@ -1335,21 +1323,20 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		info += ""
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	info += ""
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/political_PM/bloodseal/exempt_from_cruelty
 	name = ""
@@ -1376,21 +1363,20 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		info += ""
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	info += ""
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/merchant_merger
 	name = ""
@@ -1609,29 +1595,28 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(paymentclause)
-			info += "babababab [paymentclause]"
-		if(bellclause)
-			info += "babababab"
-		if(guaranteeclause)
-			info += "babababababba [guaranteeclause]"
-		if(miscclause)
-			info += "bababababba [miscclause]"
-		info += "bababababab"
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	if(paymentclause)
+		info += "babababab [paymentclause]"
+	if(bellclause)
+		info += "babababab"
+	if(guaranteeclause)
+		info += "babababababba [guaranteeclause]"
+	if(miscclause)
+		info += "bababababba [miscclause]"
+	info += "bababababab"
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/merchantprotectionpact/attack_hand_secondary(mob/user, params) //N/A THIS FUCKING SUCKS!!!
 	. = ..()
@@ -1686,24 +1671,23 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(!gaffpart)
-			info += "deals off"
-		if(guarantee)
-			info += "babababab [guarantee]"
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	if(!gaffpart)
+		info += "deals off"
+	if(guarantee)
+		info += "babababab [guarantee]"
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/merchantprotectionpact_merchpart/attackby(obj/item/P, mob/living/user, params)
 	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
@@ -1757,30 +1741,29 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
-	if(in_range(user, src) || isobserver(user))
-		if(!merchpart)
-			info += "deals off"
-		if(pay)
-			info += "bababab [pay]"
-		if(bell)
-			info += "bababab"
-		if(guarantee)
-			info += "babababab [guarantee]"
-		if(misc)
-			info += "bababab [misc]"
-		user.hud_used.reads.icon_state = "scroll"
-		user.hud_used.reads.show()
-		var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
-					<html><head><style type=\"text/css\">
-					body { background-image:url('book.png');background-repeat: repeat; }</style>
-					</head><body scroll=yes>"}
-		dat += "[info]<br>"
-		dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
-		dat += "</body></html>"
-		user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
-		onclose(user, "reading", src)
-	else
+	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	if(!merchpart)
+		info += "deals off"
+	if(pay)
+		info += "bababab [pay]"
+	if(bell)
+		info += "bababab"
+	if(guarantee)
+		info += "babababab [guarantee]"
+	if(misc)
+		info += "bababab [misc]"
+	user.hud_used.reads.icon_state = "scroll"
+	user.hud_used.reads.show()
+	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+				<html><head><style type=\"text/css\">
+				body { background-image:url('book.png');background-repeat: repeat; }</style>
+				</head><body scroll=yes>"}
+	dat += "[info]<br>"
+	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
+	dat += "</body></html>"
+	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
+	onclose(user, "reading", src)
 
 /obj/item/paper/merchantprotectionpact_gaffpart/Destroy()
 	if(merchpart)
