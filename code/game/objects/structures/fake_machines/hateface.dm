@@ -11,6 +11,7 @@
 	var/budget = 0
 	COOLDOWN_DECLARE(hate)
 	var/list/paerpywork = list()
+	var/mutable_appearance/current
 
 /obj/structure/fake_machine/hateface/Initialize()
 	. = ..()
@@ -70,11 +71,14 @@
 	say(hate_words)
 
 /obj/structure/fake_machine/hateface/proc/monitorflick()
-	cut_overlays()
-	var/screen = pick("vendor-farm", "vendor-butcher") //for testing,
-	var/mutable_appearance/M = mutable_appearance(icon, "[screen]")
-	add_overlay(M)
-	return
+	var/list/screens = list("vendor-farm", "vendor-butcher")
+	var/chosen = pick_n_take(screens)
+	if(current?.icon_state == chosen)
+		chosen = pick(screens)
+	if(current)
+		cut_overlay(current)
+	current = mutable_appearance(icon, chosen)
+	add_overlay(current)
 
 /obj/structure/fake_machine/hateface/examine(mob/user)
 	. = ..()

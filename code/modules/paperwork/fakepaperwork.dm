@@ -30,7 +30,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		user.emote("painscream")
 		to_chat(user, span_warning("THAT BURNS!!"))
 	blood = WEAKREF(user)
-	update_icon_state()
+	update_appearance(UPDATE_ICON_STATE)
 	addtimer(CALLBACK(src, PROC_REF(clear_blood)), 1 MINUTES)
 
 /obj/item/gold_prick/attack_hand_secondary(mob/user, params)
@@ -66,6 +66,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(blood)
 		blood = null
 		update_appearance(UPDATE_ICON_STATE)
+
+/obj/item/gold_prick/Destroy()
+	if(blood)
+		blood = null
+	. = ..()
 
 /obj/item/merctoken
 	name = "mercenary token"
@@ -125,15 +130,24 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 	if(mailer)
 		icon_state = "paper_prep"
-		name = "letter"
 		throw_range = 7
 		return
-	name = initial(name)
 	throw_range = initial(throw_range)
 	if(signed)
 		icon_state = "contractsigned"
 		return
 	icon_state = "contractunsigned"
+
+/obj/item/paper/merc_contract/update_name()
+	if(mailer)
+		name = "letter"
+		return ..()
+	if(signedmerc)
+		var/mob/signedmercref = signedmerc.resolve()
+		name = "[signedmercref.real_name]'s [initial(name)]"
+		return ..()
+	name = initial(name)
+	return ..()
 
 /obj/item/paper/merc_contract/attackby(obj/item/P, mob/living/user, params)
 	if(istype(P, /obj/item/flashlight/flare/torch))
@@ -159,7 +173,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			if(signedmerc)
 				var/mob/merc = signedmerc.resolve()
 				ADD_TRAIT(merc, TRAIT_MERCGUILD, type)
-			update_appearance(UPDATE_ICON_STATE)
+			update_appearance(UPDATE_ICON_STATE | UPDATE_NAME)
 			return
 
 		if(signedmerc)
@@ -234,6 +248,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 /obj/item/paper/merc_contract/Destroy()
 	if(signedmerc)
 		var/mob/merc = signedmerc.resolve()
+		signedmerc = null
 		REMOVE_TRAIT(merc, TRAIT_MERCGUILD, type)
 		if(isliving(merc))
 			var/mob/living/livingmerc = merc
@@ -372,10 +387,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 	if(mailer)
 		icon_state = "paper_prep"
-		name = "letter"
 		throw_range = 7
 		return
-	name = initial(name)
 	throw_range = initial(throw_range)
 	if(signed)
 		icon_state = "contractsigned"
@@ -446,6 +459,13 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		visible_message("[user] writes on the contract")
 		update_appearance(UPDATE_ICON_STATE)
 
+/obj/item/paper/merc_work_onetime/Destroy()
+	if(jobber)
+		jobber = null
+	if(jobed)
+		jobed = null
+	. = ..()
+
 /obj/item/paper/merc_work_conti
 	name = "Continuous Engagement and Service Agreement"
 	desc = ""
@@ -490,7 +510,6 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 	if(mailer)
 		icon_state = "paper_prep"
-		name = "letter"
 		throw_range = 7
 		return
 	name = initial(name)
@@ -560,6 +579,13 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 		visible_message("[user] writes on the contract")
 		update_appearance(UPDATE_ICON_STATE)
+
+/obj/item/paper/merc_work_conti/Destroy()
+	if(jobber)
+		jobber = null
+	if(jobed)
+		jobed = null
+	. = ..()
 
 /*/obj/item/merc_asset_steal //not sure about this one yet
 	name = ""
@@ -637,15 +663,24 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 	if(mailer)
 		icon_state = "paper_prep"
-		name = "letter"
 		throw_range = 7
 		return
-	name = initial(name)
 	throw_range = initial(throw_range)
 	if(signed)
 		icon_state = "contractsigned"
 		return
 	icon_state = "contractunsigned"
+
+/obj/item/paper/merc_autograph/update_name()
+	if(mailer)
+		name = "letter"
+		return ..()
+	if(signed)
+		var/mob/signedmercref = signed.resolve()
+		name = "[signedmercref.real_name]'s [initial(name)]"
+		return ..()
+	name = initial(name)
+	return ..()
 
 /obj/item/paper/merc_autograph/attackby(obj/item/P, mob/living/user, params)
 	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
@@ -656,13 +691,13 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] writes on the [src]")
 			signed = WEAKREF(user)
-			update_appearance(UPDATE_ICON_STATE)
+			update_appearance(UPDATE_ICON_STATE | UPDATE_NAME)
 			return
 		if(!adressedto)
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] writes on the [src]")
 			adressedto = WEAKREF(user)
-			update_appearance(UPDATE_ICON_STATE)
+			update_appearance(UPDATE_ICON_STATE | UPDATE_NAME)
 			return
 		to_chat(user, span_warning("This is already signed"))
 		return
@@ -671,6 +706,14 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		//if(renown <= 3)
 			//to_chat(user, span_warning("I'm uhh...not famous enough for this type of thing."))
 			//return
+
+/obj/item/paper/merc_autograph/Destroy()
+	if(signed)
+		signed = null
+	if(adressedto)
+		adressedto = null
+	. = ..()
+
 
 /*
 /obj/item/paper/merc_autograph/examine(mob/user)
@@ -732,15 +775,24 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 	if(mailer)
 		icon_state = "paper_prep"
-		name = "letter"
 		throw_range = 7
 		return
-	name = initial(name)
 	throw_range = initial(throw_range)
 	if(yuptheydied)
 		icon_state = "contractsigned"
 		return
 	icon_state = "contractunsigned"
+
+/obj/item/paper/merc_will/update_name()
+	if(mailer)
+		name = "letter"
+		return ..()
+	if(soontodie)
+		var/mob/signedmercref = soontodie.resolve()
+		name = "[signedmercref.real_name]'s [initial(name)]"
+		return ..()
+	name = initial(name)
+	return ..()
 
 /obj/item/paper/merc_will/attackby(obj/item/P, mob/living/carbon/human/user, params)
 	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
@@ -783,10 +835,18 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			visible_message("[user] finishes their final statement")
 			inheretorial = WEAKREF(selection)
 			soontodie = WEAKREF(user)
+			update_appearance(UPDATE_NAME)
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
 
-
+/obj/item/paper/merc_will/Destroy()
+	if(soontodie)
+		soontodie = null
+	if(inheretorial)
+		inheretorial = null
+	if(yuptheydied)
+		yuptheydied = null
+	. = ..()
 
 /obj/item/paper/merc_will/adven_will
 	name = "Adventurer's Legacy and Risk Waiver Agreement"
@@ -859,6 +919,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		visible_message("[user] finishes their final statement")
 		inheretorial = WEAKREF(selection)
 		soontodie = WEAKREF(user)
+		update_appearance(UPDATE_NAME)
 		return
 
 
@@ -875,10 +936,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 	if(mailer)
 		icon_state = "paper_prep"
-		name = "letter"
 		throw_range = 7
 		return
-	name = initial(name)
 	throw_range = initial(throw_range)
 	if(signed)
 		icon_state = "contractsigned"
@@ -939,6 +998,13 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	ash.forceMove(get_turf(src))
 	qdel(src)
 	return
+
+/obj/item/paper/political_PM/Destroy()
+	if(gaffsigned)
+		gaffsigned = null
+	if(signed)
+		signed = null
+	. = ..()
 
 /obj/item/paper/political_PM/guild_tax_exempt
 	name = ""
@@ -1423,10 +1489,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 	if(mailer)
 		icon_state = "paper_prep"
-		name = "letter"
 		throw_range = 7
 		return
-	name = initial(name)
 	throw_range = initial(throw_range)
 	if(merchant)
 		icon_state = "contractsigned"
@@ -1460,13 +1524,16 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		to_chat(user, span_warning("I can't do anything with this."))
 
 /obj/item/paper/merchant_merger/Destroy()
-	. = ..()
+	if(merchant)
+		merchant = null
 	if(used)
 		if(SSroguemachine.falseheadeater)
 			SSroguemachine.falseheadeater.infestation_death()
 	if(tiedobject)
 		var/obj/item/headeater_spawn/tiedobjectref = tiedobject.resolve()
 		tiedobjectref.tiedpaper = null
+		tiedobject = null
+	. = ..()
 
 /obj/item/paper/inn_partnership
 	name = ""
@@ -1481,10 +1548,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 	if(mailer)
 		icon_state = "paper_prep"
-		name = "letter"
 		throw_range = 7
 		return
-	name = initial(name)
 	throw_range = initial(throw_range)
 	if(inkeep)
 		icon_state = "contractsigned"
@@ -1519,7 +1584,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 
 /obj/item/paper/inn_partnership/Destroy()
-	. = ..()
+	if(inkeep)
+		inkeep = null
 	if(used)
 		if(SSroguemachine.inn_hailer)
 			SSroguemachine.inn_hailer.infestation_death()
@@ -1528,6 +1594,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(tiedobject)
 		var/obj/item/hailer_core/tiedobjectref = tiedobject.resolve()
 		tiedobjectref.tiedpaper = null
+		tiedobject = null
+	. = ..()
+
 
 /obj/item/paper/merchantprotectionpact  //N/A I'm sorry chef this is especially fucking ass
 	name = ""
@@ -1545,10 +1614,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 	if(mailer)
 		icon_state = "paper_prep"
-		name = "letter"
 		throw_range = 7
 		return
-	name = initial(name)
 	throw_range = initial(throw_range)
 	if(merchsigned)
 		icon_state = "contractsigned"
@@ -1688,6 +1755,13 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		G.misc = miscclause
 	qdel(src)
 
+/obj/item/paper/merchantprotectionpact/Destroy()
+	if(gaffsigned)
+		gaffsigned = null
+	if(merchsigned)
+		merchsigned = null
+	. = ..()
+
 /obj/item/paper/merchantprotectionpact_merchpart
 	name = ""
 	desc = ""
@@ -1697,7 +1771,6 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	var/datum/weakref/gaffpart
 	var/guarantee
 	var/lastguarantee
-
 
 /obj/item/paper/merchantprotectionpact_merchpart/read(mob/user, ignore_distance)
 	. = ..()
@@ -1747,7 +1820,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				gaffpartref.resistance_flags = null
 
 /obj/item/paper/merchantprotectionpact_merchpart/Destroy()
-	. = ..()
+	if(gaff)
+		gaff = null
 	if(gaffpart)
 		var/obj/item/paper/merchantprotectionpact_gaffpart/gaffpartref = gaffpart.resolve()
 		gaffpartref.merchpart = null
@@ -1756,6 +1830,10 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				if(bells)
 					bells.mercenaryclaus = FALSE
 					gaffpartref.bell = FALSE
+		gaffpart = null
+	if(merch)
+		merch = null
+	. = ..()
 
 /obj/item/paper/merchantprotectionpact_gaffpart
 	name = ""
@@ -1805,6 +1883,10 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	onclose(user, "reading", src)
 
 /obj/item/paper/merchantprotectionpact_gaffpart/Destroy()
+	if(gaff)
+		gaff = null
+	if(merch)
+		merch = null
 	if(merchpart)
 		var/obj/item/paper/merchantprotectionpact_merchpart/merchpartref = merchpart.resolve()
 		merchpartref.gaffpart = null
@@ -1813,6 +1895,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				if(bells)
 					bells.mercenaryclaus = FALSE
 					src.bell = FALSE
+		merchpart = null
 	return ..()
 
 /obj/item/paper/merchantprotectionpact_gaffpart/attackby(obj/item/P, mob/living/user, params)
@@ -1899,6 +1982,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 /obj/item/headeater_spawn/examine(mob/user)
 	. += "<span class='info'></span>"
 
+/obj/item/headeater_spawn/Destroy()
+	if(tiedpaper)
+		tiedpaper = null
+	. = ..()
+
 /obj/item/hailer_core
 	//name = ""
 	//icon_state = ""
@@ -1930,6 +2018,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	usage--
 	if(usage <= 0)
 		qdel(src)
+
+/obj/item/hailer_core/Destroy()
+	if(tiedpaper)
+		tiedpaper = null
+	. = ..()
 
 /*-----------------------------------------------------------------\
 |  MERCHANT ZONE PAST THIS POINT. PSYDON SAVE ALL YEE WHO PASS     |

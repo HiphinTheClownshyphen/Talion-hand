@@ -14,6 +14,11 @@
 	. = ..()
 	prefs = passed_prefs
 
+/datum/catalyst_datum/Destroy(force, ...)
+	prefs = null
+	new_player = null
+	. = ..()
+
 /datum/catalyst_datum/proc/show_ui()
 	var/client/client = prefs.parent
 	if(!client)
