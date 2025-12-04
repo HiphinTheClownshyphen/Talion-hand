@@ -139,8 +139,8 @@
 		if(!user.put_in_hands(core))
 			core.forceMove(get_turf(user))
 		inn.used = TRUE
-		inn.tiedobject = core
-		core.tiedpaper =  inn
+		inn.tiedobject = WEAKREF(core)
+		core.tiedpaper =  WEAKREF(inn)
 		//N/A sound and message
 		return
 	if(istype(H, /obj/item/paper/merchant_merger))
@@ -151,8 +151,8 @@
 		if(!user.put_in_hands(hspawn))
 			hspawn.forceMove(get_turf(user))
 		guild.used = TRUE
-		guild.tiedobject = hspawn
-		hspawn.tiedpaper = guild
+		guild.tiedobject = WEAKREF(hspawn)
+		hspawn.tiedpaper = WEAKREF(guild)
 		//N/A sound and message
 		return
 

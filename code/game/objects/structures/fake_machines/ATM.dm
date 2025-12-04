@@ -156,16 +156,18 @@
 				return
 			H.flash_fullscreen("redflash3")
 			playsound(H, 'sound/combat/hits/bladed/genstab (1).ogg', 100, FALSE, -1)
-			if(H != AW.inheretorial)
+			var/mob/inheretorialref = AW.inheretorial.resolve()
+			if(H != inheretorialref)
 				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
 				say("You are not the individual in this coverage")
 				return
-			if(AW.soontodie in SStreasury.bank_accounts)
-				var/deadsaccount = SStreasury.bank_accounts[AW.soontodie]
+			var/mob/soontodieref = AW.soontodie.resolve()
+			if(soontodieref in SStreasury.bank_accounts)
+				var/deadsaccount = SStreasury.bank_accounts[soontodieref]
 				if(deadsaccount < 0) //generational debt mechanic
 					playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-					say("Your acquaintance, [AW.soontodie.real_name] has left you their debt. The crown thanks you, personally, for continuing to pay what is rightfully owned to the crown")
-					AW.inheretorial += deadsaccount
+					say("Your acquaintance, [soontodieref.real_name] has left you their debt. The crown thanks you, personally, for continuing to pay what is rightfully owned to the crown")
+					inheretorialref += deadsaccount
 					return
 				var/list/deposit_results2 = SStreasury.generate_money_account(deadsaccount, H)
 				if(islist(deposit_results2))
@@ -173,8 +175,9 @@
 						say("The crown is sorry for your loss... TAX OF [deposit_results2[2]] MAMMONS APPLIED!!")
 						record_featured_stat(FEATURED_STATS_TAX_PAYERS, H, deposit_results2[2])
 						GLOB.vanderlin_round_stats[STATS_TAXES_COLLECTED] += deposit_results2[2]
-				if((AW.yuptheydied in SStreasury.bank_accounts) && (deadsaccount > 0))
-					var/gaffersaccount = SStreasury.bank_accounts[AW.yuptheydied]
+				var/mob/yuptheydiedref = AW.yuptheydied.resolve()
+				if((yuptheydiedref in SStreasury.bank_accounts) && (deadsaccount > 0))
+					var/gaffersaccount = SStreasury.bank_accounts[yuptheydiedref]
 					var/gafferscut = deadsaccount * 0.05
 					gafferscut = round(gafferscut)
 					deadsaccount -= gafferscut
@@ -183,7 +186,7 @@
 				qdel(AW)
 				return
 			playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-			say("[AW.soontodie.real_name] does not have an account to pay out.")
+			say("[soontodieref.real_name] does not have an account to pay out.")
 			return
 		if(istype(P, /obj/item/paper/merc_will))
 			var/obj/item/paper/merc_will/MW = P
@@ -193,19 +196,22 @@
 				return
 			H.flash_fullscreen("redflash3")
 			playsound(H, 'sound/combat/hits/bladed/genstab (1).ogg', 100, FALSE, -1)
-			if(H != MW.inheretorial)
+			var/mob/inheretorialref = MW.inheretorial.resolve()
+			if(H != inheretorialref)
 				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
 				say("You are not the individual in this coverage")
 				return
-			if(MW.soontodie in SStreasury.bank_accounts)
-				var/deadsaccount = SStreasury.bank_accounts[MW.soontodie]
+			var/mob/soontodieref = MW.soontodie.resolve()
+			if(soontodieref in SStreasury.bank_accounts)
+				var/deadsaccount = SStreasury.bank_accounts[soontodieref]
 				if(deadsaccount < 0) //generational debt mechanic
 					playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-					say("Your acquaintance, [MW.soontodie.real_name] has left you their debt. The crown thanks you, personally, for continuing to pay what is rightfully owned to the crown")
-					MW.inheretorial += deadsaccount
+					say("Your acquaintance, [soontodieref.real_name] has left you their debt. The crown thanks you, personally, for continuing to pay what is rightfully owned to the crown")
+					inheretorialref += deadsaccount
 					return
-				if((MW.yuptheydied in SStreasury.bank_accounts) && (deadsaccount > 0))
-					var/gaffersaccount = SStreasury.bank_accounts[MW.yuptheydied]
+				var/mob/yuptheydiedref = MW.yuptheydied.resolve()
+				if((yuptheydiedref in SStreasury.bank_accounts) && (deadsaccount > 0))
+					var/gaffersaccount = SStreasury.bank_accounts[yuptheydiedref]
 					var/gafferscut = deadsaccount * 0.05
 					gafferscut = round(gafferscut)
 					deadsaccount -= gafferscut
@@ -214,7 +220,7 @@
 				qdel(MW)
 				return
 			playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-			say("[MW.soontodie.real_name] does not have an account to pay out.")
+			say("[soontodieref.real_name] does not have an account to pay out.")
 			return
 		if(istype(P, /obj/item/paper/voucher))
 			var/obj/item/paper/voucher/voucher = P

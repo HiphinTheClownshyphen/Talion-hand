@@ -695,9 +695,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 /obj/item/paper/merc_will //don't look now, but this whole thing is a ploy to make adventurers and mercs keep their money in the banks so they actually contribute to capital
 	name = "Mercenary Service Risk Mitigation and Final Testament Agreement"
 	icon_state = "contractunsigned"
-	var/mob/soontodie
-	var/mob/inheretorial
-	var/mob/yuptheydied
+	var/datum/weakref/soontodie
+	var/datum/weakref/inheretorial
+	var/datum/weakref/yuptheydied
 	var/stewardsigned = FALSE
 
 /obj/item/paper/merc_will/read(mob/user)
@@ -756,8 +756,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			if(aretheydead == "They rest now" && (user.is_holding(src) || user.Adjacent(src)))
 				playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
-				visible_message("[user] confirms [soontodie.real_name]'s death.")
-				yuptheydied = user
+				var/mob/soontodieref = soontodie.resolve()
+				visible_message("[user] confirms [soontodieref.real_name]'s death.")
+				yuptheydied = WEAKREF(user)
 				update_appearance(UPDATE_ICON_STATE)
 				return
 		if(is_steward_job(user.mind.assigned_role))
@@ -780,8 +781,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] finishes their final statement")
-			inheretorial = selection
-			soontodie = user
+			inheretorial = WEAKREF(selection)
+			soontodie = WEAKREF(user)
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
 
@@ -832,8 +833,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			if(aretheydead == "They rest now" && (user.is_holding(src) || user.Adjacent(src)))
 				playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
-				visible_message("[user] confirms [soontodie.real_name]'s death.")
-				yuptheydied = user
+				var/mob/soontodieref = soontodie.resolve()
+				visible_message("[user] confirms [soontodieref.real_name]'s death.")
+				yuptheydied = WEAKREF(user)
 				update_appearance(UPDATE_ICON_STATE)
 				return
 		if(is_steward_job(user.mind.assigned_role))
@@ -855,8 +857,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			return
 		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 		visible_message("[user] finishes their final statement")
-		inheretorial = selection
-		soontodie = user
+		inheretorial = WEAKREF(selection)
+		soontodie = WEAKREF(user)
 		return
 
 
@@ -864,8 +866,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	name = ""
 	desc = ""
 	icon_state = "contractunsigned"
-	var/mob/gaffsigned = null
-	var/mob/signed = null
+	var/datum/weakref/gaffsigned
+	var/datum/weakref/signed
 	var/datum/job/jobthatcansign = null
 	var/triumph_award
 
@@ -891,15 +893,16 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
-			gaffsigned = user
+			gaffsigned = WEAKREF(user)
 			if(signed)
 				addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
 				src.name = initial(name)
 				if(triumph_award)
-					for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+					var/mob/gaffsignedref = gaffsigned.resolve()
+					for(var/claimed in GLOB.Beucratic_triumps[gaffsignedref.ckey])
 						if(claimed != src.name)
-							GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
-							gaffsigned.adjust_triumphs(triumph_award)
+							GLOB.Beucratic_triumps[gaffsignedref.ckey] += src.name
+							gaffsignedref.adjust_triumphs(triumph_award)
 				return
 			return
 		if(istype(user.mind.assigned_role, jobthatcansign))
@@ -908,16 +911,17 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
-			signed = user
+			signed = WEAKREF(user)
 			update_appearance(UPDATE_ICON_STATE)
 			if(gaffsigned)
 				addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
 				src.name = initial(name)
 				if(triumph_award)
-					for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+					var/mob/gaffsignedref = gaffsigned.resolve()
+					for(var/claimed in GLOB.Beucratic_triumps[gaffsignedref.ckey])
 						if(claimed != src.name)
-							GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
-							gaffsigned.adjust_triumphs(triumph_award)
+							GLOB.Beucratic_triumps[gaffsignedref.ckey] += src.name
+							gaffsignedref.adjust_triumphs(triumph_award)
 				return
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
@@ -1029,7 +1033,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
-			gaffsigned = user
+			gaffsigned = WEAKREF(user)
 			return
 		if(istype(user.mind.assigned_role, jobthatcansign))
 			if(signed && price)
@@ -1047,7 +1051,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
-			signed = user
+			signed = WEAKREF(user)
 			update_appearance(UPDATE_ICON_STATE)
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
@@ -1191,15 +1195,16 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			return
 		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 		visible_message("[user] signs the contract")
-		gaffsigned = user
+		gaffsigned = WEAKREF(user)
 		if(signed)
 			addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
 			src.name = initial(name)
 			if(triumph_award)
-				for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+				var/mob/gaffsignedref = gaffsigned.resolve()
+				for(var/claimed in GLOB.Beucratic_triumps[gaffsignedref.ckey])
 					if(claimed != src.name)
-						GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
-						gaffsigned.adjust_triumphs(triumph_award)
+						GLOB.Beucratic_triumps[gaffsignedref.ckey] += src.name
+						gaffsignedref.adjust_triumphs(triumph_award)
 			return
 		return
 	if(istype(P, /obj/item/gold_prick))
@@ -1219,16 +1224,17 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			return
 		playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 		visible_message("[user] signs the contract")
-		signed = user
+		signed = WEAKREF(user)
 		update_appearance(UPDATE_ICON_STATE)
 		if(gaffsigned)
 			addtimer(CALLBACK(src, PROC_REF(contract_effect)), 12 SECONDS)
 			src.name = initial(name)
 			if(triumph_award)
-				for(var/claimed in GLOB.Beucratic_triumps[gaffsigned.ckey])
+				var/mob/gaffsignedref = gaffsigned.resolve()
+				for(var/claimed in GLOB.Beucratic_triumps[gaffsignedref.ckey])
 					if(claimed != src.name)
-						GLOB.Beucratic_triumps[gaffsigned.ckey] += src.name
-						gaffsigned.adjust_triumphs(triumph_award)
+						GLOB.Beucratic_triumps[gaffsignedref.ckey] += src.name
+						gaffsignedref.adjust_triumphs(triumph_award)
 
 /obj/item/paper/political_PM/bloodseal/pre_attack(atom/A, mob/living/user, params)
 	if(isitem(A))
@@ -1264,10 +1270,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		if(!COOLDOWN_FINISHED(src, punish))
 			to_chat(user, "")
 			return
-		if(!isliving(signed) || signed.stat == UNCONSCIOUS)
+		var/mob/signedref = signed.resolve()
+		if(!isliving(signed) || signedref.stat == UNCONSCIOUS)
 			to_chat(user, "")
 			return
-		if(!signed.client && !signed.ckey)
+		if(!signedref.client && !signedref.ckey)
 			to_chat(user, "")
 			return
 		START_PROCESSING(SSfastprocess, src)
@@ -1278,13 +1285,14 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 /obj/item/paper/political_PM/bloodseal/process()
 	. = ..()
-	if(!signed.client)
+	var/mob/signedref = signed.resolve()
+	if(!signedref.client)
 		STOP_PROCESSING(SSfastprocess, src)
 		return
 	if(!isliving(signed))
 		STOP_PROCESSING(SSfastprocess, src)
 		return
-	if(!signed.client && !signed.ckey)
+	if(!signedref.client && !signedref.ckey)
 		STOP_PROCESSING(SSfastprocess, src)
 		return
 	if(prob(40))
@@ -1292,17 +1300,18 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		var/screen_location = "WEST+[rand(2,13)], SOUTH+[rand(1,12)]"
 		var/text_align = pick("left", "right", "center")
 		//text = pick_list_replacements()
-		show_blurb(signed, duration = 3 SECONDS, message = text, fade_time = 3 SECONDS, screen_position = screen_location, text_alignment = text_align, text_color = "red", outline_color = "black")
+		show_blurb(signedref, duration = 3 SECONDS, message = text, fade_time = 3 SECONDS, screen_position = screen_location, text_alignment = text_align, text_color = "red", outline_color = "black")
 
 /obj/item/paper/political_PM/bloodseal/proc/restore_order()
 	STOP_PROCESSING(SSfastprocess, src)
-	if(!signed.client)
+	var/mob/signedref = signed.resolve()
+	if(!signedref.client)
 		return
 	if(!isliving(signed))
 		return
-	if(!signed.client && !signed.ckey)
+	if(!signedref.client && !signedref.ckey)
 		return
-	var/mob/living/okay = signed
+	var/mob/living/okay = signedref
 	okay.emote("faint")
 	okay.Sleeping(12 SECONDS)
 	var/time
@@ -1407,8 +1416,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	icon_state = "contractunsigned"
 	var/gaffsigned = FALSE
 	var/used = FALSE
-	var/mob/merchant
-	var/obj/item/headeater_spawn/tiedobject
+	var/datum/weakref/merchant
+	var/datum/weakref/tiedobject
 
 /obj/item/paper/merchant_merger/update_icon_state()
 	. = ..()
@@ -1434,7 +1443,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			visible_message("[user] signs the contract")
 			gaffsigned = TRUE
 			if(merchant)
-				ADD_TRAIT(merchant, TRAIT_MERCGUILD, type)
+				var/mob/merchantref = merchant.resolve()
+				ADD_TRAIT(merchantref, TRAIT_MERCGUILD, type)
 			return
 		if(is_merchant_job(user.mind.assigned_role))
 			if(merchant)
@@ -1442,7 +1452,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
-			merchant = user
+			merchant = WEAKREF(user)
 			if(gaffsigned)
 				ADD_TRAIT(user, TRAIT_MERCGUILD, type)
 			update_appearance(UPDATE_ICON_STATE)
@@ -1455,7 +1465,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		if(SSroguemachine.falseheadeater)
 			SSroguemachine.falseheadeater.infestation_death()
 	if(tiedobject)
-		tiedobject.tiedpaper = null
+		var/obj/item/headeater_spawn/tiedobjectref = tiedobject.resolve()
+		tiedobjectref.tiedpaper = null
 
 /obj/item/paper/inn_partnership
 	name = ""
@@ -1463,8 +1474,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	icon_state = "contractunsigned"
 	var/gaffsigned = FALSE
 	var/used = FALSE
-	var/mob/inkeep
-	var/obj/item/hailer_core/tiedobject
+	var/datum/weakref/inkeep
+	var/datum/weakref/tiedobject
 
 /obj/item/paper/inn_partnership/update_icon_state()
 	. = ..()
@@ -1490,7 +1501,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			visible_message("[user] signs the contract")
 			gaffsigned = TRUE
 			if(inkeep)
-				ADD_TRAIT(inkeep, TRAIT_MERCGUILD, type)
+				var/mob/innkeepref = inkeep.resolve()
+				ADD_TRAIT(innkeepref, TRAIT_MERCGUILD, type)
 			return
 		if(is_innkeep_job(user.mind.assigned_role))
 			if(inkeep)
@@ -1498,7 +1510,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
-			inkeep = user
+			inkeep = WEAKREF(user)
 			if(gaffsigned)
 				ADD_TRAIT(user, TRAIT_MERCGUILD, type)
 			update_appearance(UPDATE_ICON_STATE)
@@ -1514,14 +1526,15 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		if(SSroguemachine.inn_hailer_b)
 			SSroguemachine.inn_hailer_b.infestation_death()
 	if(tiedobject)
-		tiedobject.tiedpaper = null
+		var/obj/item/hailer_core/tiedobjectref = tiedobject.resolve()
+		tiedobjectref.tiedpaper = null
 
 /obj/item/paper/merchantprotectionpact  //N/A I'm sorry chef this is especially fucking ass
 	name = ""
 	desc = ""
 	icon_state = "contractunsigned"
-	var/mob/gaffsigned
-	var/mob/merchsigned
+	var/datum/weakref/gaffsigned
+	var/datum/weakref/merchsigned
 	var/paymentclause
 	var/bellclause = FALSE
 	var/guaranteeclause
@@ -1597,7 +1610,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
-			gaffsigned = user
+			gaffsigned = WEAKREF(user)
 			return
 		if(is_merchant_job(user.mind.assigned_role))
 			if(merchsigned)
@@ -1605,7 +1618,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				return
 			playsound(src, 'sound/items/write.ogg', 50, FALSE, ignore_walls = FALSE)
 			visible_message("[user] signs the contract")
-			merchsigned = user
+			merchsigned = WEAKREF(user)
 			update_appearance(UPDATE_ICON_STATE)
 			return
 		to_chat(user, span_warning("I can't do anything with this."))
@@ -1650,12 +1663,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	var/obj/item/paper/merchantprotectionpact_merchpart/M = new /obj/item/paper/merchantprotectionpact_merchpart
 	var/obj/item/paper/merchantprotectionpact_gaffpart/G = new /obj/item/paper/merchantprotectionpact_gaffpart
-	M.gaffpart = G
+	M.gaffpart = WEAKREF(G)
 	M.gaff = gaffsigned
 	M.merch = merchsigned
 	G.gaff = gaffsigned
 	G.merch = merchsigned
-	G.merchpart = M
+	G.merchpart = WEAKREF(M)
 	if(guaranteeclause)
 		M.guarantee = guaranteeclause
 		M.lastguarantee = GLOB.dayspassed
@@ -1679,9 +1692,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	name = ""
 	desc = ""
 	icon_state = "contractsigned"
-	var/mob/gaff
-	var/mob/merch
-	var/obj/item/paper/merchantprotectionpact_gaffpart/gaffpart
+	var/datum/weakref/gaff
+	var/datum/weakref/merch
+	var/datum/weakref/gaffpart
 	var/guarantee
 	var/lastguarantee
 
@@ -1728,27 +1741,29 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			lastguarantee = null
 			resistance_flags = null
 			if(gaffpart)
-				gaffpart.guarantee = null
-				gaffpart.lastguarantee = null
-				gaffpart.resistance_flags = null
+				var/obj/item/paper/merchantprotectionpact_gaffpart/gaffpartref = gaffpart.resolve()
+				gaffpartref.guarantee = null
+				gaffpartref.lastguarantee = null
+				gaffpartref.resistance_flags = null
 
 /obj/item/paper/merchantprotectionpact_merchpart/Destroy()
 	. = ..()
 	if(gaffpart)
-		gaffpart.merchpart = null
-		if(gaffpart.bell == TRUE)
+		var/obj/item/paper/merchantprotectionpact_gaffpart/gaffpartref = gaffpart.resolve()
+		gaffpartref.merchpart = null
+		if(gaffpartref.bell == TRUE)
 			for(var/obj/structure/dock_bell/bells as anything in GLOB.dock_bells)
 				if(bells)
 					bells.mercenaryclaus = FALSE
-					gaffpart.bell = FALSE
+					gaffpartref.bell = FALSE
 
 /obj/item/paper/merchantprotectionpact_gaffpart
 	name = ""
 	desc = ""
 	icon_state = "contractsigned"
-	var/mob/gaff
-	var/mob/merch
-	var/obj/item/paper/merchantprotectionpact_merchpart/merchpart
+	var/datum/weakref/gaff
+	var/datum/weakref/merch
+	var/datum/weakref/merchpart
 	var/pay
 	var/lastpay
 	var/bell = FALSE
@@ -1791,7 +1806,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 /obj/item/paper/merchantprotectionpact_gaffpart/Destroy()
 	if(merchpart)
-		merchpart.gaffpart = null
+		var/obj/item/paper/merchantprotectionpact_merchpart/merchpartref = merchpart.resolve()
+		merchpartref.gaffpart = null
 		if(bell)
 			for(var/obj/structure/dock_bell/bells as anything in GLOB.dock_bells)
 				if(bells)
@@ -1814,9 +1830,10 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			lastguarantee = null
 			resistance_flags = null
 			if(merchpart)
-				merchpart.guarantee = null
-				merchpart.lastguarantee = null
-				merchpart.resistance_flags = null
+				var/obj/item/paper/merchantprotectionpact_merchpart/merchpartref = merchpart.resolve()
+				merchpartref.guarantee = null
+				merchpartref.lastguarantee = null
+				merchpartref.resistance_flags = null
 
 /*
 /obj/item/tournament //need to do some logistics with this first.
@@ -1858,7 +1875,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dropshrink = 0.4
 	drop_sound = 'sound/surgery/organ1.ogg'
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF | FREEZE_PROOF
-	var/tiedpaper
+	var/datum/weakref/tiedpaper
 
 /obj/item/headeater_spawn/pickup(mob/user)
 	if(!is_gaffer_assistant_job(user.mind.assigned_role))
@@ -1894,7 +1911,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	drop_sound = 'sound/surgery/organ1.ogg'
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF | FREEZE_PROOF
 	var/usage = 2
-	var/tiedpaper
+	var/datum/weakref/tiedpaper
 
 /obj/item/hailer_core/attack_self(mob/living/user)
 	if(!tiedpaper)
