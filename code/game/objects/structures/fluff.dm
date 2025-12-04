@@ -707,10 +707,10 @@
 		return
 	var/mob/living/luser = user
 	if(luser.patron == /datum/patron/divine/astrata)
-		. += "<span class='warning'>HER VISAGE IS DEFILED!!</span>"
+		. += span_warning("HER VISAGE IS DEFILED!!")
 		//N/A a stressevent here would be fine
 		return
-	. += "<span class='warning'>Cracks form in the Tyrant's rule.</span>"
+	. += span_warning("Cracks form in the Tyrant's rule.")
 
 
 /obj/structure/fluff/statue/astrata/proc/do_break()
