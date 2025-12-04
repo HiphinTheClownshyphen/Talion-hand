@@ -189,7 +189,6 @@
 		target.lastattacker = user.real_name
 		target.lastattackerckey = user.ckey
 		target.lastattacker_weakref = WEAKREF(user)
-		//target.fragger = user
 		if(target.mind)
 			target.mind.attackedme[user.real_name] = world.time
 		user.adjust_stamina(15)

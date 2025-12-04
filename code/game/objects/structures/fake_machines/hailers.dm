@@ -183,7 +183,8 @@
 
 /obj/structure/fake_machine/hailer/inn_hailer/Destroy()
 	. = ..()
-	SSroguemachine.inn_hailer = null
+	if(SSroguemachine.inn_hailer == src)
+		SSroguemachine.inn_hailer = null
 
 /obj/structure/fake_machine/hailer/inn_hailer/attackby(obj/item/I, mob/user, params)
 	if(!iscarbon(user))

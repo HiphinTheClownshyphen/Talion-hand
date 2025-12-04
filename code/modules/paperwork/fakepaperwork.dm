@@ -45,10 +45,10 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		to_chat(user, span_warning("I pinch the end of the prick and trace my fingers up along it's length, until the only blood left is on my fingers. It dissipates with a quiet gurgle, it was never blood."))
 		playsound(src, 'sound/magic/enter_blood.ogg', 30, FALSE, ignore_walls = FALSE)
 		user.add_stress(/datum/stress_event/ring_madness)
-		update_icon_state()
+		update_appearance(UPDATE_ICON_STATE)
 		return
 	to_chat(user, span_warning("I wipe off the [src]"))
-	update_icon_state()
+	update_appearance(UPDATE_ICON_STATE)
 
 /obj/item/gold_prick/examine(mob/user)
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
@@ -65,7 +65,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 /obj/item/gold_prick/proc/clear_blood()
 	if(blood)
 		blood = null
-		update_icon_state()
+		update_appearance(UPDATE_ICON_STATE)
 
 /obj/item/merctoken
 	name = "mercenary token"
@@ -159,7 +159,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			signed = TRUE
 			if(signedmerc)
 				ADD_TRAIT(signedmerc, TRAIT_MERCGUILD, type)
-			update_icon_state()
+			update_appearance(UPDATE_ICON_STATE)
 			return
 
 		if(signedmerc)

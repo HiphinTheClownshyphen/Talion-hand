@@ -17,7 +17,7 @@
 	START_PROCESSING(SSroguemachine, src)
 	set_light(1, 1, 1, l_color = "#ff0d0d")
 	for(var/pack in subtypesof(/datum/hate_face_stuff))
-		var/datum/supply_pack/P = new pack()
+		var/datum/hate_face_stuff/P = new pack()
 		paerpywork += P
 
 /obj/structure/fake_machine/hateface/Destroy()
@@ -60,7 +60,6 @@
 			say(span_danger("BO BO BO BO TEST ONE TWO ONE TWO"))
 		if(3)
 			say(span_danger("HO HO HO HO TEST TWO ONE TWO ONE"))
-
 
 	START_PROCESSING(SSroguemachine, src)
 	return

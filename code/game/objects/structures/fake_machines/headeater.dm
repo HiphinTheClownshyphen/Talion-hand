@@ -175,7 +175,8 @@
 
 /obj/structure/fake_machine/falseheadeater/Destroy()
 	. = ..()
-	SSroguemachine.falseheadeater = null
+	if(SSroguemachine.falseheadeater == src)
+		SSroguemachine.falseheadeater = null
 
 /obj/structure/fake_machine/falseheadeater/attackby(obj/item/I, mob/user, params)
 	if(!iscarbon(user))
