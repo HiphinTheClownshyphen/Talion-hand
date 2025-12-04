@@ -71,7 +71,6 @@ abstract types are automatically excluded.
 		/obj/item/clothing/ring/weepers_boon, // special for merchant merger contract
 		/obj/item/clothing/face/antiq, //implied to be a weird heartfelt technoitem. good luck replicating this. unique to antiquarian
 		/obj/item/clothing/wrists/bracers/naledi //Inqstuff
-
 	)
 	// these don't use misc_flags = CRAFTING_TEST_EXCLUDE because we want to explicitly know which paths we are excluding.
 	/// excludes paths along with their subtypes

@@ -815,5 +815,51 @@
                 "map": "Unfuck Rosewood so it works"
             }
         ]
+    },
+    "2025-11-29": {
+        "wgtjunior743": [
+            {
+                "rscadd": "Makes the description of stress events visible for both positive and negative."
+            }
+        ],
+        "snowyseshi": [
+            {
+                "balance": "Steelhearted added to dungeoneer"
+            }
+        ],
+        "Somniworld": [
+            {
+                "rscadd": "The adept's silver mask may now have it's little prongs retracted via right click."
+            }
+        ],
+        "CheffieGithub": [
+            {
+                "bugfix": "Remove case sensitivity from the call"
+            }
+        ]
+    },
+    "2025-11-30": {
+        "snowyseshi": [
+            {
+                "rscadd": "Added amulet of Zizo and gave it to drow knight and squire."
+            },
+            {
+                "image": "Zizo Amulet"
+            },
+            {
+                "bugfix": "drow squire not getting his knife skill"
+            },
+            {
+                "rscadd": "Added foreigner trait to inquisition"
+            },
+            {
+                "rscadd": "Added icon to absolve and weep"
+            }
+        ],
+        "SmokingCrackForChrist": [
+            {
+                "balance": "Caps Grenzelhoft Mercenary to 2, due to his musket."
+            }
+        ]
     }
 }
