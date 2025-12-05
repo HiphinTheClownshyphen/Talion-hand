@@ -7,7 +7,6 @@
 	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_HIP|ITEM_SLOT_WRISTS
 	sellprice = 10
 	experimental_onhip = TRUE
-	var/rotting = FALSE
 
 // INHUMEN PSYCROSSES
 

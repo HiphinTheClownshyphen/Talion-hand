@@ -458,6 +458,7 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 				column_counter++
 				if(column_counter > 0 && (column_counter % 3 == 0))
 					dat += "</td><td valign='top'>"
+
 			if(has_world_trait(/datum/world_trait/skeleton_siege) || has_world_trait(/datum/world_trait/death_knight) || has_world_trait(/datum/world_trait/rousman_siege) || has_world_trait(/datum/world_trait/goblin_siege))
 				break
 			for(var/job in available_jobs)

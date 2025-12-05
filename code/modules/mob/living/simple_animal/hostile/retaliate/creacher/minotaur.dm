@@ -43,7 +43,6 @@
 
 	ai_controller = /datum/ai_controller/minotaur
 	dendor_taming_chance = DENDOR_TAME_PROB_NONE
-	dontmakesentient = TRUE
 
 /mob/living/simple_animal/hostile/retaliate/minotaur/Initialize()
 	. = ..()

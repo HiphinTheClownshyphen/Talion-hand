@@ -221,10 +221,11 @@ GLOBAL_LIST_EMPTY(letters_sent)
 		addtimer(CALLBACK(src, PROC_REF(kill_the_mood)), 20 MINUTES)
 	*/
 	return ..()
-
+/*
 /obj/structure/fake_machine/mail/proc/kill_the_mood()
 	if(has_world_trait(/datum/world_trait/mercenary_parade))
 		SSmapping.find_and_remove_world_trait(/datum/world_trait/mercenary_parade)
+*/
 
 /obj/structure/fake_machine/mail/proc/handle_merctoken(obj/item/merctoken/token, mob/user)
 	if(!ishuman(user))

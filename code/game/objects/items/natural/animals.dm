@@ -205,7 +205,6 @@
 	headpricemin = 1
 	headpricemax = 8
 
-
 /obj/item/natural/head/spider
 	name = "beespider head"
 	desc = "The severed head of a venomous beespider."

@@ -235,4 +235,3 @@
 
 	/// cooldown for the next time this person can offer
 	COOLDOWN_DECLARE(offer_cooldown)
-	var/dontmakesentient = FALSE // to check if you should make the thing sentient if they get enough kills to earn it. used for bosses or shit that would suck to be a player on

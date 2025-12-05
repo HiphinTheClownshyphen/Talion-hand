@@ -390,11 +390,6 @@
 	stress_change = 5
 	timer = 10 MINUTES
 
-/datum/stress_event/elevated_optimism
-	stress_change = -10
-	desc = span_green("Just purse your lips and whistle, that's the thing!")
-	timer = INFINITY
-
 /datum/stress_event/autograph_fangirl_1
 	stress_change = -1
 	desc = span_green("I have known mercenaries autograph, so cool!")

@@ -61,7 +61,6 @@ GLOBAL_LIST_EMPTY(last_words)
 
 /mob/living/death(gibbed)
 	var/was_dead_before = stat == DEAD
-	//var/was_sentient = (src.ckey && src.client)
 	set_stat(DEAD)
 	unset_machine()
 	timeofdeath = world.time
