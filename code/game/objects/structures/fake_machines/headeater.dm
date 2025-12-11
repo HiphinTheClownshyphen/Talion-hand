@@ -172,6 +172,7 @@
 /obj/structure/fake_machine/falseheadeater/process()
 	. = ..()
 	SSroguemachine.falseheadeater = src
+	addtimer(CALLBACK(src, PROC_REF(infection)), 15 MINUTES)
 
 /obj/structure/fake_machine/falseheadeater/Destroy()
 	. = ..()
@@ -213,26 +214,36 @@
 	return ..()
 
 /obj/structure/fake_machine/falseheadeater/proc/infection()
+	if(!headeaterspread)
+		headeaterspread = 1
 	if(headeaterspread == 1)
+		update_appearance(UPDATE_ICON_STATE | UPDATE_NAME)
 		headeaterspread++
 		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
-		icon_state = ""
 		addtimer(CALLBACK(src, PROC_REF(infection)), 20 MINUTES)
 		set_light(1, 1, 1, l_color =  "#b40909")
 		return
 	if(headeaterspread == 2)
+		update_appearance(UPDATE_ICON_STATE | UPDATE_NAME)
 		headeaterspread++
 		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
-		icon_state = ""
-		update_appearance(UPDATE_NAME)
 		return
 
 /obj/structure/fake_machine/falseheadeater/update_name()
 	. = ..()
 	if(headeaterspread == 1)
 		name = "CHEST BURSTER"
+		return
 	if(headeaterspread == 2)
-		name = "CYST"
+		name = "FACE EATER"
+
+/obj/structure/fake_machine/falseheadeater/update_icon_state()
+	. = ..()
+	if(headeaterspread == 1)
+		icon_state = "infestation_2"
+		return
+	if(headeaterspread == 2)
+		icon_state = "infestation_3"
 
 /obj/structure/fake_machine/falseheadeater/proc/infestation_death()
 	playsound(src, 'sound/combat/gib (1).ogg', 70, FALSE, ignore_walls = TRUE)

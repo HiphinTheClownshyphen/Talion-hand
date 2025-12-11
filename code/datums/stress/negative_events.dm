@@ -759,7 +759,7 @@
 /datum/stress_event/paperwork_dread
 	timer = 12 MINUTES
 	stress_change = 2
-	desc = span_warning("OHgh nogogogogog")
+	desc = span_warning("A breathless expectancy. Of what? No-one knows!")
 
 /datum/stress_event/getmerced
 	timer = 15 MINUTES

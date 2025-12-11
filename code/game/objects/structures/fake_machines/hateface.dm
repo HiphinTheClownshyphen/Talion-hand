@@ -2,7 +2,7 @@
 	name = "SEIGFREED"
 	desc = ""
 	icon = 'icons/roguetown/misc/machines.dmi'
-	icon_state = "goldvendor"
+	icon_state = "hateface"
 	density = TRUE
 	blade_dulling = DULLING_BASH
 	max_integrity = 0
@@ -71,7 +71,7 @@
 	say(hate_words)
 
 /obj/structure/fake_machine/hateface/proc/monitorflick()
-	var/list/screens = list("vendor-farm", "vendor-butcher")
+	var/list/screens = list("hateface_1", "hateface_2", "hateface_3")
 	var/chosen = pick_n_take(screens)
 	if(current?.icon_state == chosen)
 		chosen = pick(screens)

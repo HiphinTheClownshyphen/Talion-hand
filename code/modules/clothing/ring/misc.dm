@@ -464,7 +464,7 @@
 /obj/item/clothing/ring/weepers_boon
 	name = "Makers ring"
 	desc = "The wearer is a proud member of the Makers' guild."
-	icon_state = "weepers_boon"
+	icon_state = "ring_duel"
 	sellprice = 0
 	var/datum/weakref/merchant
 

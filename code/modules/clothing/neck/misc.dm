@@ -654,7 +654,7 @@
 /obj/item/clothing/neck/tyrants_chain
 	name = "Nescient's chain"
 	desc = "A magnificant neckpiece made up of gold and gems, the interlocking gold chains are expertly engraved with poppies." //idk is it "poppies" in vanderlin common?
-	icon_state = ""
+	icon_state = "amuletg"
 	var/datum/weakref/innkeep
 
 /obj/item/clothing/neck/tyrants_chain/equipped(mob/user, slot)

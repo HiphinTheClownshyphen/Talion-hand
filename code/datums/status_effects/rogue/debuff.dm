@@ -621,9 +621,8 @@
 	duration = 12 MINUTES
 
 /atom/movable/screen/alert/status_effect/debuff/paperwork_dread
-	name = "ohbonoogogogog"
-	desc = "<span class='warning'>I be fuckin mad bitches tho.</span>\n"
-	icon_state = "hunger1"
+	name = "Apprehension"
+	desc = "<span class='warning'>A breathless expectancy. Of what? No-one knows!</span>\n" //the king in yellow
 
 /datum/status_effect/debuff/paperwork_dread/on_apply()
 	. = ..()
@@ -644,9 +643,8 @@
 	duration = 10 MINUTES
 
 /atom/movable/screen/alert/status_effect/debuff/unemployed
-	name = "ohbonoogogogog"
-	desc = "<span class='warning'>I be fuckin mad bitches tho.</span>\n"
-	icon_state = "hunger1"
+	name = "Estrangement"
+	desc = "<span class='warning'>myriad</span>\n"
 
 /datum/status_effect/debuff/unemployed/on_apply()
 	. = ..()

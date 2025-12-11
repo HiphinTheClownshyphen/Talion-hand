@@ -689,7 +689,7 @@
 	deconstructible = FALSE
 	density = TRUE
 	blade_dulling = DULLING_BASH
-	var/breaking = FALSE
+	var/mutable_appearance/breaking
 
 /obj/structure/fluff/statue/astrata/Initialize()
 	GLOB.astrata_statues += src
@@ -710,16 +710,18 @@
 		. += span_warning("HER VISAGE IS DEFILED!!")
 		//N/A a stressevent here would be fine
 		return
-	. += span_warning("Cracks form in the Tyrant's rule.")
+	. += span_warning("It is the victim of petty vandalism...")
 
 
 /obj/structure/fluff/statue/astrata/proc/do_break()
-	if(breaking)
+	if(!breaking)
 		playsound(src, 'sound/misc/gods/astrata_scream.ogg', 10, ignore_walls = TRUE)
-		playsound(src, 'sound/combat/hits/onstone/stonedeath.ogg', 100, ignore_walls = TRUE)
-		icon_state = "[icon_state]_hurt"
+		playsound(src, 'sound/magic/enter_blood.ogg', 20, FALSE, ignore_walls = FALSE)
+		breaking = mutable_appearance(icon, "ast_defile")
+		add_overlay(breaking)
 		return
-	icon_state = initial(icon_state)
+	cut_overlay(breaking)
+	breaking = null
 
 /obj/structure/fluff/statue/astrata/OnCrafted(dirin, mob/user)
 	. = ..()

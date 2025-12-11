@@ -6,8 +6,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 /obj/item/gold_prick
 	name = "GOLDEN PRICK"
 	desc = ""
-	icon_state = "feather"
-	icon = 'icons/roguetown/items/natural.dmi'
+	icon_state = "gold_prick"
+	icon = 'icons/roguetown/items/misc.dmi'
 	w_class = WEIGHT_CLASS_TINY
 	slot_flags = ITEM_SLOT_MOUTH //putting pricks in your mouth might be fun for a bit, just don't go on that second date.
 	var/datum/weakref/blood
@@ -15,9 +15,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 /obj/item/gold_prick/update_icon_state()
 	. = ..()
 	if(blood)
-		icon_state = "feather"
+		icon_state = "gold_prick_b"
 		return
-	icon_state = "feather"
+	icon_state = "gold_prick"
 
 /obj/item/gold_prick/attack_self(mob/living/user)
 	if(is_gaffer_assistant_job(user.mind.assigned_role))
@@ -1404,7 +1404,9 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 /obj/item/paper/political_PM/bloodseal/exemptfromlaw/contract_effect()
 	for(var/obj/structure/fake_machine/scomm/X as anything in SSroguemachine.scomm_machines)
-		X.getmerced()
+		X.merctakeover = TRUE
+		if(prob(60))
+			X.getmerced()
 
 /obj/item/paper/political_PM/bloodseal/exemptfromlaw/Destroy()
 	if(signed)
@@ -1442,14 +1444,14 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	triumph_award = 2
 
 /obj/item/paper/political_PM/bloodseal/exempt_from_cruelty/contract_effect()
-	for(var/obj/structure/fluff/statue/astrata/statue as anything in GLOB.astrata_statues)
-		statue.breaking = TRUE
-		statue.do_break()
+	if(prob(80))
+		for(var/obj/structure/fluff/statue/astrata/statue as anything in GLOB.astrata_statues)
+			statue.do_break()
 
 /obj/item/paper/political_PM/bloodseal/exempt_from_cruelty/Destroy()
 	for(var/obj/structure/fluff/statue/astrata/statue as anything in GLOB.astrata_statues)
-		statue.breaking = FALSE
-		statue.do_break()
+		if(statue.breaking)
+			statue.do_break()
 	. = ..()
 
 
@@ -1989,8 +1991,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 /obj/item/hailer_core
 	//name = ""
-	//icon_state = ""
-	//icon = ''
+	icon_state = "cartridge"
+	icon = 'icons/roguetown/items/surgery.dmi'
 	//desc = ""
 	//lefthand_file = ''
 	//righthand_file = ''
