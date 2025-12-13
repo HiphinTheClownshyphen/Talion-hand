@@ -749,7 +749,7 @@
 /datum/stress_event/merc_fired
 	timer = 5 MINUTES
 	stress_change = 2
-	desc = span_warning("I lost my job at the Mercenary Guild...")
+	desc = span_warning("I do not belong in the guild, I am a mere black sheep.")
 
 /datum/stress_event/touched_headeater_spawn
 	timer = 10 MINUTES
@@ -764,4 +764,15 @@
 /datum/stress_event/getmerced
 	timer = 15 MINUTES
 	stress_change = 2
-	desc = span_warning("OHgh nogogogogog")
+	desc = span_warning("The wind carries word of dissent, do they not know each class does what it must?")
+
+/datum/stress_event/disrespected_astrata
+	timer = 15 MINUTES
+	stress_change = 2
+	desc = span_warning("They disrespect the great Tyrant!")
+
+/datum/stress_event/weepersring
+	timer = 8 MINUTES
+	stress_change = 1
+	desc = span_warning("Placidness is no vice of mine, let them feel my fury!")
+

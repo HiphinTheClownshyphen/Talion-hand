@@ -419,7 +419,7 @@
 	stress_change = -1
 	desc = span_green("I have known mercenaries autograph, so cool!")
 	timer = 1 MINUTES
-
+/*
 /datum/stress_event/autograph_fangirl_2
 	stress_change = -1
 	desc = span_green("I have well known mercenaries autograph, so cool!")
@@ -429,3 +429,9 @@
 	stress_change = -3
 	desc = span_green("I have total legend's autograph, so cool!")
 	timer = 1 MINUTES
+*/
+
+/datum/stress_event/tyrantschain
+	timer = 8 MINUTES
+	stress_change = 1
+	desc = span_warning("I am not fond of learning, let the unknown be my king!")

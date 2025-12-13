@@ -638,13 +638,13 @@
 
 /datum/status_effect/debuff/unemployed
 	id = "unemployed"
-	alert_type = /atom/movable/screen/alert/status_effect/debuff/paperwork_dread
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/unemployed
 	effectedstats = list(STATKEY_LCK = -1, STATKEY_INT = -2)
 	duration = 10 MINUTES
 
 /atom/movable/screen/alert/status_effect/debuff/unemployed
 	name = "Estrangement"
-	desc = "<span class='warning'>myriad</span>\n"
+	desc = "<span class='warning'>The fount of creation is vast enough to confuse scholars, yet it does not spare a handful of space where I too, belong.</span>\n"
 
 /datum/status_effect/debuff/unemployed/on_apply()
 	. = ..()

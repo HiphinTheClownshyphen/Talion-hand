@@ -675,6 +675,12 @@
 	if(!innkeeper.client && !innkeeper.ckey)
 		return
 	if(prob(5))
-		var/text = pick("")
+		var/text = pick("enlightenment is blinding, I won't forget my nature!",
+		"existence turns with juvenile wonder and haste, I am not so immature!",
+		"wisdom's waves are erratic and thirst for blood, what fool seeks their own destruction?",
+		"I don't fear the intangible, what hurts me that I can't feel or touch?",
+		"death is certain, life is chaos. I am merely on the fence.",
+		"those who venture to the unknown may never return, why should I move the torch forward?",
+		)
 		to_chat(innkeeper, span_green(text))
-		//innkeep.user.add_stress(/datum/stress_event/tyrantschain)
+		innkeeper.add_stress(/datum/stress_event/tyrantschain)

@@ -243,25 +243,25 @@
 			var/obj/item/paper/merchantprotectionpact_gaffpart/garf
 			if(!garf.merchpart)
 				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-				say("garf") //N/A
+				say("This contract is no longer in effect.")
 				return
 			if(garf.lastpay == GLOB.dayspassed)
 				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-				say("garf")
+				say("The payment cycle is not in effect.")
 				return
-			if(garf.merch  in SStreasury.bank_accounts)
-				var/merchantsaccounts = SStreasury.bank_accounts[garf.merch]
+			var/mob/merchref = garf.merch.resolve()
+			if(merchref in SStreasury.bank_accounts)
+				var/merchantsaccounts = SStreasury.bank_accounts[merchref]
 				if(merchantsaccounts < garf.pay)
 					playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-					say("garf")
+					say("[merchref.real_name] does not have enough funds to pay for this contract.")
 					return
 				garf.lastpay = GLOB.dayspassed
 				budget2change(merchantsaccounts, H)
 				playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-				say("garf")
 				return
 			playsound(src, 'sound/misc/machinetalk.ogg', 100, FALSE, -1)
-			say("garf")
+			say("[merchref.real_name] does not have an account.")
 			return
 	return ..()
 

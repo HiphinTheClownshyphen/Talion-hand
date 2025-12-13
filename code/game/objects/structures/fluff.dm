@@ -707,8 +707,8 @@
 		return
 	var/mob/living/luser = user
 	if(luser.patron == /datum/patron/divine/astrata)
-		. += span_warning("HER VISAGE IS DEFILED!!")
-		//N/A a stressevent here would be fine
+		. += span_warning("HER VISAGE IS VANDALIZED!!")
+		luser.add_stress(/datum/stress_event/disrespected_astrata)
 		return
 	. += span_warning("It is the victim of petty vandalism...")
 
@@ -1436,7 +1436,7 @@
 		user.add_stress(/datum/stress_event/ring_madness)
 		return
 	if(is_gaffer_assistant_job(user.mind.assigned_role))
-		. += ""
+		. += "it is without a flaw. What sculptor could have produce it?"
 		return
 	if(ring_destroyed == TRUE)
 		. += "a statue depicting a decapitated man writhing in chains on the ground, it holds its hands out, pleading, in its palms is a glowing ring..."

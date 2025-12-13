@@ -312,7 +312,7 @@
 		user.add_stress(/datum/stress_event/ring_madness)
 		return
 	if(is_gaffer_assistant_job(user.mind.assigned_role))
-		. += ""
+		. += "The ancient anchor, weaves the narrative that will come to pass, beyond my lifetime. May the inheritor bring great change for the guild's patron."
 		return
 	else
 		. += "A very old golden ring appointing its wearer as the Mercenary guild master, its strangely missing the crown for the centre stone"
@@ -486,6 +486,11 @@
 	if(!themerchant.client && !themerchant.ckey)
 		return
 	if(prob(5))
-		var/text = pick("")
+		var/text = pick("reality is crooked, how could I fit in?",
+		"the passive pass on, the outraged claim the lands!",
+		"no sword is swung with unlit fury!",
+		"my way is the superior, my jaw clenches...",
+		"my blood boils, I will improve the meek!",
+		)
 		to_chat(themerchant, span_danger(text))
 		//merchant.user.add_stress(/datum/stress_event/weepersring)

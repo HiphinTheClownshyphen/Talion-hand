@@ -39,7 +39,7 @@
 		. += "<span class='warning'>Uhhh... I can't read them...</span>"
 		return
 	if(merctakeover)
-		. += span_warningbig("LAW XX: THE LAW CANNOT BE ENFORCED AGAINST THE MERCENARY GUILD OR IT'S ILK.") //the 'it's' is a stand in for the headeater, also I don't actually remember how the laws are supposed to look so if it isn't "law[number]: [law]" change the start here
+		. += span_warningbig("XX. THE LAW CANNOT BE ENFORCED AGAINST THE MERCENARY GUILD OR IT'S ILK.")
 	for(var/i in 1 to length(GLOB.laws_of_the_land))
 		. += span_info("[i]. [GLOB.laws_of_the_land[i]]")
 
@@ -165,11 +165,10 @@
 	for(var/obj/structure/fake_machine/scomm/S in SSroguemachine.scomm_machines)
 		S.say(message, spans = list("info"))
 
-/obj/structure/fake_machine/scomm/proc/getmerced()
-	var/time = rand(1, 12)
-	sleep(time)
-	var/saey = pick("")
-	say(saey)
+/obj/structure/fake_machine/scomm/proc/getmerced(words)
+	if(!words)
+		return
+	say(words)
 	for(var/mob/living/carbon/human/noble in range(src, loc))
 		if(HAS_TRAIT(noble, TRAIT_NOBLE) && !HAS_TRAIT(noble, TRAIT_DEAF)) //I know trait deaf isn't it but I cant find the code for canhear
 			noble.add_stress(/datum/stress_event/getmerced)

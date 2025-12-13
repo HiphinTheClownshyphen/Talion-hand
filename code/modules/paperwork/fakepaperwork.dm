@@ -10,6 +10,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	icon = 'icons/roguetown/items/misc.dmi'
 	w_class = WEIGHT_CLASS_TINY
 	slot_flags = ITEM_SLOT_MOUTH //putting pricks in your mouth might be fun for a bit, just don't go on that second date.
+	dropshrink = 0.7
 	var/datum/weakref/blood
 
 /obj/item/gold_prick/update_icon_state()
@@ -1405,8 +1406,17 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 /obj/item/paper/political_PM/bloodseal/exemptfromlaw/contract_effect()
 	for(var/obj/structure/fake_machine/scomm/X as anything in SSroguemachine.scomm_machines)
 		X.merctakeover = TRUE
-		if(prob(60))
-			X.getmerced()
+		if(prob(15))
+			var/time = 5 SECONDS
+			var/static/list/castaigne = list(
+				span_danger("You have seized the throne and the empire!"),
+				span_danger("Woe! woe to you who are crowned with the crown of the Great Tyrant!"),
+				span_danger("Who are you to keep it from Empire over all the habitable land!"),
+				)
+			for(var/word in castaigne)
+				time = time + 3 SECONDS
+				addtimer(CALLBACK(X, TYPE_PROC_REF(/obj/structure/fake_machine/scomm, getmerced), word), time)
+
 
 /obj/item/paper/political_PM/bloodseal/exemptfromlaw/Destroy()
 	if(signed)
@@ -1963,7 +1973,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	var/datum/weakref/tiedpaper
 
 /obj/item/headeater_spawn/pickup(mob/user)
-	if(!is_gaffer_assistant_job(user.mind.assigned_role))
+	if(!is_gaffer_assistant_job(user.mind.assigned_role) && !HAS_TRAIT(user, TRAIT_BURDEN))
 		to_chat(user, span_danger("WHAT IS THIS PUTRID THING?!!"))
 		user.add_stress(/datum/stress_event/touched_headeater_spawn)
 	. = ..()

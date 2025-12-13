@@ -48,7 +48,7 @@
 
 /obj/structure/fake_machine/headeater
 	name = "HEAD EATER"
-	desc = "Feeds on certain heads for coin, despite all this time... this iteration still seems unfinished, what a sell out"
+	desc = ""
 	icon = 'icons/roguetown/misc/machines.dmi'
 	icon_state = "headeater"
 	density = FALSE
@@ -66,14 +66,14 @@
 /obj/structure/fake_machine/headeater/examine(mob/user)
 	. = ..()
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
-		. += ""
+		. += "The red sign of my tormentor and namesake of this adversary of mine. The ears, eyes and hunder, I am not besieged, I am not fooled. You are not the true HEADEATER. That, I wear around my ring finger!"
 		user.add_stress(/datum/stress_event/ring_madness)
 		return
 	if(is_gaffer_assistant_job(user.mind.assigned_role))
-		. += ""
+		. += "The sign of the Guild's patron. Their eyes, ears and hunger. It's odd, such an unsightly thing then what I would expect..."
 		return
 	else
-		. += ""
+		. += "A yawning flesh maw of bronze teeth and silent defiance, it spits out mammons per head, but why, who sponsors the guild?"
 
 /obj/structure/fake_machine/headeater/r
 	SET_BASE_PIXEL(32, 0)
@@ -162,10 +162,10 @@
 
 /obj/structure/fake_machine/falseheadeater
 	name = "ANKLE BITER"
-	desc = "Feeds on certain heads for coin, despite all this time... this itteration still seems unfinished, what a sell out"
+	desc = "Disgusting..."
 	icon = 'icons/roguetown/misc/machines.dmi'
 	icon_state = "infestation_1"
-	density = FALSE
+	density = TRUE
 	blade_dulling = DULLING_BASH
 	var/headeaterspread
 
