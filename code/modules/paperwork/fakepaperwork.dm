@@ -1407,15 +1407,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	for(var/obj/structure/fake_machine/scomm/X as anything in SSroguemachine.scomm_machines)
 		X.merctakeover = TRUE
 		if(prob(15))
-			var/time = 5 SECONDS
-			var/static/list/castaigne = list(
-				span_danger("You have seized the throne and the empire!"),
-				span_danger("Woe! woe to you who are crowned with the crown of the Great Tyrant!"),
-				span_danger("Who are you to keep it from Empire over all the habitable land!"),
-				)
-			for(var/word in castaigne)
-				time = time + 3 SECONDS
-				addtimer(CALLBACK(X, TYPE_PROC_REF(/obj/structure/fake_machine/scomm, getmerced), word), time)
+			addtimer(CALLBACK(X, TYPE_PROC_REF(/obj/structure/fake_machine/scomm, getmerced)), 12 SECONDS)
 
 
 /obj/item/paper/political_PM/bloodseal/exemptfromlaw/Destroy()

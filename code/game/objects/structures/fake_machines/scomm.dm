@@ -165,7 +165,16 @@
 	for(var/obj/structure/fake_machine/scomm/S in SSroguemachine.scomm_machines)
 		S.say(message, spans = list("info"))
 
-/obj/structure/fake_machine/scomm/proc/getmerced(words)
+/obj/structure/fake_machine/scomm/proc/getmerced()
+	var/time = rand(1 SECONDS, 7 SECONDS)
+	var/castaigne = pick(
+		span_danger("You have seized the throne and the empire!"),
+		span_danger("Woe! woe to you who are crowned with the crown of the Great Tyrant!"),
+		span_danger("Who are you to keep it from Empire over all the habitable land!"),
+		)
+	addtimer(CALLBACK(src, PROC_REF(getmercedtalk), castaigne), time)
+
+/obj/structure/fake_machine/scomm/proc/getmercedtalk(words)
 	if(!words)
 		return
 	say(words)

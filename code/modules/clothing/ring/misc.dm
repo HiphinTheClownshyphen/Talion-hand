@@ -493,4 +493,4 @@
 		"my blood boils, I will improve the meek!",
 		)
 		to_chat(themerchant, span_danger(text))
-		//merchant.user.add_stress(/datum/stress_event/weepersring)
+		themerchant.add_stress(/datum/stress_event/weepersring)
