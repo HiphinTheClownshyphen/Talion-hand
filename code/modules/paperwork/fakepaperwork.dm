@@ -1253,7 +1253,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	qdel(src)
 
 /obj/item/paper/vouchergaffer
-	name = "Anagnorisis"
+	name = "Anagnorisis (Haut)"
 	desc = "An oddly worded contract. Entitles coming adventurers and mercenaries to monetary vouchers paid from the vault after being signed by the steward."
 	info = ""
 	icon_state = "merctoken"
@@ -1297,7 +1297,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 
 /obj/item/paper/vouchersteward
-	name = "Anagnorisis"
+	name = "Anagnorisis (Fond)"
 	desc = "An oddly worded contract. Entitles coming adventurers and mercenaries to monetary vouchers paid from the vault after being signed by the steward."
 	info = ""
 	icon_state = "merctoken"
