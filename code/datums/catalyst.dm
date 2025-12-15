@@ -29,7 +29,7 @@
 	stuff += "<center>You may choose to use all or none of the information granted.<br>"
 	stuff += "<center>You can diverge from the granted prompt to establish how you have gotten hold of this information.<br>"
 	stuff += "<br>"
-	stuff += "<center>___________________________________________________________________<br>"
+	stuff += "<center>__________________________________For: all characters__________________________________<br>"
 	//the contents
 	stuff += "Long before ledgers tracked gold, they tracked knowledge. No less a commodity then those obtained through strenuous labor and physical hardship,"
 	stuff += "it is guarded and exchanged as carefully as fine linen or costly jewels. You too have trifled in this addling trade, as you gather what tidbits you can of your upcoming destination,"
@@ -46,7 +46,7 @@
 	if(SStreasury.herovoucher)
 		stuff += "<br>"
 		stuff += "<br>"
-		stuff += "<center>___________________________________________________________________<br>"
+		stuff += "<center>__________________________________For: Mercenary and Adventurers__________________________________<br>"
 		stuff += "...The sun crested horizon and the morning light gave birth to quiet murmurs and hushed tattle among townsfolk, as if an overnight squall came and blew all the notice boards with fresh parchment."
 		stuff += "Across every board, was a different, hastily tacked-up sheet, similar in sentiments but diverging in contents;"
 		stuff += "'Hail the fulsome crown, and laud the Guild's patron! To all who wander or venture, find sanctum in our lands, and take claim of a privileged sum; [SStreasury.herovoucher]. See our watchman for your voucher.'"
