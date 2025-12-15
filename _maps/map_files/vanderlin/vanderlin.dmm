@@ -17408,7 +17408,6 @@
 /area/indoors/town)
 "iMS" = (
 /obj/structure/fake_machine/scomm/l,
-/obj/structure/fake_machine/hateface,
 /turf/open/floor/carpet/green,
 /area/indoors/town/merc_guild)
 "iMW" = (
@@ -32813,6 +32812,10 @@
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/blocks/stonered/tiny,
 /area/indoors/town/clinic_large/apothecary)
+"qRG" = (
+/obj/structure/fake_machine/hateface,
+/turf/open/floor/carpet/green,
+/area/indoors/town/merc_guild)
 "qRJ" = (
 /obj/structure/chair/wood/alt/chair3{
 	dir = 4
@@ -104631,7 +104634,7 @@ tKy
 tKy
 vZX
 qpO
-usw
+qRG
 vZX
 tcl
 usw
