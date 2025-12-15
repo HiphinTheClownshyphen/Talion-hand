@@ -160,6 +160,7 @@
 
 /obj/structure/fake_machine/headeater/proc/aggresive_income(income)
 	if(income)
+		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
 		budget2change(income)
 
 /obj/structure/fake_machine/falseheadeater
