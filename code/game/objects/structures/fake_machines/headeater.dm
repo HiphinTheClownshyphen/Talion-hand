@@ -141,6 +141,7 @@
 		inn.used = TRUE
 		inn.tiedobject = WEAKREF(core)
 		core.tiedpaper =  WEAKREF(inn)
+		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
 		//N/A sound and message
 		return
 	if(istype(H, /obj/item/paper/merchant_merger))
@@ -153,6 +154,7 @@
 		guild.used = TRUE
 		guild.tiedobject = WEAKREF(hspawn)
 		hspawn.tiedpaper = WEAKREF(guild)
+		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
 		//N/A sound and message
 		return
 
