@@ -2875,6 +2875,10 @@
 	},
 /turf/open/floor/ruinedwood/turned,
 /area/outdoors/town)
+"bEO" = (
+/obj/structure/closet/crate/chest/wicker/random_soilson,
+/turf/open/floor/twig,
+/area/outdoors/rtfield/safe)
 "bEP" = (
 /obj/structure/kneestingers,
 /obj/structure/flora/grass/water,
@@ -5023,6 +5027,11 @@
 	},
 /turf/open/floor/wood,
 /area/indoors/town/tavern)
+"cDp" = (
+/obj/machinery/light/fueled/firebowl/stump,
+/obj/structure/flora/ausbushes/brflowers,
+/turf/open/floor/grass,
+/area/outdoors/rtfield/safe)
 "cDz" = (
 /obj/structure/fake_machine/mail{
 	mailtag = "Manor Dining Hall"
@@ -10020,6 +10029,11 @@
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/ruinedwood/turned/darker,
 /area/outdoors/town)
+"eYw" = (
+/obj/structure/table/wood/reinf_long,
+/obj/effect/landmark/contracthole,
+/turf/open/floor/ruinedwood,
+/area/indoors/town/merc_guild)
 "eYx" = (
 /obj/structure/rack/shelf/biggest,
 /obj/item/reagent_containers/glass/bottle/beer/hagwoodbitter,
@@ -10150,10 +10164,6 @@
 "fbP" = (
 /turf/open/floor/dirt/road,
 /area/outdoors/beach)
-"fbU" = (
-/obj/item/queen_bee,
-/turf/open/floor/dirt,
-/area/outdoors/rtfield/safe)
 "fcc" = (
 /obj/structure/table/wood/large/corner{
 	dir = 9
@@ -12591,6 +12601,10 @@
 /obj/structure/chair/stool,
 /turf/open/floor/ruinedwood/darker,
 /area/indoors/soilsons)
+"gnt" = (
+/obj/structure/apiary/starter,
+/turf/open/floor/dirt,
+/area/outdoors/rtfield/safe)
 "gnA" = (
 /obj/effect/mapping_helpers/access/keyset/manor/dungeon,
 /obj/structure/door/iron/bars{
@@ -14207,6 +14221,13 @@
 	},
 /turf/open/transparent/openspace,
 /area/indoors/town/garrison)
+"hhJ" = (
+/obj/structure/table/wood/fancy/royalblue,
+/obj/item/book/secret/ledger,
+/obj/item/gem/green,
+/obj/item/paper/merchantprotectionpact,
+/turf/open/floor/tile,
+/area/indoors/town/shop)
 "hhR" = (
 /obj/structure/fluff/steamvent,
 /turf/open/floor/metal,
@@ -17609,13 +17630,6 @@
 "iTx" = (
 /turf/open/floor/greenstone,
 /area/indoors/town/garrison)
-"iTI" = (
-/obj/structure/table/wood/fancy/royalblue,
-/obj/item/book/secret/ledger,
-/obj/item/gem/green,
-/obj/item/paper/merchantprotectionpact,
-/turf/open/floor/tile,
-/area/indoors/town/shop)
 "iTV" = (
 /obj/item/reagent_containers/food/snacks/smallrat,
 /turf/open/floor/dirt,
@@ -22805,10 +22819,6 @@
 "lJy" = (
 /turf/open/water/swamp/deep,
 /area/outdoors/rtfield)
-"lJH" = (
-/obj/structure/flora/ausbushes/brflowers,
-/turf/open/floor/dirt,
-/area/outdoors/rtfield/safe)
 "lJR" = (
 /obj/machinery/light/fueled/wallfire/candle/r,
 /turf/open/floor/ruinedwood/turned/darker,
@@ -25517,6 +25527,10 @@
 /obj/machinery/light/fueled/wallfire/candle/r,
 /turf/open/floor/tile/kitchen,
 /area/indoors/town/manor)
+"nek" = (
+/obj/structure/fake_machine/hateface,
+/turf/open/floor/carpet/green,
+/area/indoors/town/merc_guild)
 "neo" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/effect/decal/cleanable/dirt/dust,
@@ -31520,11 +31534,6 @@
 	},
 /turf/open/floor/grass,
 /area/outdoors/town)
-"qiu" = (
-/obj/structure/table/wood/reinf_long,
-/obj/effect/landmark/contracthole,
-/turf/open/floor/ruinedwood,
-/area/indoors/town/merc_guild)
 "qiA" = (
 /obj/structure/rack,
 /obj/effect/decal/cleanable/dirt/dust,
@@ -31970,10 +31979,6 @@
 /obj/item/reagent_containers/food/snacks/truffles,
 /turf/open/floor/greenstone,
 /area/under/town/sewer)
-"qwm" = (
-/obj/item/inqarticles/bmirror,
-/turf/closed/mineral,
-/area/under/cave)
 "qwn" = (
 /obj/structure/window/solid,
 /obj/structure/curtain/bounty{
@@ -32812,10 +32817,6 @@
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/blocks/stonered/tiny,
 /area/indoors/town/clinic_large/apothecary)
-"qRG" = (
-/obj/structure/fake_machine/hateface,
-/turf/open/floor/carpet/green,
-/area/indoors/town/merc_guild)
 "qRJ" = (
 /obj/structure/chair/wood/alt/chair3{
 	dir = 4
@@ -37110,6 +37111,10 @@
 	},
 /turf/open/floor/carpet/royalblack,
 /area/indoors/town/church/inquisition)
+"sXV" = (
+/obj/structure/apiary/starter,
+/turf/open/floor/dirt/road,
+/area/outdoors/rtfield/safe)
 "sYd" = (
 /obj/machinery/light/fueled/firebowl/standing/blue,
 /turf/open/floor/blocks/newstone/alt,
@@ -39009,10 +39014,6 @@
 /obj/effect/mapping_helpers/access/locker,
 /turf/open/floor/church,
 /area/indoors/town/church)
-"tWh" = (
-/obj/structure/apiary/starter,
-/turf/open/floor/grass,
-/area/outdoors/rtfield/safe)
 "tWm" = (
 /obj/structure/bookcase/random/apocrypha,
 /turf/open/floor/herringbone,
@@ -43771,12 +43772,6 @@
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/manor/kitchen)
-"wkU" = (
-/obj/item/inqarticles/indexer{
-	pixel_x = 2
-	},
-/turf/open/floor/dirt,
-/area/outdoors/town)
 "wla" = (
 /turf/open/water,
 /area/outdoors/river)
@@ -46434,6 +46429,11 @@
 /obj/machinery/light/fueled/firebowl/standing/blue,
 /turf/open/floor/greenstone,
 /area/indoors/town/clocktower)
+"xIC" = (
+/obj/structure/rack,
+/obj/item/weapon/hoe,
+/turf/open/floor/twig,
+/area/outdoors/rtfield/safe)
 "xIG" = (
 /obj/machinery/light/fueled/torchholder{
 	dir = 1
@@ -104027,7 +104027,7 @@ tKy
 tKy
 hFa
 eam
-qiu
+eYw
 vZX
 mnR
 sIG
@@ -104634,7 +104634,7 @@ tKy
 tKy
 vZX
 qpO
-qRG
+nek
 vZX
 tcl
 usw
@@ -114754,7 +114754,7 @@ xKu
 xKu
 xKu
 xKu
-qwm
+xKu
 xKu
 xKu
 xKu
@@ -120409,7 +120409,7 @@ xKu
 xKu
 xKu
 xKu
-kpS
+xKu
 xKu
 nTY
 nTY
@@ -122392,7 +122392,7 @@ izl
 izl
 izl
 izl
-wkU
+ecR
 izl
 izl
 ecR
@@ -131450,7 +131450,7 @@ xfg
 xfg
 agJ
 eBP
-iTI
+hhJ
 aXD
 aXD
 aXD
@@ -162975,7 +162975,7 @@ bul
 ixF
 bZU
 bZU
-tWh
+pBU
 ixF
 pBU
 pBU
@@ -163175,7 +163175,7 @@ rgB
 bul
 bul
 bul
-tWh
+pBU
 bZU
 pBU
 bul
@@ -163379,7 +163379,7 @@ pBU
 bul
 cVA
 pBU
-fbU
+ixF
 pBU
 cdK
 pBU
@@ -164194,8 +164194,8 @@ pBU
 pBU
 ixF
 gMx
-lJH
-bZU
+jpb
+cfM
 jBj
 jpb
 jpb
@@ -164395,8 +164395,8 @@ cVA
 cdK
 pBU
 bZU
+bul
 pBU
-eXL
 pBU
 pBU
 bul
@@ -164593,9 +164593,9 @@ cfd
 bul
 pBU
 eXL
-xKu
-xKu
-pBU
+bul
+bZU
+gMx
 pBU
 bul
 pBU
@@ -164794,11 +164794,11 @@ pBU
 ixF
 ixF
 cdK
-xKu
-xKu
-xKu
 pBU
-eXL
+ixF
+bul
+pBU
+jpb
 ixF
 bZU
 pBU
@@ -164994,16 +164994,16 @@ xKu
 xKu
 cAn
 ixF
-cdK
-cdK
-xKu
-xKu
-xKu
-xKu
-cdK
+bZU
 ixF
+ixF
+ixF
+bul
+ixF
+jpb
+eXL
 mzJ
-pBU
+bZU
 cdK
 bul
 bZU
@@ -165196,14 +165196,14 @@ xKu
 xKu
 cfd
 cfd
+cVA
+ixF
+sXV
+bul
+cAn
+cfM
+bul
 cdK
-xKu
-xKu
-xKu
-xKu
-xKu
-cdK
-bZU
 ixF
 ixF
 bul
@@ -165397,14 +165397,14 @@ xKu
 xKu
 xKu
 xKu
-xKu
-xKu
-xKu
-xKu
-xKu
-xKu
-xKu
-gMx
+cfd
+eXL
+bul
+cAn
+bul
+ixF
+ixF
+bul
 cdK
 cdK
 cAn
@@ -165600,13 +165600,13 @@ xKu
 xKu
 xKu
 xKu
-xKu
-xKu
-xKu
-xKu
-xKu
-xKu
-xKu
+eXL
+mzJ
+bul
+bul
+ixF
+gnt
+pBU
 xKu
 lqf
 bZU
@@ -165803,12 +165803,12 @@ xKu
 xKu
 xKu
 xKu
-xKu
-xKu
-xKu
-xKu
-xKu
-xKu
+cfd
+cfd
+cDp
+bul
+pBU
+bZU
 xKu
 xKu
 xKu
@@ -166006,11 +166006,11 @@ xKu
 xKu
 xKu
 xKu
-xKu
-xKu
-xKu
-xKu
-xKu
+cfd
+cfd
+cfd
+xIC
+bEO
 xKu
 xKu
 xKu
@@ -204994,8 +204994,8 @@ wFp
 wFp
 wFp
 wFp
-ahW
-ahW
+wFp
+wFp
 wFp
 wFp
 wFp
@@ -205195,9 +205195,9 @@ wFp
 wFp
 wFp
 wFp
-run
-bpv
-ahW
+wFp
+wFp
+wFp
 wFp
 wFp
 wFp
@@ -205397,10 +205397,10 @@ wFp
 wFp
 wFp
 wFp
-ahW
-kSY
-ahW
-ahW
+wFp
+wFp
+wFp
+wFp
 wFp
 wFp
 wFp
@@ -205598,11 +205598,11 @@ wuS
 wFp
 wFp
 wFp
-run
-ahW
-ahW
-lQX
-ahW
+wFp
+wFp
+wFp
+wFp
+wFp
 wFp
 wFp
 wFp
@@ -205798,13 +205798,13 @@ ahW
 ahW
 ahW
 ahW
+wFp
+wFp
+wFp
+wFp
 run
-tdr
-ahW
-wuS
-uub
-run
-ahW
+lQX
+wFp
 wFp
 wFp
 wFp
@@ -206002,12 +206002,12 @@ kSY
 lQX
 lQX
 ahW
+ahW
+wuS
+ahW
 bpv
 ahW
-ahW
-ahW
-bpv
-ahW
+run
 ahW
 wFp
 wFp
