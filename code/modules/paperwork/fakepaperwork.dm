@@ -10,7 +10,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	icon = 'icons/roguetown/items/misc.dmi'
 	w_class = WEIGHT_CLASS_TINY
 	slot_flags = ITEM_SLOT_MOUTH //putting pricks in your mouth might be fun for a bit, just don't go on that second date.
-	dropshrink = 0.7
+	dropshrink = 0.8
 	var/datum/weakref/blood
 
 /obj/item/gold_prick/update_icon_state()
@@ -52,14 +52,15 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	update_appearance(UPDATE_ICON_STATE)
 
 /obj/item/gold_prick/examine(mob/user)
+	. = ..()
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
-		. = "An odious gimmick. Once the tip meets a willing edge, it drips it's false blood in meek charade. The tepid pain the body remembers is the bind and sigil." //pretentious and sucks. Change later
+		. += "An odious gimmick. Carves red Herrings, then dares to bleed."
 	else if(is_gaffer_assistant_job(user.mind.assigned_role))
-		. = ""
+		. += "A golden needle designed after a bog beast, it was supposed to be a gift for a 'noble' once, but it died before it reached them."
 	else if(HAS_TRAIT(user, TRAIT_NOBLE))
-		. = ""
+		. += "A dazzling piece, I can see my reflection on it, I look... ashamed?"
 	else
-		. = ""
+		. += "A golden prick for drawing blood and signing parchment."
 	if(HAS_TRAIT(user, TRAIT_SEEPRICES))
 		. += "<span class='info'>value: Worthless.</span>"
 
@@ -115,17 +116,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			playsound(src, 'sound/items/write.ogg', 100, FALSE)
 
 /obj/item/paper/merc_contract
-	name = "Covenant of Mercenary Service and Operational Commitments"
+	name = "Hamartia"
 	icon_state = "contractunsigned"
 	var/signed = FALSE
 	var/datum/weakref/signedmerc
 	COOLDOWN_DECLARE(recallcool)
-
-/obj/item/paper/merc_contract/Initialize(new_employee)
-	if(new_employee)
-		signedmerc = WEAKREF(new_employee)
-		signed = TRUE
-	. = ..()
 
 /obj/item/paper/merc_contract/update_icon_state()
 	. = ..()
@@ -140,15 +135,10 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	icon_state = "contractunsigned"
 
 /obj/item/paper/merc_contract/update_name()
-	if(mailer)
-		name = "letter"
-		return ..()
 	if(signedmerc)
 		var/mob/signedmercref = signedmerc.resolve()
 		name = "[signedmercref.real_name]'s [initial(name)]"
 		return ..()
-	name = initial(name)
-	return ..()
 
 /obj/item/paper/merc_contract/attackby(obj/item/P, mob/living/user, params)
 	if(istype(P, /obj/item/flashlight/flare/torch))
@@ -196,16 +186,16 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		. += "A noticably oily parchment. written on it is an oddly worded contract telling that the signee works for the Mercenary Guild"
 		return
 	if(!signedmerc)
-		. += "A lesser pact with the HEADEATER, whenever I dim my eyes and gaze again at the words, they change in some way, never enough to be meaningful, never enough to be ignored."
+		. += "A lesser pact with the Guild's patron, but what is the condition?"
 		user.add_stress(/datum/stress_event/ring_madness)
 		return
 	var/mob/merc = signedmerc.resolve()
 	if(merc.stat == DEAD)
 		var/loldied = pick("Dirty", "Cold", "Scabby", "Stiff", "Limp", "Rotted", "Mutilated", "Pallid", "Withered")
-		. += "I can still see the skin shivering, it is [loldied]"
+		. += "I see the parchment swell and shrink with the same rhythm as my breathing, it is [loldied]"
 		return
 	else
-		. += "I can still see the skin shivering, it is warm"
+		. += "I see the parchment swell and shrink with the same rhythm as my breathing, it is warm"
 
 /obj/item/paper/merc_contract/read(mob/user)
 	if(!user.client || !user.hud_used)
@@ -217,6 +207,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that you will work for the guild and get benefits of membership, if there is any."))
+	if(signedmerc)
+		var/mob/signedmercref = signedmerc.resolve()
+		to_chat(user, span_info("[signedmercref.real_name] seems to have signed this already"))
+	return
+	/*
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
 		var/merc = "_________"
 		if(signedmerc)
@@ -244,6 +240,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 
 /obj/item/paper/merc_contract/Destroy()
@@ -260,7 +257,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 /obj/item/paper/merc_contract/proc/bloodvodoo(mob/user)
 	var/fuckitupterry = browser_alert(user, "The fire is inches away from the parchment", "THE PACT", list("Absolve Contract", "Recall Champion"))
 	if(!fuckitupterry)
-		to_chat(user, "")
+		to_chat(user, span_danger("No, no I couldn't..."))
 		return
 	if(fuckitupterry == "Absolve Contract")
 		to_chat(user, "without even being claimed by the fire, the contract crumbles to ash.")
@@ -272,15 +269,16 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(fuckitupterry == "Recall Champion")
 		var/mob/merc = signedmerc.resolve()
 		if(!COOLDOWN_FINISHED(src, recallcool))
-			to_chat(user, "")
+			to_chat(user, span_danger("I--I must give them some time!"))
 			return
 		if(!isliving(merc) || merc.stat == UNCONSCIOUS)
-			to_chat(user, "")
+			to_chat(user, "They are in no state for this...")
 			return
 		if(!merc.client && !merc.ckey)
-			to_chat(user, "")
+			to_chat(user, "Something is missing?")
 			return
-		to_chat(merc, span_warning("a gentle warmth spreads into my soul, beckoning me closer to the place I find rest...")) //not too obvious
+		var/checkit = pick("Suddenly, in the distance, I hear quiet whistling. Directionless, yet beckoning me elsewhere. I know where it goes, lead me. lead me to the guild...", "I feel a cold wind wash over me. Like draining water, it feels like it has a purpose. I know where it leads, back. Back to the guild.", "In a moment, I develop a fascination with roads, ones I've walked through, ones I will never walk. The branching paths, like the branches of a tree, ever expanding, a deep vein uncompressed. I explore these roads within my mind, and it always leads me back. All roads lead back to the guild.")
+		to_chat(merc, span_boldwarning("[checkit]")) //not too obvious
 		//playsoound_local(signedmerc, '')
 		//N/A sound here would be neat
 		COOLDOWN_START(src, recallcool, 10 MINUTES)
@@ -304,7 +302,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	return ..()
 
 /obj/item/paper/merc_contract/worker
-	name = "Covenant of Guild Commitments and Operational Service"
+	name = "Deuteragonist"
 
 
 /obj/item/paper/merc_contract/worker/read(mob/user)
@@ -317,6 +315,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that you will work for the guild and get benefits of membership, if there is any."))
+	if(signedmerc)
+		var/mob/signedmercref = signedmerc.resolve()
+		to_chat(user, span_info("[signedmercref.real_name] seems to have signed this already"))
+	/*
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
 		var/merc = "_________"
 		if(signedmerc)
@@ -344,10 +347,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/merc_work_onetime //this whole shpeal is unintuitive on purpose, we are laying the groundwork for people not paying their debt and having their assets siezed
-	name = "One-Time Service and Engagement Agreement" //the actual UI for this sucking isn't part of it though
-	desc = ""
+	name = "Kairos" //the actual UI for this sucking isn't part of it though
+	desc = "An oddly worded contract. Allows hiring mercenaries for a specific objective."
 	icon_state = "contractunsigned"
 	var/signed = FALSE
 	var/jobsdone = FALSE
@@ -366,6 +370,23 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that you are hiring or hired to perform a job, and will be paid the agreed amount"))
+	if(signed)
+		to_chat(user, span_info("It seems to be ratified by the Gaffer"))
+	if(jobsdone)
+		to_chat(user, span_info("The specified job seems to be fulfilled"))
+	if(thejob)
+		to_chat(user, span_info("The job seems to be to [thejob]"))
+	if(payment)
+		to_chat(user, span_info("The payment seems to be [payment]"))
+	if(jobber)
+		var/mob/jobberref = jobber.resolve()
+		to_chat(user, span_info("[jobberref.real_name] seems to employer"))
+	if(jobed)
+		var/mob/jobedref = jobed.resolve()
+		to_chat(user, span_info("[jobedref.real_name] seems to employee"))
+	return
+	/*
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
 		info += ""
 	if(is_gaffer_assistant_job(user.mind.assigned_role))
@@ -383,6 +404,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/merc_work_onetime/update_icon_state()
 	. = ..()
@@ -468,8 +490,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 
 /obj/item/paper/merc_work_conti
-	name = "Continuous Engagement and Service Agreement"
-	desc = ""
+	name = "Trochaic"
+	desc = "An oddly worded contract. Allows hiring mercenaries for a specific objective that will continue for specified amount of time."
 	icon_state = "contractunsigned"
 	var/signed = FALSE
 	var/thejob = null
@@ -489,6 +511,23 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that you are hiring or hired to perform a job, and will be paid the agreed amount for a set of daes"))
+	if(signed)
+		to_chat(user, span_info("It seems to be ratified by the Gaffer"))
+	if(thejob)
+		to_chat(user, span_info("The job seems to be to [thejob]"))
+	if(payment)
+		to_chat(user, span_info("The payment seems to be [payment]"))
+	if(worktime)
+		to_chat(user, span_info("The job seems to pay for [worktime] daes"))
+	if(jobber)
+		var/mob/jobberref = jobber.resolve()
+		to_chat(user, span_info("[jobberref.real_name] seems be the employer"))
+	if(jobed)
+		var/mob/jobedref = jobed.resolve()
+		to_chat(user, span_info("[jobedref.real_name] seems to employee"))
+	return
+	/*
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
 		info += ""
 	if(is_gaffer_assistant_job(user.mind.assigned_role))
@@ -506,6 +545,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/merc_work_conti/update_icon_state()
 	. = ..()
@@ -597,16 +637,18 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 */
 
 /obj/item/paper/merc_autograph
-	name = ""
-	desc = ""
+	name = "Platitude"
+	desc = "An autograph from a mercenary, though, I don't think they came up with the quote themselves..."
 	icon_state = "contractunsigned" //N/A this one should have a unique sprite
 	var/datum/weakref/signed
 	var/datum/weakref/adressedto
 	var/coolness = 5
 
+/*
 /obj/item/paper/merc_autograph/Initialize()
 	switch(rand(1,2))
 		if(1) //Lady Lazarus. maybe a little little inappropriate here, but I've always liked that poem.
+			/*
 			info += "</center>I have done it again.<BR>"
 			info += "</center>One year in every ten.<BR>"
 			info += "</center>I manage it——<BR>"
@@ -614,6 +656,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			info += "</center>Covered in Black Jade<BR>"
 			info += "</center>My right foot<BR>"
 			info += "</center>Leaves track laid.<BR>"
+			*/
 			info += "</center>My face a featureless, fine<BR>"
 			info += "</center>Thick Sallade.<BR>"
 			info += "</center>Peel off the hide<BR>"
@@ -625,7 +668,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 			info += "</center>Look on my form, ye Mighty,<BR>"
 			info += "</center>and despair!<BR>"
 	. = ..()
-
+*/
 
 /obj/item/paper/merc_autograph/read(mob/user)
 	if(!user.client || !user.hud_used)
@@ -637,12 +680,24 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("It is an autograph featuring a cheesy line."))
+	if(signed)
+		var/mob/signedref = signed.resolve()
+		to_chat(user, span_info("This is signed by [signedref.real_name]"))
 	if(adressedto)
 		var/mob/adressedtoref  = adressedto.resolve()
 		if(adressedtoref == user)
 			if(coolness > 0)
 				user.add_stress(/datum/stress_event/autograph_fangirl_1)
 				coolness--
+		to_chat(user, span_info("This autograph is addressed to [adressedtoref.real_name]"))
+	return
+	/*
+	var/merc = "_________"
+	if(signed)
+		var/mob/mercref = signed.resolve()
+		merc = mercref.real_name
+	info += "Signature: [merc]" //"signature" is a bit lame.
 	user.hud_used.reads.icon_state = "scroll"
 	user.hud_used.reads.show()
 	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -650,15 +705,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 				body { background-image:url('book.png');background-repeat: repeat; }</style>
 				</head><body scroll=yes>"}
 	dat += "[info]<br>"
-	var/merc = "_________"
-	if(signed)
-		var/mob/mercref = signed.resolve()
-		merc = mercref.real_name
-	dat += "Signature: [merc]" //"signature" is a bit lame.
 	dat += "<a href='byond://?src=[REF(src)];close=1' style='position:absolute;right:50px'>Close</a>"
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/merc_autograph/update_icon_state()
 	. = ..()
@@ -673,14 +724,10 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	icon_state = "contractunsigned"
 
 /obj/item/paper/merc_autograph/update_name()
-	if(mailer)
-		name = "letter"
-		return ..()
 	if(signed)
 		var/mob/signedmercref = signed.resolve()
 		name = "[signedmercref.real_name]'s [initial(name)]"
-		return ..()
-	name = initial(name)
+		return
 	return ..()
 
 /obj/item/paper/merc_autograph/attackby(obj/item/P, mob/living/user, params)
@@ -737,7 +784,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 */
 
 /obj/item/paper/merc_will //don't look now, but this whole thing is a ploy to make adventurers and mercs keep their money in the banks so they actually contribute to capital
-	name = "Mercenary Service Risk Mitigation and Final Testament Agreement"
+	name = "Antonomasia"
+	desc = "An oddly worded contract. Allows for mercenaries to pass on their wealth after they pass. Needs the signature of the steward to be legitimate."
 	icon_state = "contractunsigned"
 	var/datum/weakref/soontodie
 	var/datum/weakref/inheretorial
@@ -754,6 +802,19 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that it allows someone to pass on the wealth in their account to someone else."))
+	if(soontodie)
+		var/mob/soontodieref = soontodie.resolve()
+		to_chat(user, span_info("This will seems to be in [soontodieref.real_name]s name"))
+	if(inheretorial)
+		var/mob/inheretorialref = inheretorial.resolve()
+		to_chat(user, span_info("[inheretorialref.real_name] seems to be the one to inheret."))
+	if(yuptheydied)
+		to_chat(user, span_info("Seems like they are confirmed dead."))
+	if(stewardsigned)
+		to_chat(user, span_info("The steward seems to have signed off on this."))
+	return
+	/*
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
 		info += ""
 	if(is_gaffer_assistant_job(user.mind.assigned_role))
@@ -771,6 +832,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/merc_will/update_icon_state()
 	. = ..()
@@ -785,14 +847,10 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	icon_state = "contractunsigned"
 
 /obj/item/paper/merc_will/update_name()
-	if(mailer)
-		name = "letter"
-		return ..()
 	if(soontodie)
 		var/mob/signedmercref = soontodie.resolve()
 		name = "[signedmercref.real_name]'s [initial(name)]"
-		return ..()
-	name = initial(name)
+		return
 	return ..()
 
 /obj/item/paper/merc_will/attackby(obj/item/P, mob/living/carbon/human/user, params)
@@ -850,7 +908,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 
 /obj/item/paper/merc_will/adven_will
-	name = "Adventurer's Legacy and Risk Waiver Agreement"
+	name = "Sardonic"
+	desc = "An oddly worded contract. Allows for adventurers to pass on their wealth after they pass. Needs the signature of the steward to be legitimate, and gets taxed by the crown."
 
 /obj/item/paper/merc_will/adven_will/read(mob/user)
 	if(!user.client || !user.hud_used)
@@ -862,6 +921,19 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that it allows someone to pass on the wealth in their account to someone else."))
+	if(soontodie)
+		var/mob/soontodieref = soontodie.resolve()
+		to_chat(user, span_info("This will seems to be in [soontodieref.real_name]s name"))
+	if(inheretorial)
+		var/mob/inheretorialref = inheretorial.resolve()
+		to_chat(user, span_info("[inheretorialref.real_name] seems to be the one to inheret."))
+	if(yuptheydied)
+		to_chat(user, span_info("Seems like they are confirmed dead."))
+	if(stewardsigned)
+		to_chat(user, span_info("The steward seems to have signed off on this."))
+	return
+	/*
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
 		info += ""
 	if(is_gaffer_assistant_job(user.mind.assigned_role))
@@ -879,6 +951,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/merc_will/adven_will/attackby(obj/item/P, mob/living/carbon/human/user, params)
 	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
@@ -1008,8 +1081,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 
 /obj/item/paper/political_PM/guild_tax_exempt
-	name = ""
-	desc = ""
+	name = "Apologue"
+	desc = "An oddly worded contract. Prevents the members of the guild from being taxed while using MEISTERs after being signed by the steward."
 	icon_state = "contractunsigned"
 	jobthatcansign = /datum/job/steward
 	triumph_award = 1
@@ -1033,6 +1106,14 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!user.can_read(src))
 		to_chat(user, span_warning("Even if I could read, I don't think I would care to."))
 		return
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that it stops members of the guild from being taxed while using MEISTERs"))
+	if(gaffsigned)
+		to_chat(user, span_info("The gaffer has signed off on this."))
+	if(signed)
+		var/mob/signedref = signed.resolve()
+		to_chat(user, span_info("[signedref.real_name] seems to signed off on this."))
+	return
+	/*
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
 	if(HAS_TRAIT(user, TRAIT_BURDEN))
@@ -1052,6 +1133,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /*
 /obj/item/paper/political_PM/merc_parade
@@ -1085,8 +1167,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 */
 
 /obj/item/paper/political_PM/herovoucher
-	name = ""
-	desc = ""
+	name = "Anagnorisis"
+	desc = "An oddly worded contract. Entitles coming adventurers and mercenaries to monetary vouchers paid from the vault after being signed by the steward."
 	info = ""
 	icon_state = "contractunsigned"
 	jobthatcansign = /datum/job/steward
@@ -1133,6 +1215,16 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that all adventurers and mercenaries will be entitled to a sum of mammons agreed on the contract"))
+	if(gaffsigned)
+		to_chat(user, span_info("The gaffer has signed off on this."))
+	if(signed)
+		var/mob/signedref = signed.resolve()
+		to_chat(user, span_info("[signedref.real_name] seems to signed off on this."))
+	if(price)
+		to_chat(user, span_info("The agreed sum seems to be [price]"))
+	return
+	/*
 	user.hud_used.reads.icon_state = "scroll"
 	user.hud_used.reads.show()
 	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -1144,6 +1236,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/political_PM/herovoucher/attack_hand_secondary(mob/user, params)
 	. = ..()
@@ -1160,8 +1253,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	qdel(src)
 
 /obj/item/paper/vouchergaffer
-	name = ""
-	desc = ""
+	name = "Anagnorisis"
+	desc = "An oddly worded contract. Entitles coming adventurers and mercenaries to monetary vouchers paid from the vault after being signed by the steward."
 	info = ""
 	icon_state = "merctoken"
 	icon = 'icons/roguetown/items/misc.dmi'
@@ -1179,6 +1272,13 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that all adventurers and mercenaries will be entitled to a sum of mammons agreed on the contract."))
+	if(!vouchersteward)
+		to_chat(user, span_info("The deal seems to have been called off"))
+	else
+		to_chat(user, span_info("The deal still seems on"))
+	return
+	/*
 	if(HAS_TRAIT(user, TRAIT_BURDEN) || is_gaffer_assistant_job(user.mind.assigned_role))
 		if(!vouchersteward)
 			. += "deals off"
@@ -1193,10 +1293,12 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
+
 
 /obj/item/paper/vouchersteward
-	name = ""
-	desc = ""
+	name = "Anagnorisis"
+	desc = "An oddly worded contract. Entitles coming adventurers and mercenaries to monetary vouchers paid from the vault after being signed by the steward."
 	info = ""
 	icon_state = "merctoken"
 	icon = 'icons/roguetown/items/misc.dmi'
@@ -1212,6 +1314,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that all adventurers and mercenaries will be entitled to a sum of mammons agreed on the contract for as long as this parchment stands."))
+	/*
 	user.hud_used.reads.icon_state = "scroll"
 	user.hud_used.reads.show()
 	var/dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -1223,6 +1327,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/vouchersteward/Destroy()
 	. = ..()
@@ -1230,8 +1335,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		SStreasury.herovoucher = null
 
 /obj/item/paper/voucher
-	name = ""
-	desc = ""
+	name = "Voucher"
+	desc = "A small voucher, entitles the owner to a sum of mammons when claimed from a MEISTER."
 	info = ""
 	icon_state = "merctoken"
 	icon = 'icons/roguetown/items/misc.dmi'
@@ -1324,7 +1429,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 /obj/item/paper/political_PM/bloodseal/proc/bloodvodoo(mob/user)
 	var/fuckitupterry = browser_alert(user, "The fire is inches away from the parchment", "THE PACT", list("Absolve Contract", "Intimidate Whelp")) //"Mark for death"
 	if(!fuckitupterry)
-		to_chat(user, "")
+		to_chat(user, span_danger("No, no I couldn't..."))
 		return
 	if(fuckitupterry == "Absolve Contract")
 		to_chat(user, "without even being claimed by the fire, the contract crumbles to ash.")
@@ -1335,14 +1440,14 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(fuckitupterry == "Intimidate Whelp")
 		if(!COOLDOWN_FINISHED(src, punish))
-			to_chat(user, "")
+			to_chat(user, span_danger("I--I must give them some time!"))
 			return
 		var/mob/signedref = signed.resolve()
 		if(!isliving(signed) || signedref.stat == UNCONSCIOUS)
-			to_chat(user, "")
+			to_chat(user, "They are in no state for this...")
 			return
 		if(!signedref.client && !signedref.ckey)
-			to_chat(user, "")
+			to_chat(user, "Something is missing?")
 			return
 		START_PROCESSING(SSfastprocess, src)
 		addtimer(CALLBACK(src, PROC_REF(restore_order)), 12 SECONDS)
@@ -1363,7 +1468,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		STOP_PROCESSING(SSfastprocess, src)
 		return
 	if(prob(40))
-		var/text = "ho ho ho, yurgg. ohohohohiee"
+		var/text = pick("OATHBREAKER!!", "FOR SHAME!!", "WHERE IS YOUR HONOR?!!", "THE CREED IS BOUND BY BLOOD!!")
 		var/screen_location = "WEST+[rand(2,13)], SOUTH+[rand(1,12)]"
 		var/text_align = pick("left", "right", "center")
 		//text = pick_list_replacements()
@@ -1379,16 +1484,22 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	if(!signedref.client && !signedref.ckey)
 		return
 	var/mob/living/okay = signedref
+	if(HAS_TRAIT(okay, TRAIT_SLEEPIMMUNE))
+		to_chat(okay, span_danger("The voices fade, a dreamless nightmare has visited me."))
+		okay.apply_status_effect(/datum/status_effect/debuff/paperwork_dread)
+		return
 	okay.emote("faint")
 	okay.Sleeping(12 SECONDS)
-	var/time
-	var/static/list/yarba = list(
-		span_danger("Something something ooooh"),
-		span_danger("Yarba diva da! hah!"),
-		span_danger("Fortnite..."),
-		span_danger("mhm yea..."),
+	var/time //court of the dragon, the king in yellow
+	var/static/list/cotd = list(
+		span_danger("A dazzling light stole my vision... The people faded away, the floor, the vast sky vanished."),
+		span_danger("I raised my seared eyes to the fathomless glare, and I saw the black stars hanging in the heavens."),
+		span_danger("And now, far away, over leagues of tossing cloud-waves, I saw the Guild's patron masked with noxious ray, It which knew by name."),
+		span_danger("And now I heard It's voice, rising, swelling, thundering through the flaring light, and as I fell, the radiance increasing, increasing, poured over me in waves of flame."),
+		span_danger("and I heard It whisper a terrible harangue, convinved before its start..."),
+		span_danger("I came to in an insouciant manner, as indefferent as one would after waking from restful sleep. I have no memory of what I dreampt, but it was unpleasant."),
 		)
-	for(var/word in yarba)
+	for(var/word in cotd)
 		time = time + 2
 		addtimer(CALLBACK(src, PROC_REF(restore_order_say), okay, word), time)
 	okay.apply_status_effect(/datum/status_effect/debuff/paperwork_dread)
@@ -1399,7 +1510,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	to_chat(H, worb)
 
 /obj/item/paper/political_PM/bloodseal/exemptfromlaw
-	name = ""
+	name = "Polemic"
+	desc = "An oddly worded contract. Claims the members of the guild come from too far away to properly adjust to the law of the crown, and must be exempt from prosecution."
 	jobthatcansign = /datum/job/lord
 	triumph_award = 2
 
@@ -1427,6 +1539,14 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that all members of the mercenary guild is protected from being prosecuted by the law of the crown."))
+	if(gaffsigned)
+		to_chat(user, span_info("The gaffer has signed off on this."))
+	if(signed)
+		var/mob/signedref = signed.resolve()
+		to_chat(user, span_info("[signedref.real_name] seems to signed off on this."))
+	return
+	/*
 	info += ""
 	user.hud_used.reads.icon_state = "scroll"
 	user.hud_used.reads.show()
@@ -1439,9 +1559,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/political_PM/bloodseal/exempt_from_cruelty
-	name = ""
+	name = "Equivocation"
+	desc = "An oddly worded contract. Claims the members of the guild are too much of a minority to have their religious affairs judged by the church mass fairly, and asks that the church permit the guild handle such affairs in private."
 	jobthatcansign = /datum/job/priest
 	triumph_award = 2
 
@@ -1467,6 +1589,13 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that all members of the mercenary guild is protected from any and all supression and cruelty of the church."))
+	if(gaffsigned)
+		to_chat(user, span_info("The gaffer has signed off on this."))
+	if(signed)
+		var/mob/signedref = signed.resolve()
+		to_chat(user, span_info("[signedref.real_name] seems to signed off on this."))
+	/*
 	info += ""
 	user.hud_used.reads.icon_state = "scroll"
 	user.hud_used.reads.show()
@@ -1479,10 +1608,11 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/merchant_merger
-	name = ""
-	desc = ""
+	name = "Peripeteia"
+	desc = "An oddly worded contract. It outlines the neccesity of the merchant's guild being absorbed by the mercenary guild to prioritize trade welfare."
 	icon_state = "contractunsigned"
 	var/gaffsigned = FALSE
 	var/used = FALSE
@@ -1540,8 +1670,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 
 /obj/item/paper/inn_partnership
-	name = ""
-	desc = ""
+	name = "Encomium"
+	desc = "An oddly worded contract. It outlines the importance of the management and hospitality of the inn, and offers a partnership between the guild."
 	icon_state = "contractunsigned"
 	var/gaffsigned = FALSE
 	var/used = FALSE
@@ -1603,8 +1733,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 
 /obj/item/paper/merchantprotectionpact  //N/A I'm sorry chef this is especially fucking ass
-	name = ""
-	desc = ""
+	name = "Homonym"
+	desc = "An Arduous contract. Concerns the details of work conduct between the merchant and mercenary guild."
 	icon_state = "contractunsigned"
 	var/datum/weakref/gaffsigned
 	var/datum/weakref/merchsigned
@@ -1705,6 +1835,21 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that the mercenary is obligated to provide protection to the merchants guild."))
+	if(gaffsigned)
+		to_chat(user, span_info("The gaffer has signed off on this."))
+	if(merchsigned)
+		to_chat(user, span_info("The merchant seems to have signed off on this."))
+	if(paymentclause)
+		to_chat(user, span_info("The merchant seems to have agreed to pay the mercenary guild [paymentclause] mammons per dae."))
+	if(bellclause)
+		to_chat(user, span_info("The merchant seems to allow the members of the mercenary guild to use the dock bell, within reason."))
+	if(guaranteeclause)
+		to_chat(user, span_info("This contract seems impossible to back off on for [guaranteeclause] daes."))
+	if(miscclause)
+		to_chat(user, span_info("The guilds agree to, '[miscclause]'"))
+	return
+	/*
 	if(paymentclause)
 		info += "babababab [paymentclause]"
 	if(bellclause)
@@ -1725,6 +1870,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/merchantprotectionpact/attack_hand_secondary(mob/user, params) //N/A THIS FUCKING SUCKS!!!
 	. = ..()
@@ -1767,8 +1913,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 
 /obj/item/paper/merchantprotectionpact_merchpart
-	name = ""
-	desc = ""
+	name = "Homonym (Fond)"
+	desc = "An Arduous contract. Concerns the details of work conduct between the merchant and mercenary guild."
 	icon_state = "contractsigned"
 	var/datum/weakref/gaff
 	var/datum/weakref/merch
@@ -1787,6 +1933,17 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that the mercenary is obligated to provide protection to the merchants guild."))
+	if(gaff)
+		to_chat(user, span_info("The gaffer has signed off on this."))
+	if(merch)
+		to_chat(user, span_info("The merchant seems to have signed off on this."))
+	if(gaffpart)
+		to_chat(user, span_info("The contract seems to be in effect."))
+	if(guarantee)
+		to_chat(user, span_info("This contract seems impossible to back off on for [guarantee] daes."))
+	return
+	/*
 	if(!gaffpart)
 		info += "deals off"
 	if(guarantee)
@@ -1802,6 +1959,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/merchantprotectionpact_merchpart/attackby(obj/item/P, mob/living/user, params)
 	if(istype(P, /obj/item/natural/thorn) || istype(P, /obj/item/natural/feather))
@@ -1840,8 +1998,8 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 
 /obj/item/paper/merchantprotectionpact_gaffpart
-	name = ""
-	desc = ""
+	name = "Homonym (Haut)"
+	desc = "An Arduous contract. Concerns the details of work conduct between the merchant and mercenary guild."
 	icon_state = "contractsigned"
 	var/datum/weakref/gaff
 	var/datum/weakref/merch
@@ -1864,6 +2022,23 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 		return
 	if(!in_range(user, src) && !isobserver(user))
 		return "<span class='warning'>I'm too far away to read it.</span>"
+	to_chat(user, span_info("Skimming through the script, you don't feel obliged to read it in full. But the gist is that the mercenary is obligated to provide protection to the merchants guild."))
+	if(gaff)
+		to_chat(user, span_info("The gaffer has signed off on this."))
+	if(merch)
+		to_chat(user, span_info("The merchant seems to have signed off on this."))
+	if(merchpart)
+		to_chat(user, span_info("The contract seems to be in effect."))
+	if(pay)
+		to_chat(user, span_info("The merchant seems to have agreed to pay the mercenary guild [pay] mammons per dae."))
+	if(bell)
+		to_chat(user, span_info("The merchant seems to allow the members of the mercenary guild to use the dock bell, within reason."))
+	if(guarantee)
+		to_chat(user, span_info("This contract seems impossible to back off on for [guarantee] daes."))
+	if(misc)
+		to_chat(user, span_info("The guilds agree to, '[misc]'"))
+	return
+	/*
 	if(!merchpart)
 		info += "deals off"
 	if(pay)
@@ -1885,6 +2060,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	dat += "</body></html>"
 	user << browse(dat, "window=reading;size=460x300;can_close=0;can_minimize=0;can_maximize=0;can_resize=0;titlebar=0")
 	onclose(user, "reading", src)
+	*/
 
 /obj/item/paper/merchantprotectionpact_gaffpart/Destroy()
 	if(gaff)
@@ -1959,7 +2135,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	//lefthand_file = ''
 	//righthand_file = ''
 	w_class = WEIGHT_CLASS_TINY
-	dropshrink = 0.4
+	dropshrink = 0.7
 	drop_sound = 'sound/surgery/organ1.ogg'
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF | FREEZE_PROOF
 	var/datum/weakref/tiedpaper
@@ -1972,7 +2148,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 /obj/item/headeater_spawn/attack_self(mob/living/user)
 	if(!tiedpaper)
-		to_chat(user, span_red(""))
+		to_chat(user, span_red("It does not seem to be alive."))
 		return
 	var/alert = alert(user, "Do I want to use this?", "WRITHING THING", "Yes", "No")
 	if(alert == "No")
@@ -1983,8 +2159,10 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	to_chat(user, span_notice("The writhing flesh compresses itself into a different shape..."))
 	qdel(src)
 
+/*
 /obj/item/headeater_spawn/examine(mob/user)
 	. += "<span class='info'></span>"
+*/
 
 /obj/item/headeater_spawn/Destroy()
 	if(tiedpaper)
@@ -1992,10 +2170,10 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 	. = ..()
 
 /obj/item/hailer_core
-	//name = ""
+	name = "HAILER CARTILAGE"
 	icon_state = "cartridge"
 	icon = 'icons/roguetown/items/surgery.dmi'
-	//desc = ""
+	desc = "Squishy, clay like mass of meat, it pulsates randomly."
 	//lefthand_file = ''
 	//righthand_file = ''
 	w_class = WEIGHT_CLASS_TINY
@@ -2007,7 +2185,7 @@ GLOBAL_LIST_EMPTY(Beucratic_triumps)
 
 /obj/item/hailer_core/attack_self(mob/living/user)
 	if(!tiedpaper)
-		to_chat(user, span_red(""))
+		to_chat(user, span_red("Doesn't seem to be working."))
 		return
 	var/alert = alert(user, "Do I want to use this?", "HAILER CORE", "Yes", "No")
 	if(alert == "No")

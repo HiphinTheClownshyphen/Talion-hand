@@ -10931,6 +10931,7 @@
 /obj/structure/table/vtable,
 /obj/item/book/rogue/howtogaffer,
 /obj/structure/trophy/deer,
+/obj/effect/landmark/contracthole,
 /turf/open/floor/wood/nosmooth/saiga,
 /area/indoors/town/merc_guild)
 "fti" = (
@@ -24159,6 +24160,7 @@
 /area/indoors/town)
 "mbe" = (
 /obj/structure/closet/crate/drawer,
+/obj/item/paper/merchantprotectionpact,
 /turf/open/floor/carpet/red,
 /area/indoors/town/shop)
 "mbh" = (
@@ -40081,6 +40083,11 @@
 /obj/effect/falling_sakura,
 /turf/open/floor/naturalstone,
 /area/outdoors/town)
+"tDu" = (
+/obj/effect/decal/shadow_floor,
+/obj/structure/fake_machine/hateface,
+/turf/open/floor/ruinedwood/spiral,
+/area/indoors/town/merc_guild)
 "tDv" = (
 /obj/machinery/light/fueled/firebowl/church,
 /turf/open/floor/church,
@@ -115303,7 +115310,7 @@ jnM
 jnM
 ist
 knq
-bYw
+tDu
 mWh
 mWh
 tdh

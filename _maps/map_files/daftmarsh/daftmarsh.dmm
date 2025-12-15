@@ -1214,6 +1214,7 @@
 /obj/machinery/light/fueled/wallfire/candle/blue{
 	pixel_y = -32
 	},
+/obj/item/paper/merchantprotectionpact,
 /turf/open/floor/wood,
 /area/indoors/town/shop)
 "bey" = (
@@ -3383,6 +3384,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 1
 	},
+/obj/structure/fake_machine/hateface,
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/merc_guild)
 "dbd" = (
@@ -18121,6 +18123,7 @@
 "qGt" = (
 /obj/structure/table/wood/reinforced,
 /obj/item/book/rogue/howtogaffer,
+/obj/effect/landmark/contracthole,
 /turf/open/floor/blocks/newstone/alt,
 /area/indoors/town/merc_guild)
 "qGC" = (

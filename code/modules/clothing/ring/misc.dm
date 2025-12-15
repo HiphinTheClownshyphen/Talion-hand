@@ -494,3 +494,8 @@
 		)
 		to_chat(themerchant, span_danger(text))
 		themerchant.add_stress(/datum/stress_event/weepersring)
+
+/obj/item/clothing/ring/weepers_boon/Destroy()
+	if(merchant)
+		merchant = null
+	. = ..()

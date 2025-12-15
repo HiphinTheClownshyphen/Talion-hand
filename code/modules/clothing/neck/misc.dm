@@ -689,3 +689,8 @@
 		)
 		to_chat(innkeeper, span_green(text))
 		innkeeper.add_stress(/datum/stress_event/tyrantschain)
+
+/obj/item/clothing/neck/tyrants_chain/Destroy()
+	if(innkeep)
+		innkeep = null
+	. = ..()

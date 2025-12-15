@@ -771,6 +771,7 @@
 /obj/item/gem/violet,
 /obj/item/coin/gold/pile,
 /obj/item/key/warehouse,
+/obj/item/paper/merchantprotectionpact,
 /turf/open/floor/ruinedwood/darker,
 /area/indoors/town/shop)
 "aKJ" = (
@@ -7126,6 +7127,10 @@
 	},
 /turf/open/floor/dirt/road,
 /area/indoors/lich)
+"gMJ" = (
+/obj/structure/fake_machine/hateface,
+/turf/open/floor/ruinedwood,
+/area/indoors/town/merc_guild)
 "gNa" = (
 /obj/machinery/light/fueled/wallfire/candle/blue/l,
 /turf/open/floor/ruinedwood/darker,
@@ -10111,6 +10116,7 @@
 /area/outdoors/rtfield)
 "jAx" = (
 /obj/structure/table/vtable/v2,
+/obj/effect/landmark/contracthole,
 /turf/open/floor/carpet/red,
 /area/indoors/town/merc_guild)
 "jAI" = (
@@ -91867,7 +91873,7 @@ fjA
 mGI
 iZs
 xMI
-iZs
+gMJ
 plt
 gbu
 gbu
