@@ -213,12 +213,71 @@
 		playsound(src, 'sound/misc/godweapons/gorefeast5.ogg', 70, FALSE, ignore_walls = TRUE)
 		say("GRRRRHHH!!...GRAAAAGH")
 		return
-	if(!innkeep.transferItemToLoc(I, src))
+	for(var/obj/structure/fake_machine/hailer/hailer as anything in SSroguemachine.hailer)
+		innkeep.transferItemToLoc(I, hailer)
+		to_chat(innkeep, "<span class='notice'>I feed the [I] to the [src].</span>")
+		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
+		say("Bbbllrrr... fffrrrtt... brrrhh...")
 		return
-	to_chat(innkeep, "<span class='notice'>I feed the [I] to the [src].</span>")
-	playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
-	say("Bbbllrrr... fffrrrtt... brrrhh...")
 	return ..()
+
+/obj/structure/fake_machine/hailer/inn_hailer/ui_interact(mob/user)
+	. = ..()
+	var/auth = TRUE
+	var/dat = "<B>[name]</B><BR>"
+	for(var/obj/structure/fake_machine/hailer/hailer as anything in SSroguemachine.hailer)
+		for(var/obj/item/H as anything in hailer.contents)
+			if(istype(H, /obj/item/paper))
+				dat += "<A href='byond://?src=[REF(src)];read=[REF(H)]'>[H.name]</A> [auth ? "<A href='byond://?src=[REF(src)];write=[REF(H)]'>Write</A> <A href='byond://?src=[REF(src)];remove=[REF(H)]'>Remove</A> <A href='byond://?src=[REF(src)];rename=[REF(H)]'>Rename</A>": ""]<BR>"
+			else
+				dat += "<A href='byond://?src=[REF(src)];read=[REF(H)]'>[H.name]</A> [auth ? "<A href='byond://?src=[REF(src)];remove=[REF(H)]'>Remove</A>" : ""]<BR>"
+	user << browse("<HEAD><TITLE>Notices</TITLE></HEAD>[dat]","window=HAILER")
+	onclose(user, "HAILER")
+
+/obj/structure/fake_machine/hailer/inn_hailer/Topic(href, href_list)
+	..()
+	usr.set_machine(src)
+	if(href_list["remove"])
+		if(!usr.can_perform_action(src, NEED_DEXTERITY|FORBID_TELEKINESIS_REACH))	//For when a player is handcuffed while they have the notice window open
+			return
+		for(var/obj/structure/fake_machine/hailer/hailer as anything in SSroguemachine.hailer)
+			var/obj/item/I = locate(href_list["remove"]) in hailer.contents
+			if(istype(I) && I.loc == hailer)
+				I.forceMove(usr.loc)
+				usr.put_in_hands(I)
+				say("kchaak... khaa...")
+
+
+	if(href_list["write"])
+		if(!usr.can_perform_action(src, NEED_DEXTERITY|FORBID_TELEKINESIS_REACH)) //For when a player is handcuffed while they have the notice window open
+			return
+		for(var/obj/structure/fake_machine/hailer/hailer as anything in SSroguemachine.hailer)
+			var/obj/item/P = locate(href_list["write"]) in hailer.contents
+			if(istype(P) && P.loc == hailer)
+				var/obj/item/I = usr.is_holding_item_of_type(/obj/item/natural/feather)
+				if(I)
+					add_fingerprint(usr)
+					P.attackby(I, usr)
+				else
+					to_chat(usr, "<span class='warning'>You'll need something to write with!</span>")
+
+	if(href_list["read"])
+		for(var/obj/structure/fake_machine/hailer/hailer as anything in SSroguemachine.hailer)
+			var/obj/item/paper/I = locate(href_list["read"]) in hailer.contents
+			if(istype(I) && I.loc == hailer && in_range(src, usr))
+				I.read(usr)
+
+	if(href_list["rename"]) //this doesnt even update the menu in real time, people are gonna think it aint workin' for sure, lol, lmao - the clown
+		for(var/obj/structure/fake_machine/hailer/hailer as anything in SSroguemachine.hailer)
+			var/obj/item/I = locate(href_list["rename"]) in hailer.contents
+			var/obj/item/P = usr.is_holding_item_of_type(/obj/item/natural/feather)
+			if(P)
+				if(istype(I) && I.loc == hailer)
+					add_fingerprint(usr)
+					var/n_name = stripped_input(usr, "give your notice a header!", "Paper Labelling", null, MAX_NAME_LEN)
+					I.name = "[(n_name ? text("- '[n_name]'") : null)]"
+					return
+		to_chat(usr, "<span class='warning'>You'll need something to write with!</span>")
 
 /obj/structure/fake_machine/hailer/inn_hailer/proc/infestation_death()
 	playsound(src, 'sound/combat/gib (1).ogg', 70, FALSE, ignore_walls = TRUE)

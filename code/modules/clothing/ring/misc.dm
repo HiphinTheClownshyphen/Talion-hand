@@ -462,8 +462,8 @@
 	desc = "A hallowed copper ring, ritualistically forged by Pestran clergymen upon the graduation of a feldsher. \n It bears a vulture skull, whose beak is crooked, and the copper was blessed with pestra's rot : it will corrode in time, yet never lose it's resilience. \n Although the wearer may not have Pestra as her patron, this ring is proof of Her blessing. This allows the feldsher to extract and manipulate Lux, so long as they follow Her teachings"
 
 /obj/item/clothing/ring/weepers_boon
-	name = "Makers ring"
-	desc = "The wearer is a proud member of the Makers' guild."
+	name = "Eye of the storm"
+	desc = "A rough fingerpiece made up of darkened gold, the crude ring is engraved with the picture of thistles in rudimentary fashion, as if chilized by tools far too large for its size."
 	icon_state = "ring_duel"
 	sellprice = 0
 	var/datum/weakref/merchant
