@@ -196,7 +196,8 @@
 			var/hardcoldsweetdelicousfuckingmammons = A.headprice * 0.10
 			hardcoldsweetdelicousfuckingmammons = round(hardcoldsweetdelicousfuckingmammons)
 			A.headprice -= hardcoldsweetdelicousfuckingmammons
-			SSroguemachine.headeater.aggresive_income(hardcoldsweetdelicousfuckingmammons)
+			for(var/obj/structure/fake_machine/headeater/headeater as anything in SSroguemachine.headeater)
+				headeater.aggresive_income(hardcoldsweetdelicousfuckingmammons)
 			to_chat(merchant, span_danger("the [src] consumes the [A] spitting out coins in its place!"))
 			playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
 			budget2change(A.headprice, merchant)
@@ -208,7 +209,8 @@
 			var/hardcoldsweetdelicousfuckingmammonss = E.headprice * 0.10
 			hardcoldsweetdelicousfuckingmammonss = round(hardcoldsweetdelicousfuckingmammonss)
 			E.headprice -= hardcoldsweetdelicousfuckingmammonss
-			SSroguemachine.headeater.aggresive_income(hardcoldsweetdelicousfuckingmammonss)
+			for(var/obj/structure/fake_machine/headeater/headeater as anything in SSroguemachine.headeater)
+				headeater.aggresive_income(hardcoldsweetdelicousfuckingmammonss)
 			to_chat(merchant, span_danger("the [src] consumes the [E] spitting out coins in its place!"))
 			playsound(src, 'sound/misc/godweapons/gorefeast3.ogg', 70, FALSE, ignore_walls = TRUE)
 			budget2change(E.headprice, merchant)
