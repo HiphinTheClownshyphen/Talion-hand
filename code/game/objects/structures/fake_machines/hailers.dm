@@ -82,6 +82,7 @@
 		if(istype(I) && I.loc == src)
 			I.forceMove(usr.loc)
 			usr.put_in_hands(I)
+			playsound(src, 'sound/vo/vomit.ogg', 100, TRUE)
 			say("kchaak... khaa...")
 
 
@@ -144,7 +145,17 @@
 		"GGGGRRRRR... BLLRRTTT!!",
 		"NNNGGGRRBB... MMPHHH!!",
 		"Hhbbbh...Mhhaamm--maaahrhh...")
-	playsound(src, 'sound/surgery/organ2.ogg', 70, FALSE, ignore_walls = TRUE)
+	var/hail = pick('sound/vo/psst.ogg',
+		'sound/vo/psst.ogg',
+		'sound/vo/female/gen/clearthroat.ogg',
+		'sound/vo/male/gen/clearthroat (1).ogg',
+		'sound/vo/male/gen/clearthroat (2).ogg',
+		'sound/vo/male/gen/clearthroat (3).ogg',
+		'sound/vo/attn.ogg',
+		'sound/vo/female/gen/whistle (7).ogg',
+		'sound/vo/male/gen/whistle (2).ogg',
+		)
+	playsound(src, hail, 70, FALSE, ignore_walls = TRUE)
 	message = span_danger(message)
 	say(message)
 
@@ -245,6 +256,7 @@
 			if(istype(I) && I.loc == hailer)
 				I.forceMove(usr.loc)
 				usr.put_in_hands(I)
+				playsound(src, 'sound/vo/vomit.ogg', 100, TRUE)
 				say("kchaak... khaa...")
 
 
@@ -307,7 +319,19 @@
 		"Hoo... Hooo... HHH...",
 		"Ggggg... GGGHH... Hhhk...",
 		"Paaaaff... Hhhheeee... hhhhhh...")
-	playsound(src, 'sound/surgery/organ2.ogg', 70, FALSE, ignore_walls = TRUE)
+	var/innhail = pick('sound/vo/female/gen/breathgasp.ogg',
+		'sound/vo/female/gen/deathgurgle (1).ogg',
+		'sound/vo/female/gen/deathgurgle (2).ogg',
+		'sound/vo/female/gen/deathgurgle (3).ogg',
+		'sound/vo/male/gen/breathgasp (2).ogg',
+		'sound/vo/male/gen/breathgasp (3).ogg',
+		'sound/vo/male/gen/deathgurgle (3).ogg',
+		'sound/vo/female/gen/deathgurgle (1).ogg',
+		'sound/vo/female/gen/gasp (1).ogg',
+		'sound/vo/female/gen/gasp (2).ogg',
+		'sound/vo/male/gen/gasp.ogg',
+		)
+	playsound(src, innhail, 70, FALSE, ignore_walls = TRUE)
 	say(span_danger(message))
 
 /obj/structure/fake_machine/hailerboard/inn_hailer_board/proc/infestation_death()

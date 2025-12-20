@@ -138,11 +138,14 @@
 		var/obj/item/hailer_core/core = new /obj/item/hailer_core(get_turf(user))
 		if(!user.put_in_hands(core))
 			core.forceMove(get_turf(user))
+		var/obj/item/clothing/neck/tyrants_chain/chain = new /obj/item/clothing/neck/tyrants_chain(get_turf(user))
+		if(!user.put_in_hands(chain))
+			chain.forceMove(get_turf(chain))
 		inn.used = TRUE
 		inn.tiedobject = WEAKREF(core)
 		core.tiedpaper =  WEAKREF(inn)
 		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
-		//N/A sound and message
+		to_chat(user, span_danger("the [src] glares at [inn] until [core] and [chain] emerges from deep within itself."))
 		return
 	if(istype(H, /obj/item/paper/merchant_merger))
 		var/obj/item/paper/merchant_merger/guild = H
@@ -151,16 +154,19 @@
 		var/obj/item/headeater_spawn/hspawn = new /obj/item/headeater_spawn(get_turf(user))
 		if(!user.put_in_hands(hspawn))
 			hspawn.forceMove(get_turf(user))
+		var/obj/item/clothing/ring/weepers_boon/ring = new /obj/item/clothing/ring/weepers_boon(get_turf(user))
+		if(!user.put_in_hands(ring))
+			ring.forceMove(get_turf(user))
 		guild.used = TRUE
 		guild.tiedobject = WEAKREF(hspawn)
 		hspawn.tiedpaper = WEAKREF(guild)
 		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
-		//N/A sound and message
+		to_chat(user, span_danger("the [src] glares at [guild] until [hspawn] and [ring] emerges from deep within itself."))
 		return
 
 /obj/structure/fake_machine/headeater/proc/aggresive_income(income)
 	if(income)
-		playsound(src, 'sound/gore/flesh_eat_03.ogg', 70, FALSE, ignore_walls = TRUE)
+		playsound(src, 'sound/vo/vomit.ogg', 100, TRUE)
 		budget2change(income)
 
 /obj/structure/fake_machine/falseheadeater
